@@ -15,3 +15,4 @@ project/plugins/project/
 .worksheet
 
 .idea/
+src/main/resources/facebook4j.properties
