@@ -17,5 +17,10 @@ libraryDependencies +=
   "com.lihaoyi" %% "upickle" % "0.4.3"
 
 libraryDependencies +=
-  "com.github.gaocegege" % "scrala" % "0.1.5"
+  "org.scalactic" %% "scalactic" % "3.0.1"
 
+libraryDependencies +=
+  "org.scalatest" %% "scalatest" % "3.0.1" % "test"
+
+libraryDependencies +=
+  "org.carrot2" % "morfologik-stemming" % "1.2.2"
