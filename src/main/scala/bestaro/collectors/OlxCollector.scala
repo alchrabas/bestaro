@@ -3,6 +3,7 @@ package bestaro.collectors
 import java.net.URL
 import java.util.UUID
 
+import bestaro.collectors.util.HttpDownloader
 import bestaro.core.ProgressStatus.LOST
 import bestaro.core.RawRecord
 import bestaro.extractors.PolishDateExtractor
@@ -13,7 +14,7 @@ import org.jsoup.nodes.Document
 import scala.collection.JavaConversions._
 import scala.language.postfixOps
 
-class OlxCollector {
+class OlxCollector(httpDownloader: HttpDownloader) {
 
   def collect(recordConsumer: RawRecord => Unit): Unit = {
     collectLostPets(recordConsumer)
@@ -38,7 +39,7 @@ class OlxCollector {
       .map(allTables.get)
       .map(_.select("a").first().attr("href"))
       .map(requestSlowly)
-      .map(collectAdvertisementDetails(_, (id, pictureUrl) => requestImageSlowly(id, pictureUrl)))
+      .map(collectAdvertisementDetails)
       .foreach(recordConsumer)
 
     enterAnotherPage(recordConsumer, page, url, doc)
@@ -57,10 +58,7 @@ class OlxCollector {
     nextPageLinkExists
   }
 
-  // todo it would be better to avoid this callback
-  def collectAdvertisementDetails(adDocument: Document,
-                                  picturesLoader: (UUID, String) => Unit
-                                 ): RawRecord = {
+  def collectAdvertisementDetails(adDocument: Document): RawRecord = {
     val uuid = UUID.randomUUID()
     val locationString = adDocument.select(".show-map-link > strong").text()
     val messageContent = adDocument.select("#textContent").text()
@@ -75,7 +73,7 @@ class OlxCollector {
     val extractedEventDate = polishDateExtractor.parse(messageContent)
 
     if (pictures.nonEmpty) {
-      picturesLoader(uuid, pictures.get(0))
+      requestImageSlowly(uuid, pictures.get(0))
     }
 
     RawRecord(uuid.toString, LOST, messageContent,
@@ -88,15 +86,10 @@ class OlxCollector {
   }
 
   def requestImageSlowly(id: UUID, url: String): Unit = {
-    Thread.sleep(10 * 1000)
-    println("Requesting image: " + url)
-    ImageUtil.saveImage(id, new URL(url).openStream())
+    ImageUtil.saveImage(id, httpDownloader.downloadResource(new URL(url)))
   }
 
   def requestSlowly(url: String): Document = {
-    Thread.sleep(10 * 1000)
-
-    println("Requesting: " + url)
-    Jsoup.connect(url).get()
+    Jsoup.parse(httpDownloader.downloadResource(new URL(url)), "UTF-8", url)
   }
 }
