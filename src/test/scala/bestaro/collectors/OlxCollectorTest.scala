@@ -2,7 +2,7 @@ package bestaro.collectors
 
 import java.time.{Instant, LocalDate, Month, ZoneOffset}
 
-import bestaro.ProgressStatus.LOST
+import bestaro.core.ProgressStatus.LOST
 import org.jsoup.Jsoup
 import org.scalatest.FunSpec
 
@@ -13,7 +13,7 @@ class OlxCollectorTest extends FunSpec {
       val collector = new OlxCollector()
       val doc = Jsoup.parse(getClass.getResourceAsStream("/olxSamplePage.html"), "UTF-8",
         "https://www.olx.pl/oferta/bura-pregowana-starsza-kotka-CID103-ID40upd.html#9537ecc7fe")
-      val record = collector.collectAdvertisementDetails(doc)
+      val record = collector.collectAdvertisementDetails(doc, (_, _) => {})
 
       assert(record.status == LOST)
       assert(record.title == "Bura, pręgowana, starsza KOTKA ! Kraków Nowa Huta • OLX.pl")
@@ -28,6 +28,14 @@ class OlxCollectorTest extends FunSpec {
         "https://olxpl-ring09.akamaized.net/images_tablicapl/103525969_5_644x461_bura-pregowana-starsza-kotka-malopolskie.jpg"
       ).sorted)
       assert(record.link == "https://www.olx.pl/oferta/bura-pregowana-starsza-kotka-CID103-ID40upd.html")
+    }
+
+    it("should know if a next page exists") {
+      val collector = new OlxCollector
+      val PAGE_URL = "https://www.olx.pl/zwierzeta/zaginione-i-znalezione/malopolskie/?search%5Bfilter_enum_lostfound%5D%5B0%5D=lost"
+      val doc = Jsoup.parse(getClass.getResourceAsStream("/olxListPage.html"), "UTF-8", PAGE_URL)
+      assert(collector.nextPageExists(2, PAGE_URL, doc) === true)
+      assert(collector.nextPageExists(4, PAGE_URL, doc) === false)
     }
   }
 
