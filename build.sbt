@@ -23,4 +23,4 @@ libraryDependencies +=
   "org.scalatest" %% "scalatest" % "3.0.1" % "test"
 
 libraryDependencies +=
-  "org.carrot2" % "morfologik-stemming" % "1.2.2"
+  "org.carrot2" % "morfologik-polish" % "2.1.3"
