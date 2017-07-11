@@ -36,6 +36,7 @@ class OlxCollector(httpDownloader: HttpDownloader) {
     val allTables = offerTables.select("table.fixed.breakword")
 
     (0 until allTables.size)
+      .iterator
       .map(allTables.get)
       .map(_.select("a").first().attr("href"))
       .map(requestSlowly)
