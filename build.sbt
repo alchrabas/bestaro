@@ -24,3 +24,6 @@ libraryDependencies +=
 
 libraryDependencies +=
   "org.carrot2" % "morfologik-polish" % "2.1.3"
+
+libraryDependencies +=
+  "org.scalamock" %% "scalamock-scalatest-support" % "3.5.0" % Test

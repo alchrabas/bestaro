@@ -33,7 +33,7 @@ class OlxCollector(httpDownloader: HttpDownloader) {
     val doc = requestSlowly(url)
     val offerTables = doc.select("#offers_table").first().children()
 
-    val allTables = offerTables.select("table.fixed.breakword").subList(0, 1)
+    val allTables = offerTables.select("table.fixed.breakword")
 
     (0 until allTables.size)
       .map(allTables.get)

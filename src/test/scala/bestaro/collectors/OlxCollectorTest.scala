@@ -1,19 +1,26 @@
 package bestaro.collectors
 
+import java.net.URL
 import java.time.{Instant, LocalDate, Month, ZoneOffset}
 
+import bestaro.collectors.util.HttpDownloader
 import bestaro.core.ProgressStatus.LOST
 import org.jsoup.Jsoup
 import org.scalatest.FunSpec
+import org.scalamock.scalatest.MockFactory
 
-class OlxCollectorTest extends FunSpec {
+class OlxCollectorTest extends FunSpec with MockFactory {
 
   describe("Collector") {
     it("should get the data from olxSamplePage") {
-      val collector = new OlxCollector()
+      val httpDownloaderMock = mock[HttpDownloader]
+      (httpDownloaderMock.downloadResource _).expects(
+        new URL("https://olxpl-ring09.akamaized.net/images_tablicapl/103525969_4_644x461_bura-pregowana-starsza-kotka-zwierzeta.jpg"))
+        .returning(this.getClass.getResourceAsStream("/paw.png")).once
+      val collector = new OlxCollector(httpDownloaderMock)
       val doc = Jsoup.parse(getClass.getResourceAsStream("/olxSamplePage.html"), "UTF-8",
         "https://www.olx.pl/oferta/bura-pregowana-starsza-kotka-CID103-ID40upd.html#9537ecc7fe")
-      val record = collector.collectAdvertisementDetails(doc, (_, _) => {})
+      val record = collector.collectAdvertisementDetails(doc)
 
       assert(record.status == LOST)
       assert(record.title == "Bura, pręgowana, starsza KOTKA ! Kraków Nowa Huta • OLX.pl")
@@ -31,7 +38,8 @@ class OlxCollectorTest extends FunSpec {
     }
 
     it("should know if a next page exists") {
-      val collector = new OlxCollector
+      val httpDownloaderMock = mock[HttpDownloader]
+      val collector = new OlxCollector(httpDownloaderMock)
       val PAGE_URL = "https://www.olx.pl/zwierzeta/zaginione-i-znalezione/malopolskie/?search%5Bfilter_enum_lostfound%5D%5B0%5D=lost"
       val doc = Jsoup.parse(getClass.getResourceAsStream("/olxListPage.html"), "UTF-8", PAGE_URL)
       assert(collector.nextPageExists(2, PAGE_URL, doc) === true)
