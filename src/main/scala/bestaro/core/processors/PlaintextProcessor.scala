@@ -1,6 +1,7 @@
 package bestaro.core.processors
 
 import bestaro.core.RawRecord
+import morfologik.stemming.WordData
 import morfologik.stemming.polish.PolishStemmer
 
 import collection.JavaConverters._
@@ -13,16 +14,17 @@ class PlaintextProcessor {
     val inputText = record.message
     val tokens = Option(inputText)
       // remove everything except letters, numbers and white spaces
-      .map(_.replaceAll("[^0-9a-ząćęłńóśżźA-ZĄĆĘŁŃÓŚŻŹ ]", ""))
-      .map(_.split(" ").toList)
+      .map(_.replaceAll("[^.0-9a-ząćęłńóśżźA-ZĄĆĘŁŃÓŚŻŹ ]", " "))
+      .map(_.replaceAll("\\.", ". "))
+      .map(_.split("\\s+").toList)
       .getOrElse(List())
 
     val cleanedText = tokens.map { token =>
-      val results = stemmer.lookup(token)
-      if (results.isEmpty) {
+      val matchedStems = stemmer.lookup(token)
+      if (matchedStems.isEmpty || isExcludedFromMorfologik(token)) {
         token
       } else {
-        results.get(0).getStem.toString
+        mostAccurateStem(matchedStems)
       }
     }.mkString(" ")
 
@@ -31,5 +33,16 @@ class PlaintextProcessor {
     println(cleanedText)
 
     record.copy()
+  }
+
+  private def mostAccurateStem(results: java.util.List[WordData]): String = {
+    val stems = results.asScala
+      .map(_.getStem.toString)
+
+    stems.find(stem => stem.endsWith("y")).getOrElse(stems.head)
+  }
+
+  private def isExcludedFromMorfologik(word: String): Boolean = {
+    Set("w", "i", "m") contains word.toLowerCase
   }
 }
