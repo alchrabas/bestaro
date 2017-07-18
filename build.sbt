@@ -27,3 +27,6 @@ libraryDependencies +=
 
 libraryDependencies +=
   "org.scalamock" %% "scalamock-scalatest-support" % "3.5.0" % Test
+
+libraryDependencies +=
+  "com.github.tototoshi" %% "scala-csv" % "1.3.4"

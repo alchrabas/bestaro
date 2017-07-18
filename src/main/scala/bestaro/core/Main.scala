@@ -1,11 +1,9 @@
 package bestaro.core
 
 import java.io.{File, FileWriter}
-import java.nio.charset.{Charset, StandardCharsets}
+import java.nio.charset.StandardCharsets
 import java.nio.file.{Files, Paths}
 
-import bestaro.collectors.{FacebookCollector, OlxCollector}
-import bestaro.collectors.util.SlowHttpDownloader
 import bestaro.core.processors.PlaintextProcessor
 import upickle.default._
 
@@ -17,7 +15,6 @@ object Main {
     //    fb.collect(saveInJson)
     //    val olx = new OlxCollector(new SlowHttpDownloader)
     //    olx.collect(saveInJson)
-
 
     val records = readRecordsFromFile
     val processor = new PlaintextProcessor
