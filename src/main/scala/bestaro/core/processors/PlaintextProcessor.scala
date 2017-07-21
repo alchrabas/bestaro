@@ -29,6 +29,12 @@ class PlaintextProcessor {
   private val streetsByFirstSimpleWord: Map[String, Seq[StreetEntry]] = streets.groupBy(_.strippedName
     .split(" ")(0))
 
+  private val LOC_NAME_TRAIT_SCORE = 5
+  private val CAPITALIZED_WORD_SCORE = 5
+  private val EXISTING_STREET_SCORE = 10
+  private val PRECEDED_BY_LOC_NAME_TRAIT_SCORE = 5
+  private val PRECEDED_BY_LOC_SPECIFIC_PREPOSITION_SCORE = 5
+
   def process(record: RawRecord): RawRecord = {
     val inputText = record.message
     val tokens = Option(inputText)
@@ -44,15 +50,15 @@ class PlaintextProcessor {
         baseNameProducer.getBestBaseName(tokenText))) {
         Token(tokenText,
           baseNameProducer.strippedForStemming(tokenText),
-          baseNameProducer.getBestBaseName(tokenText), 5)
+          baseNameProducer.getBestBaseName(tokenText), LOC_NAME_TRAIT_SCORE)
       } else {
         evaluateMostAccurateBaseName(tokenText)
       }
-    }.map { a =>
-      if (isCapitalized(a.original)) {
-        a.copy(value = a.value + 5)
+    }.map { token =>
+      if (isCapitalized(token.original)) {
+        alterScore(token, by = CAPITALIZED_WORD_SCORE)
       } else {
-        a
+        token
       }
     }
 
@@ -76,7 +82,7 @@ class PlaintextProcessor {
     println(inputText)
     println(" ====> ")
     println(stemmedTokens.mkString(" "))
-    println("CANDIDATES: " + stemmedTokens.sortBy(_.value).reverse.slice(0, 3))
+    println("BEST CANDIDATES: " + stemmedTokens.sortBy(_.placenessScore).reverse.slice(0, 3))
 
     record.copy()
   }
@@ -95,29 +101,29 @@ class PlaintextProcessor {
                                idx: Int, streetEntry: StreetEntry,
                                streetProperty: StreetEntry => String,
                                tokenProperty: Token => String): Boolean = {
-    if (matching(mutableTokens, idx, streetEntry, streetProperty, tokenProperty)) {
+    if (streetNameFullyMatches(mutableTokens, idx, streetEntry, streetProperty, tokenProperty)) {
       for (wordToReplace <- streetProperty(streetEntry).split(" ").indices) {
-        increaseValue(mutableTokens, idx + wordToReplace)
+        increaseScoreForExistingStreet(mutableTokens, idx + wordToReplace)
         return true
       }
     }
     false
   }
 
-  private def increaseValue(mutableTokens: ListBuffer[Token], idx: Int) = {
-    mutableTokens(idx) = mutableTokens(idx).copy(value = mutableTokens(idx).value + 10)
+  private def increaseScoreForExistingStreet(mutableTokens: ListBuffer[Token], idx: Int) = {
+    mutableTokens(idx) = alterScore(mutableTokens(idx), EXISTING_STREET_SCORE)
   }
 
-  private def matching(tokens: ListBuffer[Token],
-                       firstTokenPos: Int,
-                       street: StreetEntry,
-                       streetProperty: StreetEntry => String,
-                       tokenProperty: Token => String
-                      ): Boolean = {
-    val streetSimpleWords = streetProperty(street).split(" ")
-    for (wordId <- streetSimpleWords.indices) {
+  private def streetNameFullyMatches(tokens: ListBuffer[Token],
+                                     firstTokenPos: Int,
+                                     street: StreetEntry,
+                                     streetProperty: StreetEntry => String,
+                                     tokenProperty: Token => String
+                                    ): Boolean = {
+    val streetTokens = streetProperty(street).split(" ")
+    for (wordId <- streetTokens.indices) {
       if (tokens.length > firstTokenPos + wordId) {
-        if (tokenProperty(tokens(firstTokenPos + wordId)) != streetSimpleWords(wordId)) {
+        if (tokenProperty(tokens(firstTokenPos + wordId)) != streetTokens(wordId)) {
           return false
         }
       }
@@ -133,28 +139,28 @@ class PlaintextProcessor {
     import PlaintextProcessor._
     tokens.slidingPrefixedByEmptyTokens(2).map { case List(nameTrait, toReturn) =>
       if (isLocationNameTrait(nameTrait)) {
-        alterValue(toReturn, by = 5)
+        alterScore(toReturn, by = PRECEDED_BY_LOC_NAME_TRAIT_SCORE)
       } else {
         toReturn
       }
     }.toList.slidingPrefixedByEmptyTokens(2).map { case List(preposition, toReturn) =>
       if (isLocationSpecificPreposition(preposition)) {
-        alterValue(toReturn, by = 5)
+        alterScore(toReturn, by = PRECEDED_BY_LOC_SPECIFIC_PREPOSITION_SCORE)
       } else {
         toReturn
       }
     }.toList.slidingPrefixedByEmptyTokens(3).map { case List(preposition, nameTrait, toReturn) =>
       val isPrepositionFollowedByKind = isLocationSpecificPreposition(preposition) && isLocationNameTrait(nameTrait)
       if (isPrepositionFollowedByKind) {
-        alterValue(toReturn, by = 5)
+        alterScore(toReturn, by = PRECEDED_BY_LOC_SPECIFIC_PREPOSITION_SCORE)
       } else {
         toReturn
       }
     }.toList
   }
 
-  private def alterValue(token: Token, by: Int): Token = {
-    token.copy(value = token.value + by)
+  private def alterScore(token: Token, by: Int): Token = {
+    token.copy(placenessScore = token.placenessScore + by)
   }
 
   private def isLocationNameTrait(token: Token): Boolean = {
@@ -194,5 +200,4 @@ class PlaintextProcessor {
   private def isCapitalized(original: String): Boolean = {
     !original.isEmpty && original(0).isUpper
   }
-
 }

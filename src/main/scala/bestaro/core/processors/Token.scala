@@ -4,9 +4,9 @@ case class Token(
                   original: String,
                   stripped: String,
                   stem: String,
-                  value: Int
+                  placenessScore: Int
                 ) {
   override def toString: String = {
-    original + " (" + stem + ")[" + value + "]"
+    original + " (" + stem + ")[" + placenessScore + "]"
   }
 }
