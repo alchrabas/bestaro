@@ -1,7 +1,6 @@
 package bestaro.core.processors
 
 import com.github.tototoshi.csv.{CSVReader, DefaultCSVFormat}
-import morfologik.stemming.polish.PolishStemmer
 
 object GusDataReader {
 
@@ -12,7 +11,8 @@ object GusDataReader {
 }
 
 class GusDataReader {
-  val STREET_NAMES_CSV = "gus/ULIC_Adresowy_2017-07-17.csv"
+  //  val STREET_NAMES_CSV = "gus/ULIC_Adresowy_2017-07-17.csv"
+  val STREET_NAMES_CSV = "gus/ULIC_Adresowy_Krakow.csv"
 
   private val baseNameProducer = new BaseNameProducer
 
@@ -48,13 +48,12 @@ class GusDataReader {
       str.substring(3)
     } else {
       str
-    }
+    }.toLowerCase
   }
 
   private def stemTheWords(original: String): String = {
     original.split("\\s+")
-      .map { word =>
-        baseNameProducer.getBestBaseName(word).getOrElse(word)
-      }.mkString(" ")
+      .map(baseNameProducer.getBestBaseName)
+      .mkString(" ")
   }
 }
