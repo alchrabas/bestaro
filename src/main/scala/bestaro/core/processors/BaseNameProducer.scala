@@ -7,8 +7,13 @@ class BaseNameProducer {
 
   private val stemmer = new PolishStemmer
 
-  def getBestBaseName(original: String): Option[String] = {
-    val matchedStems = stemmer.lookup(original.toLowerCase)
+  def strippedForStemming(original: String): String = {
+    original.toLowerCase.replaceAll("[^0-9a-ząćęłńóśżź]", "").trim
+  }
+
+  def maybeBestBaseName(original: String): Option[String] = {
+    val strippedOriginal = strippedForStemming(original)
+    val matchedStems = stemmer.lookup(strippedOriginal)
     if (matchedStems.isEmpty || isExcludedFromMorfologik(original)) {
       None
     } else {
@@ -17,6 +22,10 @@ class BaseNameProducer {
         .map(_.getStem.toString)
       Some(stems.find(stem => stem.endsWith("y")).getOrElse(stems.head))
     }
+  }
+
+  def getBestBaseName(original: String): String = {
+    maybeBestBaseName(original).getOrElse(strippedForStemming(original))
   }
 
   private def isExcludedFromMorfologik(word: String): Boolean = {

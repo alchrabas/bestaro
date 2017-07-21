@@ -2,10 +2,11 @@ package bestaro.core.processors
 
 case class Token(
                   original: String,
+                  stripped: String,
                   stem: String,
                   value: Int
                 ) {
   override def toString: String = {
-    stem + "[" + value + "]"
+    original + " (" + stem + ")[" + value + "]"
   }
 }

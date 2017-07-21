@@ -32,14 +32,13 @@ class GusDataReader {
   private def convertToStreetEntry(csvEntry: Map[String, String]): StreetEntry = {
     val originalName = csvEntry("NAZWA_1")
     val kind = csvEntry("CECHA")
-    val stemmedName = stemTheWords(originalName)
-    val simpleName = simplifyName(originalName)
-    val stemmedSimpleName = stemTheWords(simpleName)
+    val strippedName = stripAndShortenName(originalName)
+    val stemmedName = stemTheWords(strippedName)
 
-    StreetEntry(originalName, kind, simpleName, stemmedName, stemmedSimpleName)
+    StreetEntry(originalName, kind, strippedName, stemmedName)
   }
 
-  private def simplifyName(str: String): String = {
+  private def stripAndShortenName(str: String): String = {
     if (str.contains("im.")) {
       str.substring(str.indexOf("im.") + 3)
     } else if (str.contains("ul.")) {
