@@ -58,7 +58,9 @@ class PlaintextProcessor {
 
     println("########################")
 
-    stemmedTokens = updateTokenEvaluationUsingContext(stemmedTokens)
+    if (stemmedTokens.nonEmpty) {
+      stemmedTokens = updateTokenEvaluationUsingContext(stemmedTokens)
+    }
     val mutableTokens = stemmedTokens.to[ListBuffer]
     for (idx <- mutableTokens.indices) {
       if (streetsByFirstSimpleWord.contains(mutableTokens(idx).stripped)) {
@@ -129,26 +131,30 @@ class PlaintextProcessor {
 
   private def updateTokenEvaluationUsingContext(tokens: List[Token]): List[Token] = {
     import PlaintextProcessor._
-    tokens.slidingPrefixedByEmptyTokens(2).map(a => {
-      if (isLocationNameTrait(a.head)) {
-        a.last.copy(value = a.last.value + 5)
+    tokens.slidingPrefixedByEmptyTokens(2).map { case List(nameTrait, toReturn) =>
+      if (isLocationNameTrait(nameTrait)) {
+        alterValue(toReturn, by = 5)
       } else {
-        a.last
+        toReturn
       }
-    }).toList.slidingPrefixedByEmptyTokens(2).map(a => {
-      if (isLocationSpecificPreposition(a.head)) {
-        a.last.copy(value = a.last.value + 5)
+    }.toList.slidingPrefixedByEmptyTokens(2).map { case List(preposition, toReturn) =>
+      if (isLocationSpecificPreposition(preposition)) {
+        alterValue(toReturn, by = 5)
       } else {
-        a.last
+        toReturn
       }
-    }).toList.slidingPrefixedByEmptyTokens(3).map(a => {
-      val isPrepositionFollowedByKind = isLocationSpecificPreposition(a.head) && isLocationNameTrait(a(1))
+    }.toList.slidingPrefixedByEmptyTokens(3).map { case List(preposition, nameTrait, toReturn) =>
+      val isPrepositionFollowedByKind = isLocationSpecificPreposition(preposition) && isLocationNameTrait(nameTrait)
       if (isPrepositionFollowedByKind) {
-        a.last.copy(value = a.last.value + 5)
+        alterValue(toReturn, by = 5)
       } else {
-        a.last
+        toReturn
       }
-    }).toList
+    }.toList
+  }
+
+  private def alterValue(token: Token, by: Int): Token = {
+    token.copy(value = token.value + by)
   }
 
   private def isLocationNameTrait(token: Token): Boolean = {
