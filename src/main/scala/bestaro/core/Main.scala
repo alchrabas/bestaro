@@ -22,7 +22,7 @@ object Main {
 
     OPTION match {
       case FB =>
-        val fb = new FacebookCollector(saveInJson)
+        val fb = new FacebookCollector(saveInJson, recordAlreadyExists)
         fb.collect(printResult)
       case OLX =>
         val olx = new OlxCollector(new SlowHttpDownloader)
@@ -36,7 +36,12 @@ object Main {
     }
   }
 
-  def saveInJson(record: RawRecord): Unit = {
+  private def recordAlreadyExists(record: RawRecord): Boolean = {
+    readRecordsFromFile.exists(existingRecord =>
+      existingRecord.id == record.id)
+  }
+
+  private def saveInJson(record: RawRecord): Unit = {
     var listOfRecords: Seq[RawRecord] = readRecordsFromFile
     listOfRecords = listOfRecords :+ record
     saveFile(write(listOfRecords))

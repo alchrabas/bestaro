@@ -1,15 +1,18 @@
 package bestaro.collectors
 
 import java.nio.file.Path
+import java.time.Instant
 import java.util.UUID
+import java.util.concurrent.TimeUnit
 
 import bestaro.core.ProgressStatus.LOST
 import bestaro.core.RawRecord
 import bestaro.util.ImageUtil
 import facebook4j._
+
 import scala.collection.JavaConverters._
 
-class FacebookCollector(recordConsumer: RawRecord => Unit) {
+class FacebookCollector(recordConsumer: RawRecord => Unit, isAlreadyStored: RawRecord => Boolean) {
 
   def collect(recordConsumer: RawRecord => Unit): Unit = {
     val facebook = new FacebookFactory().getInstance
@@ -25,7 +28,16 @@ class FacebookCollector(recordConsumer: RawRecord => Unit) {
       .iterator
       .asScala
       .map(postToRecord)
+      .takeWhile {
+        record =>
+          isWithinTimeBox(record.postDate) || isAlreadyStored(record)
+      }
       .foreach(recordConsumer)
+  }
+
+  private def isWithinTimeBox(postDate: Long): Boolean = {
+    val threeMonthsAgo = Instant.now().minusSeconds(TimeUnit.DAYS.toSeconds(3 * 30)).toEpochMilli
+    postDate >= threeMonthsAgo
   }
 
   class FacebookEater(facebook: Facebook, groupId: String) {
@@ -34,6 +46,7 @@ class FacebookCollector(recordConsumer: RawRecord => Unit) {
       .fields("message", "link", "id", "permalink_url", "created_time", "attachments")
 
     def fetch(): ResponseList[Post] = {
+      Thread.sleep(1000)
       val responseList = if (lastPage.isEmpty) {
         facebook.groups().getGroupFeed(groupId, READING)
       } else {
