@@ -4,22 +4,35 @@ import java.io.{File, FileWriter}
 import java.nio.charset.StandardCharsets
 import java.nio.file.{Files, Paths}
 
+import bestaro.collectors.{FacebookCollector, OlxCollector}
+import bestaro.collectors.util.SlowHttpDownloader
 import bestaro.core.processors.PlaintextProcessor
 import upickle.default._
 
 object Main {
 
+  val FB = "FB"
+  val OLX = "OLX"
+  val PROCESS = "PROCESS"
+
+  val OPTION = FB
+
   def main(args: Array[String]): Unit = {
+    val printResult = (record: RawRecord) => println(record)
 
-    //    val fb = new FacebookCollector(saveInJson)
-    //    fb.collect(saveInJson)
-    //    val olx = new OlxCollector(new SlowHttpDownloader)
-    //    olx.collect(saveInJson)
-
-    val records = readRecordsFromFile
-    val processor = new PlaintextProcessor
-    for (record <- records) {
-      processor.process(record)
+    OPTION match {
+      case FB =>
+        val fb = new FacebookCollector(saveInJson)
+        fb.collect(printResult)
+      case OLX =>
+        val olx = new OlxCollector(new SlowHttpDownloader)
+        olx.collect(saveInJson)
+      case PROCESS =>
+        val records = readRecordsFromFile
+        val processor = new PlaintextProcessor
+        for (record <- records) {
+          processor.process(record)
+        }
     }
   }
 
@@ -31,8 +44,9 @@ object Main {
 
   private def readRecordsFromFile = {
     val fileContents = readFile()
-    var listOfRecords = read[Seq[RawRecord]](fileContents)
-    listOfRecords
+    read[Seq[RawRecord]](fileContents).filter {
+      a => a.link != null && a.link.contains("facebook")
+    }
   }
 
   private def readFile(): String = {
