@@ -11,6 +11,7 @@ import bestaro.util.ImageUtil
 import facebook4j._
 
 import scala.collection.JavaConverters._
+import scala.collection.mutable
 
 class FacebookCollector(recordConsumer: RawRecord => Unit, isAlreadyStored: RawRecord => Boolean) {
 
@@ -21,18 +22,25 @@ class FacebookCollector(recordConsumer: RawRecord => Unit, isAlreadyStored: RawR
     val foundGroup = foundGroups.get(0)
     val eater = new FacebookEater(facebook, foundGroup.getId)
 
-    val result = eater.fetch()
-    println(s"Found ${result.size()} posts")
+    var continueFetching = true
+    while (continueFetching) {
+      val result = eater.fetch()
+      println(s"Found ${result.size()} fb posts")
 
-    result
-      .iterator
-      .asScala
-      .map(postToRecord)
-      .takeWhile {
-        record =>
-          isWithinTimeBox(record.postDate) || isAlreadyStored(record)
-      }
-      .foreach(recordConsumer)
+      val records = result
+        .asScala
+        .map(postToRecord)
+
+      continueFetching = thereIsAtLeastOneRecordToSave(records)
+      records.foreach(recordConsumer)
+    }
+  }
+
+  private def thereIsAtLeastOneRecordToSave(records: mutable.Buffer[RawRecord]) = {
+    records.map {
+      record =>
+        isWithinTimeBox(record.postDate) && !isAlreadyStored(record)
+    }.exists(validToSave => validToSave)
   }
 
   private def isWithinTimeBox(postDate: Long): Boolean = {
