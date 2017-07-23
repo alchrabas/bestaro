@@ -1,6 +1,6 @@
 package bestaro.core
 
-case class RawRecord(id: String = "",
+case class RawRecord(recordId: RecordId,
                      status: AnimalStatus,
                      message: String,
                      postDate: Long,
@@ -19,5 +19,7 @@ object ProgressStatus {
 
   object FOUND extends AnimalStatus("FOUND")
 
-  val values = Seq(LOST, FOUND)
+  object SEEN extends AnimalStatus("SEEN")
+
+  val values = Seq(LOST, FOUND, SEEN)
 }

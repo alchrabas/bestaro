@@ -6,7 +6,7 @@ import java.util.UUID
 import java.util.concurrent.TimeUnit
 
 import bestaro.core.ProgressStatus.LOST
-import bestaro.core.RawRecord
+import bestaro.core.{FbId, RawRecord}
 import bestaro.util.ImageUtil
 import facebook4j._
 
@@ -14,6 +14,8 @@ import scala.collection.JavaConverters._
 import scala.collection.mutable
 
 class FacebookCollector(recordConsumer: RawRecord => Unit, isAlreadyStored: RawRecord => Boolean) {
+
+  private val THREE_MONTHS = TimeUnit.DAYS.toSeconds(3 * 30)
 
   def collect(recordConsumer: RawRecord => Unit): Unit = {
     val facebook = new FacebookFactory().getInstance
@@ -44,13 +46,13 @@ class FacebookCollector(recordConsumer: RawRecord => Unit, isAlreadyStored: RawR
   }
 
   private def isWithinTimeBox(postDate: Long): Boolean = {
-    val threeMonthsAgo = Instant.now().minusSeconds(TimeUnit.DAYS.toSeconds(3 * 30)).toEpochMilli
+    val threeMonthsAgo = Instant.now().minusSeconds(THREE_MONTHS).toEpochMilli
     postDate >= threeMonthsAgo
   }
 
   class FacebookEater(facebook: Facebook, groupId: String) {
     private var lastPage: Option[Paging[Post]] = None
-    private val READING = new Reading().limit(25)
+    private val READING = new Reading().limit(10)
       .fields("message", "link", "id", "permalink_url", "created_time", "attachments")
 
     def fetch(): ResponseList[Post] = {
@@ -68,13 +70,14 @@ class FacebookCollector(recordConsumer: RawRecord => Unit, isAlreadyStored: RawR
 
   def postToRecord(post: Post): RawRecord = {
     println(s"[link: ${post.getPermalinkUrl}, ${post.getCreatedTime}] ${post.getMessage}")
-    val uuid = UUID.randomUUID()
+
+    val id = FbId(post.getId)
     var picturePath: Option[Path] = Option.empty
     if (post.getPicture != null) {
-      picturePath = Some(ImageUtil.saveImage(uuid, post.getPicture.openStream()))
+      picturePath = Some(ImageUtil.saveImage(id, post.getPicture.openStream()))
     }
 
-    RawRecord(uuid.toString, LOST, post.getMessage, post.getCreatedTime.getTime,
+    RawRecord(id, LOST, post.getMessage, post.getCreatedTime.getTime,
       picturePath.map(_.toString).toList, Option(post.getPermalinkUrl).map(_.toString).orNull)
   }
 }

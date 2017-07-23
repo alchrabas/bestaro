@@ -4,8 +4,8 @@ import java.io.{File, FileWriter}
 import java.nio.charset.StandardCharsets
 import java.nio.file.{Files, Paths}
 
-import bestaro.collectors.{FacebookCollector, OlxCollector}
 import bestaro.collectors.util.SlowHttpDownloader
+import bestaro.collectors.{FacebookCollector, OlxCollector}
 import bestaro.core.processors.PlaintextProcessor
 import upickle.default._
 
@@ -23,7 +23,7 @@ object Main {
     OPTION match {
       case FB =>
         val fb = new FacebookCollector(saveInJson, recordAlreadyExists)
-        fb.collect(printResult)
+        fb.collect(saveInJson)
       case OLX =>
         val olx = new OlxCollector(new SlowHttpDownloader)
         olx.collect(saveInJson)
@@ -37,21 +37,24 @@ object Main {
   }
 
   private def recordAlreadyExists(record: RawRecord): Boolean = {
-    readRecordsFromFile.exists(existingRecord =>
-      existingRecord.id == record.id)
+    readRecordsFromFile.exists(_.recordId == record.recordId)
   }
 
+  import RecordId._
   private def saveInJson(record: RawRecord): Unit = {
     var listOfRecords: Seq[RawRecord] = readRecordsFromFile
-    listOfRecords = listOfRecords :+ record
+    if (!listOfRecords.exists(_.recordId == record.recordId)) {
+      listOfRecords = listOfRecords :+ record
+    }
     saveFile(write(listOfRecords))
   }
 
-  private def readRecordsFromFile = {
+  private def readRecordsFromFile: Seq[RawRecord] = {
     val fileContents = readFile()
-    read[Seq[RawRecord]](fileContents).filter {
-      a => a.link != null && a.link.contains("facebook")
-    }
+    read[Seq[RawRecord]](fileContents)
+      .filter {
+        record => record.link != null && record.link.contains("facebook")
+      }
   }
 
   private def readFile(): String = {

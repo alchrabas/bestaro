@@ -1,11 +1,10 @@
 package bestaro.collectors
 
 import java.net.URL
-import java.util.UUID
 
 import bestaro.collectors.util.HttpDownloader
 import bestaro.core.ProgressStatus.LOST
-import bestaro.core.RawRecord
+import bestaro.core.{OlxId, RawRecord, RecordId}
 import bestaro.extractors.PolishDateExtractor
 import bestaro.util.ImageUtil
 import org.jsoup.Jsoup
@@ -60,11 +59,11 @@ class OlxCollector(httpDownloader: HttpDownloader) {
   }
 
   def collectAdvertisementDetails(adDocument: Document): RawRecord = {
-    val uuid = UUID.randomUUID()
     val locationString = adDocument.select(".show-map-link > strong").text()
     val messageContent = adDocument.select("#textContent").text()
     val title = adDocument.select("title").text()
     val dateString = adDocument.select(".offer-titlebox__details > em").text()
+    val idString = adDocument.select(".offer-titlebox__details > em > small").text()
 
     val pictures = adDocument.select(".img-item img").eachAttr("src").toList
     val url = adDocument.select("link[rel=canonical]").attr("href")
@@ -73,11 +72,12 @@ class OlxCollector(httpDownloader: HttpDownloader) {
     val extractedDate = polishDateExtractor.parse(dateString)
     val extractedEventDate = polishDateExtractor.parse(messageContent)
 
+    val id = parseId(idString)
     if (pictures.nonEmpty) {
-      requestImageSlowly(uuid, pictures.get(0))
+      requestImageSlowly(id, pictures.get(0))
     }
 
-    RawRecord(uuid.toString, LOST, messageContent,
+    RawRecord(id, LOST, messageContent,
       postDate = extractedDate.map(_.toEpochMilli).getOrElse(1L),
       location = locationString, title = title,
       pictures = pictures,
@@ -86,7 +86,14 @@ class OlxCollector(httpDownloader: HttpDownloader) {
     )
   }
 
-  def requestImageSlowly(id: UUID, url: String): Unit = {
+  private def parseId(idString: String): RecordId = {
+    val idRegex = "ID ogłoszenia: (\\d+)".r
+    idString match {
+      case idRegex(identifier) => OlxId(identifier)
+    }
+  }
+
+  def requestImageSlowly(id: RecordId, url: String): Unit = {
     ImageUtil.saveImage(id, httpDownloader.downloadResource(new URL(url)))
   }
 
