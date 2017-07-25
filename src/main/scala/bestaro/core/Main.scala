@@ -1,12 +1,10 @@
 package bestaro.core
 
-import java.io.{File, FileWriter}
-import java.nio.charset.StandardCharsets
-import java.nio.file.{Files, Paths}
-
 import bestaro.collectors.util.SlowHttpDownloader
 import bestaro.collectors.{FacebookCollector, OlxCollector}
 import bestaro.core.processors.PlaintextProcessor
+import bestaro.helpers.TaggedRecordsManager
+import bestaro.helpers.TaggedRecordsManager.TaggedRecord
 
 
 object Main {
@@ -15,7 +13,7 @@ object Main {
   val OLX = "OLX"
   val PROCESS = "PROCESS"
 
-  val OPTION = FB
+  val OPTION = PROCESS
 
   def main(args: Array[String]): Unit = {
     val printResult = (record: RawRecord) => println(record)
@@ -31,9 +29,14 @@ object Main {
       case PROCESS =>
         val records = jsonSerializer.readRecordsFromFile
         val processor = new PlaintextProcessor
-        for (record <- records) {
-          processor.process(record)
-        }
+        val processedRecords = records.map(record => (record.recordId, processor.process(record)))
+
+        val evaluator = new LocationEvaluator(getTaggedRecords)
+        println(evaluator.evaluate(processedRecords))
     }
+  }
+
+  private def getTaggedRecords: Map[RecordId, TaggedRecord] = {
+    TaggedRecordsManager.readTaggedRecordsFromCsv().map(tr => tr.recordId -> tr).toMap
   }
 }

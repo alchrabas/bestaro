@@ -2,12 +2,13 @@ package bestaro.core.processors
 
 import java.util
 
-import bestaro.core.RawRecord
+import bestaro.core.{RawRecord, RecordId}
 import morfologik.stemming.WordData
 
-import collection.JavaConverters._
+import scala.collection.JavaConverters._
 import scala.collection.mutable.ListBuffer
 
+case class MatchedStreet(street: StreetEntry, position: Int)
 
 object PlaintextProcessor {
 
@@ -35,7 +36,7 @@ class PlaintextProcessor {
   private val PRECEDED_BY_LOC_NAME_TRAIT_SCORE = 5
   private val PRECEDED_BY_LOC_SPECIFIC_PREPOSITION_SCORE = 5
 
-  def process(record: RawRecord): RawRecord = {
+  def process(record: RawRecord): List[MatchedStreet] = {
     val inputText = record.message
     val tokens = Option(inputText)
       // remove everything except letters, numbers, dots, commas and white spaces
@@ -68,13 +69,14 @@ class PlaintextProcessor {
       stemmedTokens = updateTokenEvaluationUsingContext(stemmedTokens)
     }
     val mutableTokens = stemmedTokens.to[ListBuffer]
+    val matchedStreets = new ListBuffer[MatchedStreet]
     for (idx <- mutableTokens.indices) {
       if (streetsByFirstSimpleWord.contains(mutableTokens(idx).stripped)) {
         streetsByFirstSimpleWord(mutableTokens(idx).stripped).find(streetEntry =>
-          managedToMatchStrippedStreetName(mutableTokens, idx, streetEntry))
+          managedToMatchStrippedStreetName(mutableTokens, idx, streetEntry, matchedStreets))
       } else if (streetsByFirstStemmedWord.contains(mutableTokens(idx).stem)) {
         streetsByFirstStemmedWord(mutableTokens(idx).stem).find(streetEntry =>
-          managedToMatchStemmedStreetName(mutableTokens, idx, streetEntry))
+          managedToMatchStemmedStreetName(mutableTokens, idx, streetEntry, matchedStreets))
       }
     }
     stemmedTokens = mutableTokens.toList
@@ -82,30 +84,35 @@ class PlaintextProcessor {
     println(inputText)
     println(" ====> ")
     println(stemmedTokens.mkString(" "))
-    println("BEST CANDIDATES: " + stemmedTokens.sortBy(_.placenessScore).reverse.slice(0, 3))
+    val bestLocations = stemmedTokens.sortBy(_.placenessScore).reverse.slice(0, 3)
+    println("BEST CANDIDATES: " + bestLocations)
 
-    record.copy()
+    matchedStreets.toList
   }
 
   private def managedToMatchStemmedStreetName(mutableTokens: ListBuffer[Token],
-                                              idx: Int, streetEntry: StreetEntry): Boolean = {
-    managedToExtract(mutableTokens, idx, streetEntry, _.stemmedName, _.stem)
+                                              idx: Int, streetEntry: StreetEntry,
+                                              matchedStreets: ListBuffer[MatchedStreet]): Boolean = {
+    managedToMatchStreetName(mutableTokens, idx, streetEntry, _.stemmedName, _.stem, matchedStreets)
   }
 
   private def managedToMatchStrippedStreetName(mutableTokens: ListBuffer[Token],
-                                               idx: Int, streetEntry: StreetEntry): Boolean = {
-    managedToExtract(mutableTokens, idx, streetEntry, _.strippedName, _.stripped)
+                                               idx: Int, streetEntry: StreetEntry,
+                                               matchedStreets: ListBuffer[MatchedStreet]): Boolean = {
+    managedToMatchStreetName(mutableTokens, idx, streetEntry, _.strippedName, _.stripped, matchedStreets)
   }
 
-  private def managedToExtract(mutableTokens: ListBuffer[Token],
-                               idx: Int, streetEntry: StreetEntry,
-                               streetProperty: StreetEntry => String,
-                               tokenProperty: Token => String): Boolean = {
-    if (streetNameFullyMatches(mutableTokens, idx, streetEntry, streetProperty, tokenProperty)) {
+  private def managedToMatchStreetName(mutableTokens: ListBuffer[Token],
+                                       startPos: Int, streetEntry: StreetEntry,
+                                       streetProperty: StreetEntry => String,
+                                       tokenProperty: Token => String,
+                                       matchedStreets: ListBuffer[MatchedStreet]): Boolean = {
+    if (streetNameFullyMatches(mutableTokens, startPos, streetEntry, streetProperty, tokenProperty)) {
       for (wordToReplace <- streetProperty(streetEntry).split(" ").indices) {
-        increaseScoreForExistingStreet(mutableTokens, idx + wordToReplace)
-        return true
+        increaseScoreForExistingStreet(mutableTokens, startPos + wordToReplace)
       }
+      matchedStreets.append(MatchedStreet(streetEntry, startPos))
+      return true
     }
     false
   }
@@ -121,11 +128,13 @@ class PlaintextProcessor {
                                      tokenProperty: Token => String
                                     ): Boolean = {
     val streetTokens = streetProperty(street).split(" ")
+    val streetNameExceedsTextLength = firstTokenPos + streetTokens.length > tokens.length
+    if (streetNameExceedsTextLength) {
+      return false
+    }
     for (wordId <- streetTokens.indices) {
-      if (tokens.length > firstTokenPos + wordId) {
-        if (tokenProperty(tokens(firstTokenPos + wordId)) != streetTokens(wordId)) {
-          return false
-        }
+      if (tokenProperty(tokens(firstTokenPos + wordId)) != streetTokens(wordId)) {
+        return false
       }
     }
     true
