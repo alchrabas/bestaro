@@ -29,7 +29,7 @@ object Main {
       case PROCESS =>
         val records = jsonSerializer.readRecordsFromFile
         val processor = new PlaintextProcessor
-        val processedRecords = records.map(record => (record.recordId, processor.process(record)))
+        val processedRecords = records.map(processor.process)
 
         val evaluator = new LocationEvaluator(getTaggedRecords)
         println(evaluator.evaluate(processedRecords))

@@ -3,10 +3,11 @@ package bestaro.core.processors
 
 import bestaro.core.ProgressStatus.LOST
 import bestaro.core.{FbId, RawRecord, RecordId}
+import bestaro.extractors.{LocationExtractor, MatchedStreet}
 import bestaro.helpers.TaggedRecordsManager.TaggedRecord
 import org.scalatest.FunSpec
 
-class PlaintextProcessorTest extends FunSpec {
+class LocationExtractorTest extends FunSpec {
 
   describe("Should extract") {
     it("not inflected two-word street name") {
@@ -15,8 +16,10 @@ class PlaintextProcessorTest extends FunSpec {
         TaggedRecord(FbId("123"), List("Monte Cassino"), List(), "", "")
       )
 
-      val processor = new PlaintextProcessor()
-      val result = processor.process(record)
+      val locationExtractor = new LocationExtractor()
+      val plaintextProcessor = new PlaintextProcessor
+      val tokenizedText = plaintextProcessor.tokenize(record.message)
+      val (tokens, result) = locationExtractor.extractLocationName(tokenizedText)
       assert(result == List(
         MatchedStreet(StreetEntry("Monte Cassino", "ul.", "monte cassino", "monte cassino"), 3)
       ))
