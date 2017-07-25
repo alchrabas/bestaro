@@ -13,7 +13,11 @@ class BaseNameProducer {
 
   def maybeBestBaseName(original: String): Option[String] = {
     val strippedOriginal = strippedForStemming(original)
-    val matchedStems = stemmer.lookup(strippedOriginal)
+    var matchedStems = stemmer.lookup(strippedOriginal)
+    if (matchedStems.isEmpty && strippedOriginal.nonEmpty && strippedOriginal.charAt(0).isUpper) {
+      matchedStems = stemmer.lookup(strippedOriginal.capitalize)
+    }
+
     if (matchedStems.isEmpty || isExcludedFromMorfologik(original)) {
       None
     } else {
