@@ -1,5 +1,6 @@
-package bestaro.core.processors
+package bestaro.service
 
+import bestaro.core.processors.{BaseNameProducer, StreetEntry}
 import com.github.tototoshi.csv.{CSVReader, DefaultCSVFormat}
 
 object GusDataReader {

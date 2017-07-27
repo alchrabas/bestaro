@@ -1,6 +1,7 @@
 package bestaro.extractors
 
 import bestaro.core.processors._
+import bestaro.service.GusDataReader
 
 import scala.collection.mutable.ListBuffer
 
