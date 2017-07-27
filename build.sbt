@@ -30,3 +30,6 @@ libraryDependencies +=
 
 libraryDependencies +=
   "com.github.tototoshi" %% "scala-csv" % "1.3.4"
+
+libraryDependencies +=
+  "fr.dudie" % "nominatim-api" % "3.3"
