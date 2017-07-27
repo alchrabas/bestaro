@@ -5,9 +5,10 @@ import bestaro.service.GusDataReader
 
 import scala.collection.mutable.ListBuffer
 
-case class MatchedStreet(street: StreetEntry, position: Int)
 
-class LocationExtractor {
+class GusLocationExtractor extends AbstractLocationExtractor {
+
+  private val EXISTING_STREET_SCORE = 10
 
   private val gusData = new GusDataReader
   private val streets = gusData.streetsInKrakow
@@ -16,36 +17,7 @@ class LocationExtractor {
   private val streetsByFirstSimpleWord: Map[String, Seq[StreetEntry]] = streets.groupBy(_.strippedName
     .split(" ")(0))
 
-  private val LOC_NAME_TRAIT_SCORE = 5
-  private val CAPITALIZED_WORD_SCORE = 5
-  private val EXISTING_STREET_SCORE = 10
-  private val PRECEDED_BY_LOC_NAME_TRAIT_SCORE = 5
-  private val PRECEDED_BY_LOC_SPECIFIC_PREPOSITION_SCORE = 5
-
-  def extractLocationName(tokens: List[String]): (List[Token], List[MatchedStreet]) = {
-
-    var stemmedTokens = tokens.map { tokenText =>
-      if (isLocationNameTrait(baseNameProducer.strippedForStemming(tokenText),
-        baseNameProducer.getBestBaseName(tokenText))) {
-        Token(tokenText,
-          baseNameProducer.strippedForStemming(tokenText),
-          baseNameProducer.getBestBaseName(tokenText), LOC_NAME_TRAIT_SCORE)
-      } else {
-        evaluateMostAccurateBaseName(tokenText)
-      }
-    }.map { token =>
-      if (isCapitalized(token.original)) {
-        alterScore(token, by = CAPITALIZED_WORD_SCORE)
-      } else {
-        token
-      }
-    }
-
-    println("########################")
-
-    if (stemmedTokens.nonEmpty) {
-      stemmedTokens = updateTokenEvaluationUsingContext(stemmedTokens)
-    }
+  override protected def specificExtract(stemmedTokens: List[Token]): (ListBuffer[Token], ListBuffer[MatchedStreet]) = {
     val mutableTokens = stemmedTokens.to[ListBuffer]
     val matchedStreets = new ListBuffer[MatchedStreet]
     for (idx <- mutableTokens.indices) {
@@ -57,7 +29,7 @@ class LocationExtractor {
           managedToMatchStemmedStreetName(mutableTokens, idx, streetEntry, matchedStreets))
       }
     }
-    (mutableTokens.toList, matchedStreets.toList)
+    (mutableTokens, matchedStreets)
   }
 
   private def managedToMatchStemmedStreetName(mutableTokens: ListBuffer[Token],
@@ -110,63 +82,5 @@ class LocationExtractor {
     true
   }
 
-  private def updateTokenEvaluationUsingContext(tokens: List[Token]): List[Token] = {
-    import PlaintextProcessor._
-    tokens.slidingPrefixedByEmptyTokens(2).map { case List(nameTrait, toReturn) =>
-      if (isLocationNameTrait(nameTrait)) {
-        alterScore(toReturn, by = PRECEDED_BY_LOC_NAME_TRAIT_SCORE)
-      } else {
-        toReturn
-      }
-    }.toList.slidingPrefixedByEmptyTokens(2).map { case List(preposition, toReturn) =>
-      if (isLocationSpecificPreposition(preposition)) {
-        alterScore(toReturn, by = PRECEDED_BY_LOC_SPECIFIC_PREPOSITION_SCORE)
-      } else {
-        toReturn
-      }
-    }.toList.slidingPrefixedByEmptyTokens(3).map { case List(preposition, nameTrait, toReturn) =>
-      val isPrepositionFollowedByKind = isLocationSpecificPreposition(preposition) && isLocationNameTrait(nameTrait)
-      if (isPrepositionFollowedByKind) {
-        alterScore(toReturn, by = PRECEDED_BY_LOC_SPECIFIC_PREPOSITION_SCORE)
-      } else {
-        toReturn
-      }
-    }.toList
-  }
-
-  private def alterScore(token: Token, by: Int): Token = {
-    token.copy(placenessScore = token.placenessScore + by)
-  }
-
-  private def isLocationNameTrait(token: Token): Boolean = {
-    isLocationNameTrait(token.stripped, token.stem)
-  }
-
-  private def isLocationNameTrait(stripped: String, stem: String): Boolean = {
-    (Set("ul.", "pl.", "os.", "al.") contains stripped) ||
-      (Set("plac", "ulica", "osiedle", "aleja") contains stem)
-  }
-
-  private def isLocationSpecificPreposition(token: Token): Boolean = {
-    (Set("w", "we", "nad", "na") contains token.stripped) ||
-      (Set("okolica", "pobliże") contains token.stem)
-  }
-
-  private val baseNameProducer = new BaseNameProducer
-
-  private def evaluateMostAccurateBaseName(original: String): Token = {
-    val strippedText = baseNameProducer.strippedForStemming(original)
-    baseNameProducer.maybeBestBaseName(original) match {
-      case Some(stemmedText) => Token(original,
-        strippedText,
-        stemmedText, 1)
-      case None => Token(original,
-        strippedText,
-        strippedText, 0)
-    }
-  }
-
-  private def isCapitalized(original: String): Boolean = {
-    !original.isEmpty && original(0).isUpper
-  }
 }
+

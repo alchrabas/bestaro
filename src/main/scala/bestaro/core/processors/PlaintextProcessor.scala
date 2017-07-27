@@ -1,7 +1,7 @@
 package bestaro.core.processors
 
 import bestaro.core.RawRecord
-import bestaro.extractors.LocationExtractor
+import bestaro.extractors.GusLocationExtractor
 
 
 object PlaintextProcessor {
@@ -16,7 +16,7 @@ object PlaintextProcessor {
 }
 
 class PlaintextProcessor {
-  val locationExtractor = new LocationExtractor()
+  val locationExtractor = new GusLocationExtractor()
 
   def process(record: RawRecord): RawRecord = {
     val inputText = record.message
