@@ -9,10 +9,12 @@ import fr.dudie.nominatim.client.request.paramhelper.PolygonFormat
 import fr.dudie.nominatim.model.Address
 
 import scala.collection.JavaConverters._
+import scala.util.Random
 
-class CachedNominatimClient(nominatimClient: NominatimClient) {
+class CachedNominatimClient(nominatimClient: NominatimClient, requestLogger: String => Unit = _ => Unit) {
 
   private val gson = new Gson()
+  private var memoryCache: Option[mapOfAddresses] = None
 
   def search(queryString: String): List[Address] = {
     (if (existsInCache(queryString)) {
@@ -25,8 +27,11 @@ class CachedNominatimClient(nominatimClient: NominatimClient) {
       searchRequest.setPolygonFormat(PolygonFormat.NONE)
 
       searchRequest.setQuery(queryString)
+      Thread.sleep(1100 + Random.nextInt(100))
       val nominatimResults = nominatimClient.search(searchRequest)
       saveInCache(queryString, nominatimResults)
+
+      requestLogger(queryString)
 
       nominatimResults
     }).asScala.toList
@@ -34,7 +39,12 @@ class CachedNominatimClient(nominatimClient: NominatimClient) {
 
   private type mapOfAddresses = java.util.Map[String, java.util.List[Address]]
 
+  private def resetCacheCache() = {
+    memoryCache = None
+  }
+
   private def saveInCache(queryString: String, listToSave: java.util.List[Address]) = {
+    resetCacheCache()
     val cacheEntries = loadMapOfAddresses()
     cacheEntries.put(queryString, listToSave)
     FileIO.saveFile("nominatimCache.json", gson.toJson(cacheEntries))
@@ -49,8 +59,10 @@ class CachedNominatimClient(nominatimClient: NominatimClient) {
   }
 
   private def loadMapOfAddresses(): mapOfAddresses = {
-    val gsonType = new TypeToken[mapOfAddresses]() {}.getType
-    gson.fromJson(FileIO.readFile("nominatimCache.json", "{}"), gsonType)
+    if (memoryCache.isEmpty) {
+      val gsonType = new TypeToken[mapOfAddresses]() {}.getType
+      memoryCache = Some(gson.fromJson(FileIO.readFile("nominatimCache.json", "{}"), gsonType))
+    }
+    memoryCache.get
   }
-
 }
