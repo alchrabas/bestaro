@@ -49,11 +49,12 @@ class GusLocationExtractor extends AbstractLocationExtractor {
                                        streetProperty: StreetEntry => String,
                                        tokenProperty: Token => String,
                                        matchedStreets: ListBuffer[MatchedStreet]): Boolean = {
-    if (streetNameFullyMatches(mutableTokens, startPos, streetEntry, streetProperty, tokenProperty)) {
-      for (wordToReplace <- streetProperty(streetEntry).split(" ").indices) {
+    val streetWords = streetProperty(streetEntry).split(" ")
+    if (streetNameFullyMatches(mutableTokens, startPos, streetWords, tokenProperty)) {
+      for (wordToReplace <- streetWords.indices) {
         increaseScoreForExistingStreet(mutableTokens, startPos + wordToReplace)
       }
-      matchedStreets.append(MatchedStreet(streetEntry, startPos))
+      matchedStreets.append(MatchedStreet(streetEntry, startPos, streetWords.size))
       return true
     }
     false
@@ -65,17 +66,15 @@ class GusLocationExtractor extends AbstractLocationExtractor {
 
   private def streetNameFullyMatches(tokens: ListBuffer[Token],
                                      firstTokenPos: Int,
-                                     street: StreetEntry,
-                                     streetProperty: StreetEntry => String,
+                                     streetWords: Array[String],
                                      tokenProperty: Token => String
                                     ): Boolean = {
-    val streetTokens = streetProperty(street).split(" ")
-    val streetNameExceedsTextLength = firstTokenPos + streetTokens.length > tokens.length
+    val streetNameExceedsTextLength = firstTokenPos + streetWords.length > tokens.length
     if (streetNameExceedsTextLength) {
       return false
     }
-    for (wordId <- streetTokens.indices) {
-      if (tokenProperty(tokens(firstTokenPos + wordId)) != streetTokens(wordId)) {
+    for (wordId <- streetWords.indices) {
+      if (tokenProperty(tokens(firstTokenPos + wordId)) != streetWords(wordId)) {
         return false
       }
     }

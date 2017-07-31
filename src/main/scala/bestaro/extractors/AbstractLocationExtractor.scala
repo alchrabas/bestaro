@@ -4,7 +4,7 @@ import bestaro.core.processors.{BaseNameProducer, PlaintextProcessor, StreetEntr
 
 import scala.collection.mutable.ListBuffer
 
-case class MatchedStreet(street: StreetEntry, position: Int)
+case class MatchedStreet(street: StreetEntry, position: Int, wordCount: Int)
 
 abstract class AbstractLocationExtractor {
 

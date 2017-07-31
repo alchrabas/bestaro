@@ -21,7 +21,7 @@ class GusLocationExtractorTest extends FunSpec {
       val tokenizedText = plaintextProcessor.tokenize(record.message)
       val (tokens, result) = locationExtractor.extractLocationName(tokenizedText)
       assert(result == List(
-        MatchedStreet(StreetEntry("Monte Cassino", "ul.", "monte cassino", "monte cassino"), 3)
+        MatchedStreet(StreetEntry("Monte Cassino", "ul.", "monte cassino", "monte cassino"), 3, 2)
       ))
     }
   }
