@@ -1,7 +1,7 @@
 package bestaro.core.processors
 
 import bestaro.core.RawRecord
-import bestaro.extractors.GusLocationExtractor
+import bestaro.extractors.{GusLocationExtractor, NominatimLocationExtractor}
 
 
 object PlaintextProcessor {
@@ -12,11 +12,12 @@ object PlaintextProcessor {
     }
   }
 
-  private val EMPTY_TOKEN = Token("", "", "", 0)
+  private val EMPTY_TOKEN = Token("", "", "", List(), 0)
 }
 
 class PlaintextProcessor {
-  val locationExtractor = new GusLocationExtractor()
+//    val locationExtractor = new GusLocationExtractor()
+  val locationExtractor = new NominatimLocationExtractor()
 
   def process(record: RawRecord): RawRecord = {
     val inputText = record.message
@@ -28,7 +29,7 @@ class PlaintextProcessor {
     println(stemmedTokens.mkString(" "))
     val bestLocations = stemmedTokens.sortBy(_.placenessScore).reverse.slice(0, 3)
     println("BEST CANDIDATES: " + bestLocations)
-
+    println(s"ALL MATCHED STREETS ${matchedStreets.size} " + matchedStreets.mkString("\n"))
     record.copy(location = matchedStreets.headOption.map(_.street.strippedName).orNull)
   }
 

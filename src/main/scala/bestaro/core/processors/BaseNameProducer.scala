@@ -1,7 +1,9 @@
 package bestaro.core.processors
 
-import collection.JavaConverters._
+import morfologik.stemming.WordData
 import morfologik.stemming.polish.PolishStemmer
+
+import scala.collection.JavaConverters._
 
 class BaseNameProducer {
 
@@ -11,7 +13,7 @@ class BaseNameProducer {
     original.toLowerCase.replaceAll("[^0-9a-ząćęłńóśżź]", "").trim
   }
 
-  def maybeBestBaseName(original: String): Option[String] = {
+  def maybeBestBaseToken(original: String): Option[Token] = {
     val strippedOriginal = strippedForStemming(original)
     var matchedStems = stemmer.lookup(strippedOriginal)
     if (matchedStems.isEmpty && strippedOriginal.nonEmpty && strippedOriginal.charAt(0).isUpper) {
@@ -21,15 +23,50 @@ class BaseNameProducer {
     if (matchedStems.isEmpty || isExcludedFromMorfologik(original)) {
       None
     } else {
-      val stems = matchedStems
-        .asScala
-        .map(_.getStem.toString)
-      Some(stems.find(stem => stem.endsWith("y")).getOrElse(stems.head))
+      Some(
+        matchedStems
+          .asScala
+          .map(tagInfo => Token(original,
+            strippedOriginal,
+            tagInfo.getStem.toString,
+            getPartsOfSpeech(tagInfo),
+            0))
+          .head
+      )
     }
   }
 
+  private def getPartsOfSpeech(tagInfo: WordData): List[PartOfSpeech] = {
+    tagInfo.getTag
+      .toString
+      .split("\\+")
+      .toList
+      .flatMap(extractPartOfSpeechFromSingleTag)
+  }
+
+  private def extractPartOfSpeechFromSingleTag(tag: String): Option[PartOfSpeech] = {
+    tag.split(":").toList
+      .flatMap(TAG_TO_PART_OF_SPEECH.get).headOption
+  }
+
+  private val TAG_TO_PART_OF_SPEECH = Map(
+    "adj" -> PartOfSpeech.ADJECTIVE,
+    "subst" -> PartOfSpeech.NOUN,
+    "ger" -> PartOfSpeech.NOUN,
+    "prep" -> PartOfSpeech.PREPOSITION
+  )
+
+  def getBestBaseToken(original: String): Token = {
+    maybeBestBaseToken(original).getOrElse(Token(original,
+      strippedForStemming(original),
+      strippedForStemming(original),
+      List(PartOfSpeech.OTHER),
+      0
+    ))
+  }
+
   def getBestBaseName(original: String): String = {
-    maybeBestBaseName(original).getOrElse(strippedForStemming(original))
+    getBestBaseToken(original).stem
   }
 
   private def isExcludedFromMorfologik(word: String): Boolean = {

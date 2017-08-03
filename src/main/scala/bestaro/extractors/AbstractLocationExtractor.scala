@@ -1,6 +1,6 @@
 package bestaro.extractors
 
-import bestaro.core.processors.{BaseNameProducer, PlaintextProcessor, StreetEntry, Token}
+import bestaro.core.processors.{BaseNameProducer, PlaintextProcessor, StreetEntry, Token, PartOfSpeech}
 
 import scala.collection.mutable.ListBuffer
 
@@ -13,6 +13,8 @@ abstract class AbstractLocationExtractor {
   private val PRECEDED_BY_LOC_NAME_TRAIT_SCORE = 5
   private val PRECEDED_BY_LOC_SPECIFIC_PREPOSITION_SCORE = 5
 
+  protected val baseNameProducer = new BaseNameProducer
+
   def extractLocationName(tokens: List[String]): (List[Token], List[MatchedStreet]) = {
 
     var stemmedTokens = tokens.map { tokenText =>
@@ -20,7 +22,9 @@ abstract class AbstractLocationExtractor {
         baseNameProducer.getBestBaseName(tokenText))) {
         Token(tokenText,
           baseNameProducer.strippedForStemming(tokenText),
-          baseNameProducer.getBestBaseName(tokenText), LOC_NAME_TRAIT_SCORE)
+          baseNameProducer.getBestBaseName(tokenText),
+          List(PartOfSpeech.PREPOSITION),
+          LOC_NAME_TRAIT_SCORE)
       } else {
         evaluateMostAccurateBaseName(tokenText)
       }
@@ -85,18 +89,14 @@ abstract class AbstractLocationExtractor {
       (Set("okolica", "pobliże") contains token.stem)
   }
 
-  private val baseNameProducer = new BaseNameProducer
-
   private def evaluateMostAccurateBaseName(original: String): Token = {
     val strippedText = baseNameProducer.strippedForStemming(original)
-    baseNameProducer.maybeBestBaseName(original) match {
-      case Some(stemmedText) => Token(original,
-        strippedText,
-        stemmedText, 1)
-      case None => Token(original,
-        strippedText,
-        strippedText, 0)
-    }
+    baseNameProducer.maybeBestBaseToken(original).map(_.copy(placenessScore = 1)).getOrElse(
+      Token(original,
+        strippedText, strippedText,
+        List(PartOfSpeech.OTHER),
+        0)
+    )
   }
 
   private def isCapitalized(original: String): Boolean = {

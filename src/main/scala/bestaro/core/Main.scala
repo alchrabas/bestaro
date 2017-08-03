@@ -5,6 +5,10 @@ import bestaro.collectors.{FacebookCollector, OlxCollector}
 import bestaro.core.processors.PlaintextProcessor
 import bestaro.helpers.TaggedRecordsManager
 import bestaro.helpers.TaggedRecordsManager.TaggedRecord
+import bestaro.service.CachedNominatimClient
+import fr.dudie.nominatim.client.JsonNominatimClient
+import morfologik.stemming.polish.PolishStemmer
+import org.apache.http.impl.client.DefaultHttpClient
 
 
 object Main {
@@ -19,6 +23,10 @@ object Main {
     val printResult = (record: RawRecord) => println(record)
     val jsonSerializer = new JsonSerializer
 
+//    val la = new CachedNominatimClient(new JsonNominatimClient(new DefaultHttpClient(), "ala123@exeris.org"))
+//    val a = la.search("Długa, Kraków, województwo małopolskie")
+//
+//    return
     OPTION match {
       case FB =>
         val fb = new FacebookCollector(jsonSerializer.saveInJson, jsonSerializer.recordAlreadyExists)
@@ -28,10 +36,12 @@ object Main {
         olx.collect(jsonSerializer.saveInJson)
       case PROCESS =>
         val records = jsonSerializer.readRecordsFromFile
+        val taggedRecords = getTaggedRecords
         val processor = new PlaintextProcessor
-        val processedRecords = records.map(processor.process)
+        val recordsWithTags = records.filter(r => taggedRecords.contains(r.recordId))
+        val processedRecords = recordsWithTags.map(processor.process)
 
-        val evaluator = new LocationEvaluator(getTaggedRecords)
+        val evaluator = new LocationEvaluator(taggedRecords)
         println(evaluator.evaluate(processedRecords))
     }
   }

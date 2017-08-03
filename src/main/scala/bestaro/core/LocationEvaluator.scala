@@ -19,7 +19,6 @@ case class InvalidPair(actual: String, expected: Seq[String]) {
 }
 
 class LocationEvaluator(recordTags: Map[RecordId, TaggedRecord]) {
-  private val baseNameProducer = new BaseNameProducer
 
   def evaluate(processed: Seq[RawRecord]): EvaluationResult = {
 
