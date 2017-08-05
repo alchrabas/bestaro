@@ -10,7 +10,7 @@ class BaseNameProducer {
   private val stemmer = new PolishStemmer
 
   def strippedForStemming(original: String): String = {
-    original.toLowerCase.replaceAll("[^0-9a-ząćęłńóśżź]", "").trim
+    original.toLowerCase.replaceAll("[^0-9a-ząćęłńóśżź ]", "").replaceAll("\\s+", " ").trim
   }
 
   def maybeBestBaseToken(original: String): Option[Token] = {

@@ -43,7 +43,11 @@ class LocationEvaluator(recordTags: Map[RecordId, TaggedRecord]) {
     EvaluationResult(successfulMatches, allLocations, invalidPairs)
   }
 
+  val baseNameProducer = new BaseNameProducer
+
   private def anyLocMatches(taggedRecord: TaggedRecord, location: String): Boolean = {
-    (taggedRecord.locs ++ taggedRecord.altLocs).map(_.toLowerCase).contains(location)
+    (taggedRecord.locs ++ taggedRecord.altLocs)
+      .map(baseNameProducer.strippedForStemming)
+      .contains(baseNameProducer.strippedForStemming(location))
   }
 }
