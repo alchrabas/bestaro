@@ -19,11 +19,12 @@ object TaggedRecordsManager {
     val listOfRows = reader.allWithHeaders()
 
     val taggedRecords = ListBuffer[TaggedRecord]()
-    for ((row, index) <- listOfRows.view.zipWithIndex if index < 120) {
+    for ((row, index) <- listOfRows.view.zipWithIndex if index < 480) {
       val recordId = read[RecordId](row("ID"))
       val locs =
-        stringToList(row("Location-1")) ::: stringToList(row("Location-2")) ::: stringToList(row("Location-3"))
-      val altLocs = stringToList(row("Location-1-opt"))
+        stringToList(row("Location-1")) ::: stringToList(row("Location-2")) :::
+          stringToList(row("Location-3"))
+      val altLocs = stringToList(row("Location-1-opt")) ::: stringToList(row("Location-2-opt"))
       val isKrakow = Option(row("Krakow")).contains("1")
       val date = row("Date")
       val animalType = row("Type")
