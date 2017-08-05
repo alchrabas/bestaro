@@ -48,8 +48,8 @@ class NominatimLocationExtractor extends AbstractLocationExtractor {
   }
 
   private def matchedStreetFromNominatimMatchedStreet(nominatimStreet: NominatimMatchedStreet): MatchedStreet = {
-    val streetName = getAddressKey(nominatimStreet.address, "road").map(_.toLowerCase)
-      .getOrElse(nominatimStreet.street.strippedName)
+    val streetName = getLeftMostAddressKey(nominatimStreet.address, "road", "residental").map(_.toLowerCase)
+      .getOrElse(nominatimStreet.address.getAddressElements.head.getValue)
     MatchedStreet(
       nominatimStreet.street.copy(strippedName = streetName),
       nominatimStreet.position,
@@ -73,6 +73,10 @@ class NominatimLocationExtractor extends AbstractLocationExtractor {
 
   private def getAddressKey(address: Address, key: String): Option[String] = {
     address.getAddressElements.find(_.getKey == key).map(_.getValue)
+  }
+
+  private def getLeftMostAddressKey(address: Address, keys: String*): Option[String] = {
+    keys.flatMap(getAddressKey(address, _)).headOption
   }
 
   private def allAddressesFoundInWholeMessage(mutableTokens: ListBuffer[Token]): List[NominatimMatchedStreet] = {
