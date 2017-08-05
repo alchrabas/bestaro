@@ -1,6 +1,6 @@
 package bestaro.extractors
 
-import bestaro.core.processors.{BaseNameProducer, PlaintextProcessor, StreetEntry, Token, PartOfSpeech}
+import bestaro.core.processors._
 
 import scala.collection.mutable.ListBuffer
 
@@ -18,12 +18,16 @@ abstract class AbstractLocationExtractor {
   def extractLocationName(tokens: List[String]): (List[Token], List[MatchedStreet]) = {
 
     var stemmedTokens = tokens.map { tokenText =>
-      if (isLocationNameTrait(baseNameProducer.strippedForStemming(tokenText),
-        baseNameProducer.getBestBaseName(tokenText))) {
+      val strippedTokenText = baseNameProducer.strippedForStemming(tokenText)
+      val stemmedTokenText = baseNameProducer.getBestBaseName(tokenText)
+      if (isLocationNameTrait(strippedTokenText,
+        stemmedTokenText)) {
+        val gender = getGenderOfLocationNameTrait(strippedTokenText, stemmedTokenText)
         Token(tokenText,
-          baseNameProducer.strippedForStemming(tokenText),
-          baseNameProducer.getBestBaseName(tokenText),
-          List(PartOfSpeech.PREPOSITION),
+          strippedTokenText,
+          stemmedTokenText,
+          List(PartOfSpeech.NOUN),
+          List(gender),
           LOC_NAME_TRAIT_SCORE)
       } else {
         evaluateMostAccurateBaseName(tokenText)
@@ -84,6 +88,24 @@ abstract class AbstractLocationExtractor {
       (Set("plac", "ulica", "osiedle", "aleja") contains stem)
   }
 
+  private val strippedLocNameTraitToGender = Map(
+    "ul" -> Gender.F,
+    "pl" -> Gender.M,
+    "os" -> Gender.N,
+    "al" -> Gender.F
+  )
+
+  private val stemmedLocNameTraitToGender = Map(
+    "plac" -> Gender.M,
+    "ulica" -> Gender.F,
+    "osiedle" -> Gender.N,
+    "aleja" -> Gender.F
+  )
+
+  private def getGenderOfLocationNameTrait(stripped: String, stemmed: String): Gender = {
+    strippedLocNameTraitToGender.getOrElse(stripped, stemmedLocNameTraitToGender(stemmed))
+  }
+
   private def isLocationSpecificPreposition(token: Token): Boolean = {
     (Set("w", "we", "nad", "na") contains token.stripped) ||
       (Set("okolica", "pobliże") contains token.stem)
@@ -95,6 +117,7 @@ abstract class AbstractLocationExtractor {
       Token(original,
         strippedText, strippedText,
         List(PartOfSpeech.OTHER),
+        List(Gender.F), // because the most common "ulica" is feminine
         0)
     )
   }

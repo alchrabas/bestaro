@@ -12,7 +12,7 @@ object PlaintextProcessor {
     }
   }
 
-  private val EMPTY_TOKEN = Token("", "", "", List(), 0)
+  private val EMPTY_TOKEN = Token("", "", "", List(), List(), 0)
 }
 
 class PlaintextProcessor {

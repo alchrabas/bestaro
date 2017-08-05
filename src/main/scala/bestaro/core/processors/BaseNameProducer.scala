@@ -1,6 +1,6 @@
 package bestaro.core.processors
 
-import morfologik.stemming.WordData
+import bestaro.util.InflectionUtil
 import morfologik.stemming.polish.PolishStemmer
 
 import scala.collection.JavaConverters._
@@ -29,38 +29,20 @@ class BaseNameProducer {
           .map(tagInfo => Token(original,
             strippedOriginal,
             tagInfo.getStem.toString,
-            getPartsOfSpeech(tagInfo),
+            InflectionUtil.getPartsOfSpeech(tagInfo),
+            InflectionUtil.getGenders(tagInfo),
             0))
           .head
       )
     }
   }
 
-  private def getPartsOfSpeech(tagInfo: WordData): List[PartOfSpeech] = {
-    tagInfo.getTag
-      .toString
-      .split("\\+")
-      .toList
-      .flatMap(extractPartOfSpeechFromSingleTag)
-  }
-
-  private def extractPartOfSpeechFromSingleTag(tag: String): Option[PartOfSpeech] = {
-    tag.split(":").toList
-      .flatMap(TAG_TO_PART_OF_SPEECH.get).headOption
-  }
-
-  private val TAG_TO_PART_OF_SPEECH = Map(
-    "adj" -> PartOfSpeech.ADJECTIVE,
-    "subst" -> PartOfSpeech.NOUN,
-    "ger" -> PartOfSpeech.NOUN,
-    "prep" -> PartOfSpeech.PREPOSITION
-  )
-
   def getBestBaseToken(original: String): Token = {
     maybeBestBaseToken(original).getOrElse(Token(original,
       strippedForStemming(original),
       strippedForStemming(original),
       List(PartOfSpeech.OTHER),
+      List(Gender.F), // because the most common "ulica" is feminine
       0
     ))
   }
