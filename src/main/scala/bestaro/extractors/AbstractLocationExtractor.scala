@@ -80,7 +80,7 @@ abstract class AbstractLocationExtractor {
   }
 
   private def isLocationNameTrait(stripped: String, stem: String): Boolean = {
-    (Set("ul.", "pl.", "os.", "al.") contains stripped) ||
+    (Set("ul", "pl", "os", "al") contains stripped) ||
       (Set("plac", "ulica", "osiedle", "aleja") contains stem)
   }
 
