@@ -1,6 +1,6 @@
 package bestaro.core.processors
 
-import bestaro.core.RawRecord
+import bestaro.core.{RawRecord, Tokenizer}
 import bestaro.extractors.{GusLocationExtractor, NominatimLocationExtractor}
 
 
@@ -16,12 +16,13 @@ object PlaintextProcessor {
 }
 
 class PlaintextProcessor {
-//    val locationExtractor = new GusLocationExtractor()
+  //    val locationExtractor = new GusLocationExtractor()
   val locationExtractor = new NominatimLocationExtractor()
 
   def process(record: RawRecord): RawRecord = {
     val inputText = record.message
-    val tokens = tokenize(inputText)
+    val tokenizer = new Tokenizer()
+    val tokens = tokenizer.tokenize(inputText)
 
     val (stemmedTokens, matchedStreets) = locationExtractor.extractLocationName(tokens)
     println(inputText)
@@ -31,20 +32,6 @@ class PlaintextProcessor {
     println("BEST CANDIDATES: " + bestLocations)
     println(s"ALL MATCHED STREETS ${matchedStreets.size} " + matchedStreets.mkString("\n"))
     record.copy(location = matchedStreets.headOption.map(_.street.strippedName).orNull)
-  }
-
-  def tokenize(inputText: String): List[String] = {
-    Option(inputText)
-      // remove everything except letters, numbers, dots, commas and white spaces
-      .map(stripLinks)
-      .map(_.replaceAll("[^.,!0-9a-ząćęłńóśżźA-ZĄĆĘŁŃÓŚŻŹ ]", " "))
-      .map(_.replaceAll("([.,!])", "$1 "))
-      .map(_.split("\\s+").toList)
-      .getOrElse(List())
-  }
-
-  private def stripLinks(text: String): String = {
-    text.replaceAll("http[^\\s+]+", "")
   }
 
 }
