@@ -92,7 +92,7 @@ class NominatimLocationExtractor extends AbstractLocationExtractor {
   private def allAddressesGotFromWordList(mutableTokens: ListBuffer[Token],
                                           initialPos: Int, wordCount: Int): List[NominatimMatchedStreet] = {
     val multiwordName = mergeIntoMultiwordName(mutableTokens, initialPos, wordCount)
-    val addresses = nominatim.search(multiwordName + ", Kraków, województwo małopolskie")
+    val addresses = nominatim.search(multiwordName + ", województwo małopolskie")
     if (addresses.nonEmpty) {
       //      println("@@@ For name: " + multiwordName + " - " + addresses.size + " results")
       //      printAddresses(addresses)
