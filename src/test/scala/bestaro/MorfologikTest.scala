@@ -4,7 +4,7 @@ import morfologik.stemming.WordData
 import morfologik.stemming.polish.PolishStemmer
 import org.scalatest.FunSpec
 
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 
 class MorfologikTest extends FunSpec {
 
@@ -33,7 +33,7 @@ class MorfologikTest extends FunSpec {
   }
 
   private def getAllWordStems(word: String): List[String] = {
-    stemmer.lookup(word).toList.map(_.getStem.toString)
+    stemmer.lookup(word).asScala.map(_.getStem.toString).toList
   }
 
   private def getOnlyWordStem(word: String): String = {

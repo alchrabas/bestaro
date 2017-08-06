@@ -10,7 +10,7 @@ import bestaro.util.ImageUtil
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 import scala.language.postfixOps
 
 class OlxCollector(httpDownloader: HttpDownloader) {
@@ -65,7 +65,7 @@ class OlxCollector(httpDownloader: HttpDownloader) {
     val dateString = adDocument.select(".offer-titlebox__details > em").text()
     val idString = adDocument.select(".offer-titlebox__details > em > small").text()
 
-    val pictures = adDocument.select(".img-item img").eachAttr("src").toList
+    val pictures = adDocument.select(".img-item img").eachAttr("src").asScala.toList
     val url = adDocument.select("link[rel=canonical]").attr("href")
 
     val polishDateExtractor = new PolishDateExtractor()
@@ -74,7 +74,7 @@ class OlxCollector(httpDownloader: HttpDownloader) {
 
     val id = parseId(idString)
     if (pictures.nonEmpty) {
-      requestImageSlowly(id, pictures.get(0))
+      requestImageSlowly(id, pictures(0))
     }
 
     RawRecord(id, LOST, messageContent,
