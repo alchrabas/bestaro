@@ -6,6 +6,7 @@ object PartOfSpeech {
   val ADJECTIVE = PartOfSpeech("adjective")
   val NOUN = PartOfSpeech("noun")
   val PREPOSITION = PartOfSpeech("preposition")
+  val VERB = PartOfSpeech("verb")
   val OTHER = PartOfSpeech("other")
 }
 

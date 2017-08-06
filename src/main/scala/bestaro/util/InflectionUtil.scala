@@ -10,26 +10,27 @@ object InflectionUtil {
       .flatMap(extractPartOfSpeechFromSingleTag).distinct
   }
 
-  private def extractPartOfSpeechFromSingleTag(tag: String): Option[PartOfSpeech] = {
-    tag.split(":").toList
-      .flatMap(TAG_TO_PART_OF_SPEECH.get).headOption
+  private def extractPartOfSpeechFromSingleTag(tag: String): List[PartOfSpeech] = {
+    tag.split("[:.]").toList
+      .flatMap(TAG_TO_PART_OF_SPEECH.get)
   }
 
   private val TAG_TO_PART_OF_SPEECH = Map(
     "adj" -> PartOfSpeech.ADJECTIVE,
     "subst" -> PartOfSpeech.NOUN,
     "ger" -> PartOfSpeech.NOUN,
-    "prep" -> PartOfSpeech.PREPOSITION
+    "prep" -> PartOfSpeech.PREPOSITION,
+    "verb" -> PartOfSpeech.VERB
   )
 
   def getGenders(tagInfo: WordData): List[Gender] = {
     splitTagInfos(tagInfo)
-      .flatMap(extractGenderFromSingleTag).distinct
+      .flatMap(extractGendersFromSingleTag).distinct
   }
 
-  private def extractGenderFromSingleTag(tag: String): Option[Gender] = {
-    tag.split(":").toList
-      .flatMap(TAG_TO_GENDER.get).headOption
+  private def extractGendersFromSingleTag(tag: String): List[Gender] = {
+    tag.split("[:\\.]").toList
+      .flatMap(TAG_TO_GENDER.get)
   }
 
   private val TAG_TO_GENDER = Map(
