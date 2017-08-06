@@ -33,3 +33,9 @@ libraryDependencies +=
 
 libraryDependencies +=
   "fr.dudie" % "nominatim-api" % "3.3"
+
+libraryDependencies +=
+  "com.google.maps" % "google-maps-services" % "0.2.1"
+
+libraryDependencies +=
+  "org.slf4j" % "slf4j-nop" % "1.7.25"
