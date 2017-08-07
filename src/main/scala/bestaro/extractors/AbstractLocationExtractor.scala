@@ -34,7 +34,7 @@ abstract class AbstractLocationExtractor {
       }
     }.map { token =>
       if (isCapitalized(token.original)) {
-        alterScore(token, by = CAPITALIZED_WORD_SCORE)
+        token.withAlteredPlacenessScore(CAPITALIZED_WORD_SCORE)
       } else {
         token
       }
@@ -55,28 +55,24 @@ abstract class AbstractLocationExtractor {
     import PlaintextProcessor._
     tokens.slidingPrefixedByEmptyTokens(2).map { case List(nameTrait, toReturn) =>
       if (isLocationNameTrait(nameTrait)) {
-        alterScore(toReturn, by = PRECEDED_BY_LOC_NAME_TRAIT_SCORE)
+        toReturn.withAlteredPlacenessScore(PRECEDED_BY_LOC_NAME_TRAIT_SCORE)
       } else {
         toReturn
       }
     }.toList.slidingPrefixedByEmptyTokens(2).map { case List(preposition, toReturn) =>
       if (isLocationSpecificPreposition(preposition)) {
-        alterScore(toReturn, by = PRECEDED_BY_LOC_SPECIFIC_PREPOSITION_SCORE)
+        toReturn.withAlteredPlacenessScore(PRECEDED_BY_LOC_SPECIFIC_PREPOSITION_SCORE)
       } else {
         toReturn
       }
     }.toList.slidingPrefixedByEmptyTokens(3).map { case List(preposition, nameTrait, toReturn) =>
       val isPrepositionFollowedByKind = isLocationSpecificPreposition(preposition) && isLocationNameTrait(nameTrait)
       if (isPrepositionFollowedByKind) {
-        alterScore(toReturn, by = PRECEDED_BY_LOC_SPECIFIC_PREPOSITION_SCORE)
+        toReturn.withAlteredPlacenessScore(PRECEDED_BY_LOC_SPECIFIC_PREPOSITION_SCORE)
       } else {
         toReturn
       }
     }.toList
-  }
-
-  protected def alterScore(token: Token, by: Int): Token = {
-    token.copy(placenessScore = token.placenessScore + by)
   }
 
   private def isLocationNameTrait(token: Token): Boolean = {

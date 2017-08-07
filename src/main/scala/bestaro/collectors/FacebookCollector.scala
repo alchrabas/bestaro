@@ -2,7 +2,6 @@ package bestaro.collectors
 
 import java.nio.file.Path
 import java.time.Instant
-import java.util.UUID
 import java.util.concurrent.TimeUnit
 
 import bestaro.core.ProgressStatus.LOST

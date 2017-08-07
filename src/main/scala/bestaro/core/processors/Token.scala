@@ -18,15 +18,37 @@ object Gender {
   val N = Gender("neuter")
 }
 
+case class Importance(name: String)
+
+object Importance {
+  val PRIMARY = Importance("primary")
+  val SECONDARY = Importance("secondary")
+}
+
+case class LocationType(name: String)
+
+object LocationType {
+  val STREET = LocationType("street")
+  val ESTATE = LocationType("estate") // = "osiedle"
+  val CITY = LocationType("city") // or town or village
+  val UNKNOWN = LocationType("unknown")
+}
+
 case class Token(
                   original: String,
                   stripped: String,
                   stem: String,
                   partsOfSpeech: List[PartOfSpeech],
                   genders: List[Gender],
-                  placenessScore: Int
+                  placenessScore: Int,
+                  locationType: LocationType = LocationType.UNKNOWN,
+                  importance: Importance = Importance.PRIMARY
                 ) {
   override def toString: String = {
     original + " (" + stem + ")[" + placenessScore + "]"
+  }
+
+  def withAlteredPlacenessScore(alteredBy: Int): Token = {
+    copy(placenessScore = placenessScore + alteredBy)
   }
 }

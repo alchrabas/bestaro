@@ -61,7 +61,7 @@ class GusLocationExtractor extends AbstractLocationExtractor {
   }
 
   private def increaseScoreForExistingStreet(mutableTokens: ListBuffer[Token], idx: Int) = {
-    mutableTokens(idx) = alterScore(mutableTokens(idx), EXISTING_STREET_SCORE)
+    mutableTokens(idx) = mutableTokens(idx).withAlteredPlacenessScore(EXISTING_STREET_SCORE)
   }
 
   private def streetNameFullyMatches(tokens: ListBuffer[Token],
