@@ -32,12 +32,6 @@ abstract class AbstractLocationExtractor {
       } else {
         evaluateMostAccurateBaseName(tokenText)
       }
-    }.map { token =>
-      if (isCapitalized(token.original)) {
-        token.withAlteredPlacenessScore(CAPITALIZED_WORD_SCORE)
-      } else {
-        token
-      }
     }
 
     println("########################")
@@ -51,6 +45,7 @@ abstract class AbstractLocationExtractor {
 
   protected def specificExtract(stemmedTokens: List[Token]): (ListBuffer[Token], ListBuffer[MatchedStreet])
 
+
   private def updateTokenEvaluationUsingContext(tokens: List[Token]): List[Token] = {
     import PlaintextProcessor._
     tokens.slidingPrefixedByEmptyTokens(2).map { case List(nameTrait, toReturn) =>
@@ -62,6 +57,15 @@ abstract class AbstractLocationExtractor {
     }.toList.slidingPrefixedByEmptyTokens(2).map { case List(preposition, toReturn) =>
       if (isLocationSpecificPreposition(preposition)) {
         toReturn.withAlteredPlacenessScore(PRECEDED_BY_LOC_SPECIFIC_PREPOSITION_SCORE)
+      } else {
+        toReturn
+      }
+    }.toList.slidingPrefixedByEmptyTokens(2).map { case List(previous, toReturn) =>
+      if (isCapitalized(toReturn.original)
+        && !tokenIsEndOfSentence(previous)
+        && !isUpperCase(toReturn.original)
+        && !previous.flags.contains(Flag.EMPTY_TOKEN)) {
+        toReturn.withAlteredPlacenessScore(CAPITALIZED_WORD_SCORE)
       } else {
         toReturn
       }
@@ -120,5 +124,14 @@ abstract class AbstractLocationExtractor {
 
   private def isCapitalized(original: String): Boolean = {
     !original.isEmpty && original(0).isUpper
+  }
+
+  def isUpperCase(original: String): Boolean = {
+    original.toUpperCase == original
+  }
+
+  private def tokenIsEndOfSentence(token: Token): Boolean = {
+    (token.original.endsWith(".") && !token.flags.contains(Flag.PUNCTUATED_WORD)) ||
+      token.original.endsWith("!") || token.original.endsWith("?")
   }
 }
