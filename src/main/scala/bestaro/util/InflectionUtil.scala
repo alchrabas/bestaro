@@ -1,9 +1,17 @@
 package bestaro.util
 
-import bestaro.core.processors.{Gender, PartOfSpeech}
+import bestaro.core.processors.{Flag, Gender, PartOfSpeech}
 import morfologik.stemming.WordData
 
 object InflectionUtil {
+
+  def getFlags(tagInfo: WordData): Set[Flag] = {
+    if (splitTagInfos(tagInfo).flatMap(_.split("[:.]")).contains("pun")) {
+      Set(Flag.PUNCTUATED_WORD)
+    } else {
+      Set()
+    }
+  }
 
   def getPartsOfSpeech(tagInfo: WordData): List[PartOfSpeech] = {
     splitTagInfos(tagInfo)

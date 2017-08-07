@@ -7,6 +7,7 @@ object PartOfSpeech {
   val NOUN = PartOfSpeech("noun")
   val PREPOSITION = PartOfSpeech("preposition")
   val VERB = PartOfSpeech("verb")
+  val PUNCTUATED_END = PartOfSpeech("abbreviation")
   val OTHER = PartOfSpeech("other")
 }
 
@@ -34,6 +35,12 @@ object LocationType {
   val UNKNOWN = LocationType("unknown")
 }
 
+case class Flag(name: String)
+
+object Flag {
+  val PUNCTUATED_WORD = Flag("punctuated_word")
+}
+
 case class Token(
                   original: String,
                   stripped: String,
@@ -42,7 +49,8 @@ case class Token(
                   genders: List[Gender],
                   placenessScore: Int,
                   locationType: LocationType = LocationType.UNKNOWN,
-                  importance: Importance = Importance.PRIMARY
+                  importance: Importance = Importance.PRIMARY,
+                  flags: Set[Flag] = Set()
                 ) {
   override def toString: String = {
     original + " (" + stem + ")[" + placenessScore + "]"

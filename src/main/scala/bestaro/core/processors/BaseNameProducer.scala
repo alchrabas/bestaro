@@ -31,7 +31,9 @@ class BaseNameProducer {
             tagInfo.getStem.toString,
             InflectionUtil.getPartsOfSpeech(tagInfo),
             InflectionUtil.getGenders(tagInfo),
-            0))
+            0,
+            flags = InflectionUtil.getFlags(tagInfo)
+          ))
           .head
       )
     }

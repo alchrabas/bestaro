@@ -1,6 +1,6 @@
 package bestaro.util
 
-import bestaro.core.processors.{Gender, PartOfSpeech}
+import bestaro.core.processors.{Flag, Gender, PartOfSpeech}
 import morfologik.stemming.WordData
 import morfologik.stemming.polish.PolishStemmer
 import org.scalamock.scalatest.MockFactory
@@ -39,6 +39,12 @@ class InflectionUtilTest extends FunSpec with MockFactory {
 
     it("should extract part of speech from verb 'pracuję'") {
       assert(InflectionUtil.getPartsOfSpeech(lookupFirstResult("pracuję")) == List(PartOfSpeech.VERB))
+    }
+  }
+
+  describe("Flags function") {
+    it("correctly notice that 'św' requires a trailing dot") {
+      assert(InflectionUtil.getFlags(lookupFirstResult("św")) == Set(Flag.PUNCTUATED_WORD))
     }
   }
 
