@@ -39,6 +39,7 @@ case class Flag(name: String)
 
 object Flag {
   val PUNCTUATED_WORD = Flag("punctuated_word")
+  val EMPTY_TOKEN = Flag("empty_token")
 }
 
 case class Token(
