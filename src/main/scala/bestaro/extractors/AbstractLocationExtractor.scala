@@ -8,9 +8,9 @@ case class MatchedStreet(street: StreetEntry, position: Int, wordCount: Int)
 
 abstract class AbstractLocationExtractor {
 
-  private val LOC_NAME_TRAIT_SCORE = 5
+  private val NOUN_PRECEDING_NAME_SCORE = 5
   private val CAPITALIZED_WORD_SCORE = 5
-  private val PRECEDED_BY_LOC_NAME_TRAIT_SCORE = 5
+  private val PRECEDED_BY_NOUN_THAT_SUGGESTS_NAME_SCORE = 8
   private val PRECEDED_BY_LOC_SPECIFIC_PREPOSITION_SCORE = 5
 
   protected val baseNameProducer = new BaseNameProducer
@@ -20,15 +20,15 @@ abstract class AbstractLocationExtractor {
     var stemmedTokens = tokens.map { tokenText =>
       val strippedTokenText = baseNameProducer.strippedForStemming(tokenText)
       val stemmedTokenText = baseNameProducer.getBestBaseName(tokenText)
-      if (isLocationNameTrait(strippedTokenText,
+      if (isNounThatSuggestsName(strippedTokenText,
         stemmedTokenText)) {
-        val gender = getGenderOfLocationNameTrait(strippedTokenText, stemmedTokenText)
+        val gender = getGenderOfNounPrecedingName(strippedTokenText, stemmedTokenText)
         Token(tokenText,
           strippedTokenText,
           stemmedTokenText,
           List(PartOfSpeech.NOUN),
           List(gender),
-          LOC_NAME_TRAIT_SCORE)
+          NOUN_PRECEDING_NAME_SCORE)
       } else {
         evaluateMostAccurateBaseName(tokenText)
       }
@@ -49,8 +49,8 @@ abstract class AbstractLocationExtractor {
   private def updateTokenEvaluationUsingContext(tokens: List[Token]): List[Token] = {
     import PlaintextProcessor._
     tokens.slidingPrefixedByEmptyTokens(2).map { case List(nameTrait, toReturn) =>
-      if (isLocationNameTrait(nameTrait)) {
-        toReturn.withAlteredPlacenessScore(PRECEDED_BY_LOC_NAME_TRAIT_SCORE)
+      if (isNounThatSuggestsName(nameTrait)) {
+        toReturn.withAlteredPlacenessScore(PRECEDED_BY_NOUN_THAT_SUGGESTS_NAME_SCORE)
       } else {
         toReturn
       }
@@ -70,7 +70,7 @@ abstract class AbstractLocationExtractor {
         toReturn
       }
     }.toList.slidingPrefixedByEmptyTokens(3).map { case List(preposition, nameTrait, toReturn) =>
-      val isPrepositionFollowedByKind = isLocationSpecificPreposition(preposition) && isLocationNameTrait(nameTrait)
+      val isPrepositionFollowedByKind = isLocationSpecificPreposition(preposition) && isNounThatSuggestsName(nameTrait)
       if (isPrepositionFollowedByKind) {
         toReturn.withAlteredPlacenessScore(PRECEDED_BY_LOC_SPECIFIC_PREPOSITION_SCORE)
       } else {
@@ -79,31 +79,31 @@ abstract class AbstractLocationExtractor {
     }.toList
   }
 
-  private def isLocationNameTrait(token: Token): Boolean = {
-    isLocationNameTrait(token.stripped, token.stem)
+  private def isNounThatSuggestsName(token: Token): Boolean = {
+    isNounThatSuggestsName(token.stripped, token.stem)
   }
 
-  private def isLocationNameTrait(stripped: String, stem: String): Boolean = {
+  private def isNounThatSuggestsName(stripped: String, stem: String): Boolean = {
     (Set("ul", "pl", "os", "al") contains stripped) ||
       (Set("plac", "ulica", "osiedle", "aleja") contains stem)
   }
 
-  private val strippedLocNameTraitToGender = Map(
+  private val strippedNounPrecedingNameToGender = Map(
     "ul" -> Gender.F,
     "pl" -> Gender.M,
     "os" -> Gender.N,
     "al" -> Gender.F
   )
 
-  private val stemmedLocNameTraitToGender = Map(
+  private val stemmedNounPrecedingNameToGender = Map(
     "plac" -> Gender.M,
     "ulica" -> Gender.F,
     "osiedle" -> Gender.N,
     "aleja" -> Gender.F
   )
 
-  private def getGenderOfLocationNameTrait(stripped: String, stemmed: String): Gender = {
-    strippedLocNameTraitToGender.getOrElse(stripped, stemmedLocNameTraitToGender(stemmed))
+  private def getGenderOfNounPrecedingName(stripped: String, stemmed: String): Gender = {
+    strippedNounPrecedingNameToGender.getOrElse(stripped, stemmedNounPrecedingNameToGender(stemmed))
   }
 
   private def isLocationSpecificPreposition(token: Token): Boolean = {
