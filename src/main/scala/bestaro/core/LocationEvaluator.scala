@@ -31,7 +31,7 @@ class LocationEvaluator(recordTags: Map[RecordId, TaggedRecord]) {
         allLocations += 1
         recordTag.map {
           taggedRecord =>
-            val successfulMatch = anyLocMatches(taggedRecord, rawRecord.location)
+            val successfulMatch = rawRecord.location != null && anyLocMatches(taggedRecord, rawRecord.location)
             if (!successfulMatch) {
               invalidPairs.append(InvalidPair(rawRecord.location, taggedRecord.locs ++ taggedRecord.altLocs))
             }
@@ -43,7 +43,7 @@ class LocationEvaluator(recordTags: Map[RecordId, TaggedRecord]) {
     EvaluationResult(successfulMatches, allLocations, invalidPairs)
   }
 
-  val baseNameProducer = new BaseNameProducer
+  protected val baseNameProducer = new BaseNameProducer
 
   private def anyLocMatches(taggedRecord: TaggedRecord, location: String): Boolean = {
     (taggedRecord.locs ++ taggedRecord.altLocs)
