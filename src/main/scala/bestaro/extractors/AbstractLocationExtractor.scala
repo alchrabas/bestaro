@@ -147,7 +147,8 @@ abstract class AbstractLocationExtractor {
   }
 
   private def tokenIsEndOfSentence(token: Token): Boolean = {
-    (token.original.endsWith(".") && !token.flags.contains(Flag.PUNCTUATED_WORD)) ||
-      token.original.endsWith("!") || token.original.endsWith("?")
+    token.original.nonEmpty &&
+      ((token.original.endsWith(".") && !token.flags.contains(Flag.PUNCTUATED_WORD)) ||
+      Set('!', '\n', '?').contains(token.original.last))
   }
 }
