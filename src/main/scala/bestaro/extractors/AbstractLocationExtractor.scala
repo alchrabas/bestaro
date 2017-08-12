@@ -10,37 +10,49 @@ abstract class AbstractLocationExtractor {
 
   private val NOUN_PRECEDING_NAME_SCORE = 5
   private val CAPITALIZED_WORD_SCORE = 5
-  private val PRECEDED_BY_NOUN_THAT_SUGGESTS_NAME_SCORE = 8
+  private val PRECEDED_BY_NOUN_THAT_SUGGESTS_LOCATION_SCORE = 8
   private val PRECEDED_BY_LOC_SPECIFIC_PREPOSITION_SCORE = 5
+  private val NAME_ON_IGNORE_LIST_SCORE = -20
 
   protected val baseNameProducer = new BaseNameProducer
 
   def extractLocationName(tokens: List[String]): (List[Token], List[MatchedStreet]) = {
 
+    println("########################")
     var stemmedTokens = tokens.map { tokenText =>
       val strippedTokenText = baseNameProducer.strippedForStemming(tokenText)
       val stemmedTokenText = baseNameProducer.getBestBaseName(tokenText)
-      if (isNounThatSuggestsName(strippedTokenText,
+      if (isNounThatSuggestsLocationName(strippedTokenText,
         stemmedTokenText)) {
-        val gender = getGenderOfNounPrecedingName(strippedTokenText, stemmedTokenText)
-        Token(tokenText,
-          strippedTokenText,
-          stemmedTokenText,
-          List(PartOfSpeech.NOUN),
-          List(gender),
-          NOUN_PRECEDING_NAME_SCORE)
+        newNounToken(tokenText, strippedTokenText, stemmedTokenText)
       } else {
         evaluateMostAccurateBaseName(tokenText)
       }
-    }
+    }.map(token => {
+      if (onIgnoreList(token)) {
+        token.withAlteredPlacenessScore(NAME_ON_IGNORE_LIST_SCORE)
+      } else {
+        token
+      }
+    })
 
-    println("########################")
 
     if (stemmedTokens.nonEmpty) {
       stemmedTokens = updateTokenEvaluationUsingContext(stemmedTokens)
     }
     val (mutableTokens, matchedStreets) = specificExtract(stemmedTokens)
     (mutableTokens.toList, matchedStreets.toList)
+  }
+
+  private def newNounToken(tokenText: String, strippedTokenText: String, stemmedTokenText: String) = {
+    val gender = getGenderOfNounPrecedingName(strippedTokenText, stemmedTokenText)
+    Token(tokenText,
+      strippedTokenText,
+      stemmedTokenText,
+      List(PartOfSpeech.NOUN),
+      List(gender),
+      NOUN_PRECEDING_NAME_SCORE,
+      flags = Some(tokenText.endsWith(".")).collect { case true => Flag.PUNCTUATED_WORD }.toSet)
   }
 
   protected def specificExtract(stemmedTokens: List[Token]): (ListBuffer[Token], ListBuffer[MatchedStreet])
@@ -50,7 +62,7 @@ abstract class AbstractLocationExtractor {
     import PlaintextProcessor._
     tokens.slidingPrefixedByEmptyTokens(2).map { case List(nameTrait, toReturn) =>
       if (isNounThatSuggestsName(nameTrait)) {
-        toReturn.withAlteredPlacenessScore(PRECEDED_BY_NOUN_THAT_SUGGESTS_NAME_SCORE)
+        toReturn.withAlteredPlacenessScore(PRECEDED_BY_NOUN_THAT_SUGGESTS_LOCATION_SCORE)
       } else {
         toReturn
       }
@@ -80,10 +92,10 @@ abstract class AbstractLocationExtractor {
   }
 
   private def isNounThatSuggestsName(token: Token): Boolean = {
-    isNounThatSuggestsName(token.stripped, token.stem)
+    isNounThatSuggestsLocationName(token.stripped, token.stem)
   }
 
-  private def isNounThatSuggestsName(stripped: String, stem: String): Boolean = {
+  private def isNounThatSuggestsLocationName(stripped: String, stem: String): Boolean = {
     (Set("ul", "pl", "os", "al") contains stripped) ||
       (Set("plac", "ulica", "osiedle", "aleja") contains stem)
   }
@@ -120,6 +132,10 @@ abstract class AbstractLocationExtractor {
         List(Gender.F), // because the most common "ulica" is feminine
         0)
     )
+  }
+
+  private def onIgnoreList(token: Token): Boolean = {
+    Set("rybna", "rybną", "rybnej").contains(token.stripped) // for example names/streets of animal shelters in the area
   }
 
   private def isCapitalized(original: String): Boolean = {
