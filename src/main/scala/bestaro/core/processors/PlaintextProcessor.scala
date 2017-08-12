@@ -1,7 +1,7 @@
 package bestaro.core.processors
 
-import bestaro.core.{RawRecord, Tokenizer}
-import bestaro.extractors.{GusLocationExtractor, NominatimLocationExtractor}
+import bestaro.core.{FbId, RawRecord, Tokenizer}
+import bestaro.extractors.{GoogleLocationExtractor, GusLocationExtractor, NominatimLocationExtractor}
 
 
 object PlaintextProcessor {
@@ -17,7 +17,8 @@ object PlaintextProcessor {
 
 class PlaintextProcessor {
   //    val locationExtractor = new GusLocationExtractor()
-  val locationExtractor = new NominatimLocationExtractor()
+//  val locationExtractor = new NominatimLocationExtractor()
+  val locationExtractor = new GoogleLocationExtractor()
 
   def process(record: RawRecord): RawRecord = {
     val inputText = record.message
