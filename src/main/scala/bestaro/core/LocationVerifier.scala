@@ -12,9 +12,9 @@ case class VerificationResult(success: Int, all: Int, invalidPairs: Seq[InvalidP
   }
 }
 
-case class InvalidPair(actual: String, expected: Seq[String]) {
+case class InvalidPair(record: RawRecord, expected: Seq[String]) {
   override def toString: String = {
-    s"Expected $expected, but found $actual"
+    s"Expected $expected, but found ${record.location}"
   }
 }
 
@@ -33,7 +33,7 @@ class LocationVerifier(recordTags: Map[RecordId, TaggedRecord]) {
           taggedRecord =>
             val successfulMatch = rawRecord.location != null && anyLocMatches(taggedRecord, rawRecord.location)
             if (!successfulMatch) {
-              invalidPairs.append(InvalidPair(rawRecord.location, taggedRecord.locs ++ taggedRecord.altLocs))
+              invalidPairs.append(InvalidPair(rawRecord, taggedRecord.locs ++ taggedRecord.altLocs))
             }
             successfulMatch
         }.filter(_ == true).foreach(_ => successfulMatches += 1)
