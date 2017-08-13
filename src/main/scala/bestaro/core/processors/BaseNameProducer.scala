@@ -4,10 +4,14 @@ import bestaro.util.InflectionUtil
 import morfologik.stemming.polish.PolishStemmer
 
 import scala.collection.JavaConverters._
+import scala.collection.mutable
+
 
 class BaseNameProducer {
 
   private val stemmer = new PolishStemmer
+
+  private val _notFoundWords = mutable.HashMap[String, Int]()
 
   def strippedForStemming(original: String): String = {
     original.toLowerCase.replaceAll("[^0-9a-ząćęłńóśżź ]", "").replaceAll("\\s+", " ").trim
@@ -21,6 +25,7 @@ class BaseNameProducer {
     }
 
     if (matchedStems.isEmpty || isExcludedFromMorfologik(original)) {
+      increaseNumberOfOccurrencesOfNotFoundWord(strippedOriginal)
       None
     } else {
       Some(
@@ -37,6 +42,14 @@ class BaseNameProducer {
           .head
       )
     }
+  }
+
+  private def increaseNumberOfOccurrencesOfNotFoundWord(strippedOriginal: String) = {
+    _notFoundWords.put(strippedOriginal, _notFoundWords.getOrElse(strippedOriginal, 0) + 1)
+  }
+
+  def notFoundWords: Map[String, Int] = {
+    _notFoundWords.toMap
   }
 
   def getBestBaseToken(original: String): Token = {
