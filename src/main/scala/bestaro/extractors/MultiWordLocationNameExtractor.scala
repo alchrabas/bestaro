@@ -31,9 +31,8 @@ case class MultiWordName(tokens: List[Token], startIndex: Int) {
 class MultiWordLocationNameExtractor {
 
   def mostSuitableMultiWordNames(tokens: List[Token]): List[MultiWordName] = {
-    import scala.util.control.Breaks._
 
-    val multiWordNames = tokens.zipWithIndex
+    tokens.zipWithIndex
       .filter(_._1.placenessScore >= 5)
       .sortBy(_._1.placenessScore)
       .reverse.slice(0, 5).map {
@@ -41,22 +40,23 @@ class MultiWordLocationNameExtractor {
         MultiWordName(List(firstToken), startIndex)
     }.map {
       firstWord =>
-        var multiWordName = firstWord
-        breakable {
-          for (i <- firstWord.startIndex + 1 to firstWord.startIndex + 3 if i < tokens.size) {
-            val candidateToken = tokens(i)
-            val previousToken = tokens(i - 1)
-            if (candidateToken.placenessScore < 5 || previousToken.original.endsWith(",") ||
-              (previousToken.original.endsWith(".") && !previousToken.flags.contains(Flag.PUNCTUATED_WORD))) {
-              break
-            }
-            multiWordName = multiWordName.pushWord(tokens(i))
-          }
-        }
-        multiWordName
-    }.sortBy(_.sumScore).reverse
-    //    println(multiWordNames.map(a => a.tokens.map(_.original).mkString(" ") + " = " + a.sumScore).mkString("\n"))
+        val tokensToUse = tokens.slice(firstWord.startIndex, firstWord.startIndex + 4)
 
-    multiWordNames
+        if (tokensToUse.size == 1) {
+          firstWord
+        } else {
+          tokensToUse.sliding(2).map(listToTuple).takeWhile {
+            case (previousToken, currentToken) =>
+              currentToken.placenessScore >= 5 &&
+                !(previousToken.original.endsWith(",") ||
+                  previousToken.isEndOfSentence)
+          }.map(_._2).foldLeft(firstWord)(_.pushWord(_))
+        }
+    }.sortBy(_.sumScore).reverse
+  }
+
+  private def listToTuple(tokens: List[Token]): (Token, Token) = {
+    assert(tokens.size == 2)
+    (tokens.head, tokens.last)
   }
 }
