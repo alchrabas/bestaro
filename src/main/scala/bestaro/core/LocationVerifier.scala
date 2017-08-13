@@ -5,10 +5,10 @@ import bestaro.helpers.TaggedRecordsManager.TaggedRecord
 
 import scala.collection.mutable.ListBuffer
 
-case class EvaluationResult(success: Int, all: Int, invalidPairs: Seq[InvalidPair]) {
+case class VerificationResult(success: Int, all: Int, invalidPairs: Seq[InvalidPair]) {
   override def toString: String = {
     val successfulPercent = success * 100.0 / all
-    invalidPairs.mkString("\n") + "\n\n" + f"Evaluation: $success / $all = $successfulPercent%1.2f%%"
+    invalidPairs.mkString("\n") + "\n\n" + f"Verification: $success / $all = $successfulPercent%1.2f%%"
   }
 }
 
@@ -18,9 +18,9 @@ case class InvalidPair(actual: String, expected: Seq[String]) {
   }
 }
 
-class LocationEvaluator(recordTags: Map[RecordId, TaggedRecord]) {
+class LocationVerifier(recordTags: Map[RecordId, TaggedRecord]) {
 
-  def evaluate(processed: Seq[RawRecord]): EvaluationResult = {
+  def verify(processed: Seq[RawRecord]): VerificationResult = {
 
     var successfulMatches = 0
     var allLocations = 0
@@ -40,7 +40,7 @@ class LocationEvaluator(recordTags: Map[RecordId, TaggedRecord]) {
       }
     }
 
-    EvaluationResult(successfulMatches, allLocations, invalidPairs)
+    VerificationResult(successfulMatches, allLocations, invalidPairs)
   }
 
   protected val baseNameProducer = new BaseNameProducer
