@@ -5,7 +5,7 @@ case class PartOfSpeech(name: String)
 object PartOfSpeech {
   val ADJECTIVE = PartOfSpeech("adjective")
   val NOUN = PartOfSpeech("noun")
-  val PREPOSITION = PartOfSpeech("preposition")
+  val PREPOSITION = PartOfSpeech("preposition") // also used for conjunctions
   val VERB = PartOfSpeech("verb")
   val PUNCTUATED_END = PartOfSpeech("abbreviation")
   val OTHER = PartOfSpeech("other")
@@ -40,6 +40,7 @@ case class Flag(name: String)
 object Flag {
   val PUNCTUATED_WORD = Flag("punctuated_word")
   val EMPTY_TOKEN = Flag("empty_token")
+  val NOUN_PRECEDING_LOCATION_NAME = Flag("noun_preceding_location_name")
 }
 
 case class Token(
@@ -59,5 +60,11 @@ case class Token(
 
   def withAlteredPlacenessScore(alteredBy: Int): Token = {
     copy(placenessScore = placenessScore + alteredBy)
+  }
+
+  def isEndOfSentence: Boolean = {
+    original.nonEmpty &&
+      ((original.endsWith(".") && !flags.contains(Flag.PUNCTUATED_WORD)) ||
+        Set('!', '\n', '?').contains(original.last))
   }
 }

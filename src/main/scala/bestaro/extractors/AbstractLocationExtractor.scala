@@ -36,7 +36,6 @@ abstract class AbstractLocationExtractor {
       }
     })
 
-
     if (stemmedTokens.nonEmpty) {
       stemmedTokens = updateTokenEvaluationUsingContext(stemmedTokens)
     }
@@ -52,7 +51,16 @@ abstract class AbstractLocationExtractor {
       List(PartOfSpeech.NOUN),
       List(gender),
       NOUN_PRECEDING_NAME_SCORE,
-      flags = Some(tokenText.endsWith(".")).collect { case true => Flag.PUNCTUATED_WORD }.toSet)
+      flags = createFlagsForNounPrecedingLocationName(tokenText))
+  }
+
+  private def createFlagsForNounPrecedingLocationName(tokenText: String) = {
+    Set(Flag.NOUN_PRECEDING_LOCATION_NAME) ++
+      (if (tokenText.endsWith(".")) {
+        Set(Flag.PUNCTUATED_WORD)
+      } else {
+        Set()
+      })
   }
 
   protected def specificExtract(stemmedTokens: List[Token]): (ListBuffer[Token], ListBuffer[MatchedStreet])
@@ -74,7 +82,7 @@ abstract class AbstractLocationExtractor {
       }
     }.toList.slidingPrefixedByEmptyTokens(2).map { case List(previous, toReturn) =>
       if (isCapitalized(toReturn.original)
-        && !tokenIsEndOfSentence(previous)
+        && !previous.isEndOfSentence
         && !isUpperCase(toReturn.original)
         && !previous.flags.contains(Flag.EMPTY_TOKEN)) {
         toReturn.withAlteredPlacenessScore(CAPITALIZED_WORD_SCORE)
@@ -146,9 +154,4 @@ abstract class AbstractLocationExtractor {
     original.toUpperCase == original
   }
 
-  private def tokenIsEndOfSentence(token: Token): Boolean = {
-    token.original.nonEmpty &&
-      ((token.original.endsWith(".") && !token.flags.contains(Flag.PUNCTUATED_WORD)) ||
-      Set('!', '\n', '?').contains(token.original.last))
-  }
 }
