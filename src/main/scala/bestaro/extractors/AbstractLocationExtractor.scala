@@ -127,7 +127,7 @@ abstract class AbstractLocationExtractor {
   }
 
   private def isLocationSpecificPreposition(token: Token): Boolean = {
-    (Set("w", "we", "nad", "na") contains token.stripped) ||
+    (Set("w", "we", "nad", "na", "przy") contains token.stripped) ||
       (Set("okolica", "pobliże") contains token.stem)
   }
 

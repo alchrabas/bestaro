@@ -26,7 +26,7 @@ class CachedGoogleApiClient(requestLogger: String => Unit = _ => Unit)
       loadFromCache(queryString)
     } else {
       val context = new GeoApiContext.Builder().apiKey(properties.getProperty("apiKey")).build
-      Thread.sleep(1000)
+      Thread.sleep(20)
       val results: java.util.List[GeocodingResult] = GeocodingApi.geocode(context, queryString).await.toList.asJava
       saveInCache(queryString, results)
 

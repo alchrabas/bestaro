@@ -38,10 +38,34 @@ class GoogleLocationExtractor extends AbstractLocationExtractor {
   }
 
   private def getGeocodingResultForMultiWordName(multiWordName: MultiWordName) = {
-    (multiWordName, geocodingClient.search(multiWordName.stripped + ", województwo małopolskie"))
+    (multiWordName, geocodingClient.search(
+      replaceAbbreviatedNouns(multiWordName).stripped + ", województwo małopolskie"))
   }
 
+  private def replaceAbbreviatedNouns(multiWordName: MultiWordName): MultiWordName = {
+    multiWordName.copy(tokens = multiWordName.tokens.map(expandAbbreviatedNounsPrecedingLocation))
+  }
+
+  private def expandAbbreviatedNounsPrecedingLocation(token: Token): Token = {
+    val strippedReplacements = REPLACEMENTS.get(token.stripped)
+    if (strippedReplacements.isDefined) {
+      token.copy(stripped = strippedReplacements.get, stem = strippedReplacements.get)
+    } else {
+      token
+    }
+  }
+
+  private val REPLACEMENTS = Map(
+    "os" -> "osiedle",
+    "al" -> "aleja",
+    "ul" -> "ulica",
+    "pl" -> "plac"
+  )
+
   private def streetEntryFromGeocodingResults(results: List[GeocodingResult]): StreetEntry = {
+    if (results.size > 1) {
+      println("MULTIPLE SOLUTIONS AVAILABLE:\n" + results.map(_.formattedAddress).mkString(";; \n"))
+    }
     StreetEntry(getStreetName(results.head), "street",
       baseNameProducer.strippedForStemming(getStreetName(results.head)),
       baseNameProducer.strippedForStemming(getStreetName(results.head)))
