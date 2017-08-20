@@ -13,7 +13,7 @@ class GusLocationExtractorTest extends FunSpec {
     it("not inflected two-word street name") {
       val record = RawRecord(FbId("123"), LOST, "Dziś na ulicy Monte Cassino", 1, List())
       val taggedRecords: Map[RecordId, TaggedRecord] = Map(FbId("123") ->
-        TaggedRecord(FbId("123"), List("Monte Cassino"), List(), "", "")
+        TaggedRecord(FbId("123"), List("Monte Cassino"), List(), List(), "", "")
       )
 
       val locationExtractor = new GusLocationExtractor()
