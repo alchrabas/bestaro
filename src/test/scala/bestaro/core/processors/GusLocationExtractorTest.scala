@@ -5,6 +5,7 @@ import bestaro.core.ProgressStatus.LOST
 import bestaro.core.{FbId, RawRecord, RecordId, Tokenizer}
 import bestaro.extractors.{GusLocationExtractor, MatchedLocation}
 import bestaro.helpers.TaggedRecordsManager.TaggedRecord
+import bestaro.service.Voivodeship
 import org.scalatest.FunSpec
 
 class GusLocationExtractorTest extends FunSpec {
@@ -19,7 +20,7 @@ class GusLocationExtractorTest extends FunSpec {
       val locationExtractor = new GusLocationExtractor()
       val plaintextProcessor = new PlaintextProcessor
       val tokenizedText = new Tokenizer().tokenize(record.message)
-      val (tokens, result) = locationExtractor.extractLocationName(tokenizedText)
+      val (tokens, result) = locationExtractor.extractLocationName(tokenizedText, Voivodeship("MAŁOPOLSKIE"))
       assert(result == List(
         MatchedLocation(Location("monte cassino", "Monte Cassino", "ulica"), 3, 2)
       ))

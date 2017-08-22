@@ -2,6 +2,7 @@ package bestaro.core.processors
 
 import bestaro.core.{FbId, RawRecord, Tokenizer}
 import bestaro.extractors.{GoogleLocationExtractor, GusLocationExtractor, NominatimLocationExtractor}
+import bestaro.service.Voivodeship
 
 
 object PlaintextProcessor {
@@ -25,14 +26,14 @@ class PlaintextProcessor {
     val tokenizer = new Tokenizer()
     val tokens = tokenizer.tokenize(inputText)
 
-    val (stemmedTokens, matchedStreets) = locationExtractor.extractLocationName(tokens)
+    val (stemmedTokens, matchedStreets) = locationExtractor.extractLocationName(tokens, Voivodeship("MAŁOPOLSKIE"))
     println(inputText)
-    println(" ====> ")
-    println(stemmedTokens.mkString(" "))
+//    println(" ====> ")
+//    println(stemmedTokens.mkString(" "))
     val bestLocations = stemmedTokens.sortBy(_.placenessScore).reverse.slice(0, 3)
     println("BEST CANDIDATES: " + bestLocations)
     println(s"ALL MATCHED STREETS ${matchedStreets.size} " + matchedStreets.mkString("\n"))
-    record.copy(location = matchedStreets.headOption.map(_.street.strippedName).orNull)
+    record.copy(location = matchedStreets.headOption.map(_.location.stripped).orNull)
   }
 
 }
