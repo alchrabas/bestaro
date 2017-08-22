@@ -1,5 +1,6 @@
 package bestaro.service
 
+import bestaro.core.processors.{BaseNameProducer, Location}
 import bestaro.util.FileIO
 import com.github.tototoshi.csv.{CSVReader, DefaultCSVFormat}
 import upickle.default.read
@@ -13,14 +14,14 @@ object PolishTownNamesInflector {
   def main(args: Array[String]): Unit = {
     val converter = new PolishTownNamesInflector
     println(converter.generateInflectedForms(converter.loadTownEntriesFromUrzedowyWykazNazwMiejscowosci())
-      .filter(_.voivodeship.name == "MAŁOPOLSKIE").mkString("\n"))
+      .filter(_.location.voivodeship.map(_.name).contains("MAŁOPOLSKIE")).mkString("\n"))
     //    converter.printMostIgnoredSuffixes(converter.loadTownEntriesFromFile())
   }
 }
 
 case class Voivodeship(name: String)
 
-case class TownEntry(name: String, originalName: String, voivodeship: Voivodeship)
+case class InflectedLocation(stripped: String, location: Location)
 
 class PolishTownNamesInflector {
 
@@ -36,7 +37,9 @@ class PolishTownNamesInflector {
   private val genetivusSuffixes = suffixesReadFromFile("genetivus")
   private val locativusSuffixes = suffixesReadFromFile("locativus")
 
-  def loadTownEntriesFromTerytFile(): Seq[TownEntry] = {
+  private val baseNameProducer = new BaseNameProducer
+
+  def loadTownEntriesFromTerytFile(): Seq[InflectedLocation] = {
     val townNamesResource = getClass.getClassLoader.getResource(TOWN_NAMES_CSV)
     val reader = CSVReader.open(townNamesResource.getFile)
     reader.allWithHeaders()
@@ -44,50 +47,57 @@ class PolishTownNamesInflector {
       .map(convertToTownEntry)
   }
 
-  private def convertToTownEntry(csvEntry: Map[String, String]): TownEntry = {
+  private def convertToTownEntry(csvEntry: Map[String, String]): InflectedLocation = {
     val originalName = csvEntry("NAZWA").toLowerCase
     val voivodeshipId = Integer.parseInt(csvEntry("WOJ"))
     val kind = csvEntry("NAZWA_DOD")
 
-    TownEntry(originalName, originalName,
-      Voivodeship(VOIVODESHIP_ID_TO_NAME(voivodeshipId)))
+    InflectedLocation(originalName, Location(originalName, originalName, "town",
+      Some(Voivodeship(VOIVODESHIP_ID_TO_NAME(voivodeshipId)))))
   }
 
-  def loadTownEntriesFromUrzedowyWykazNazwMiejscowosci(): Seq[TownEntry] = {
+  private val TOWN_NAME_COLUMN = "Nazwa miejscowości "
+  private val KIND_COLUMN = "Rodzaj"
+  private val VOIVODESHIP_COLUMN = "Województwo"
+
+  def loadTownEntriesFromUrzedowyWykazNazwMiejscowosci(): Seq[InflectedLocation] = {
     val townNamesResource = getClass.getClassLoader.getResource(URZEDOWY_WYKAZ_NAZW_CSV)
     val reader = CSVReader.open(townNamesResource.getFile)
     reader.allWithHeaders()
-      .filter(row =>
-        Set("wieś", "miasto").contains(row("Rodzaj")) ||
-          row("Rodzaj").startsWith("część miasta"))
+      .filter(row => {
+        Set("wieś", "miasto").contains(row(KIND_COLUMN)) ||
+          row(KIND_COLUMN).startsWith("część miasta")
+      })
       .map {
         row =>
-          TownEntry(
-            row("Nazwa miejscowości ").toLowerCase,
-            row("Nazwa miejscowości ").toLowerCase,
-            Voivodeship(row("Województwo").toUpperCase))
+          val stripped = baseNameProducer.strippedForStemming(row(TOWN_NAME_COLUMN))
+          InflectedLocation(stripped,
+            Location(stripped, row(TOWN_NAME_COLUMN), "town",
+              Some(Voivodeship(row(VOIVODESHIP_COLUMN).toUpperCase))
+            )
+          )
       }
   }
 
-  def generateInflectedForms(townsInNominativus: Seq[TownEntry]): Seq[TownEntry] = {
+  def generateInflectedForms(townsInNominativus: Seq[InflectedLocation]): Seq[InflectedLocation] = {
     townsInNominativus.flatMap(inflectedVersionsOfName).distinct
   }
 
-  def inflectedVersionsOfName(original: TownEntry): Seq[TownEntry] = {
+  def inflectedVersionsOfName(original: InflectedLocation): Seq[InflectedLocation] = {
     makeGenetivus(original) ++ makeLocativus(original)
   }
 
-  private def makeGenetivus(townEntry: TownEntry): Seq[TownEntry] = {
+  private def makeGenetivus(townEntry: InflectedLocation): Seq[InflectedLocation] = {
     makeNonNominativus(townEntry, genetivusSuffixes)
   }
 
-  private def makeLocativus(townEntry: TownEntry): Seq[TownEntry] = {
+  private def makeLocativus(townEntry: InflectedLocation): Seq[InflectedLocation] = {
     makeNonNominativus(townEntry, locativusSuffixes)
   }
 
-  private def makeNonNominativus(nominativusTown: TownEntry,
-                                 suffixReplacements: Map[String, Set[String]]): Seq[TownEntry] = {
-    val wordsOfOriginalName = nominativusTown.originalName.split(" ")
+  private def makeNonNominativus(nominativusTown: InflectedLocation,
+                                 suffixReplacements: Map[String, Set[String]]): Seq[InflectedLocation] = {
+    val wordsOfOriginalName = nominativusTown.location.stripped.split(" ")
     val allWordVariants = wordsOfOriginalName.toSeq.map {
       originalWordOfName =>
         val wordReplacements = suffixReplacements
@@ -102,7 +112,7 @@ class PolishTownNamesInflector {
 
     generateAllWordCombinations(allWordVariants)
       .map(_.mkString(" "))
-      .map(newName => nominativusTown.copy(name = newName))
+      .map(newName => nominativusTown.copy(stripped = newName))
   }
 
   private def generateAllWordCombinations(wordVariants: Seq[Seq[String]]): Seq[Seq[String]] = {
@@ -119,9 +129,9 @@ class PolishTownNamesInflector {
     subject.substring(0, subject.length - pattern.length) + replacement
   }
 
-  def printMostIgnoredSuffixes(townsInNominativus: Seq[TownEntry]) {
+  def printMostIgnoredSuffixes(townsInNominativus: Seq[InflectedLocation]) {
     val mostIgnoredSuffixes = townsInNominativus
-      .map(_.name)
+      .map(_.stripped)
       .filter(a => !genetivusSuffixes.keys.exists(a.endsWith))
       .map(a => a.substring(a.length - 3, a.length))
       .groupBy(a => a)
