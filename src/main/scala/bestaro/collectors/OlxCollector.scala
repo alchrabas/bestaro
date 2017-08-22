@@ -6,6 +6,7 @@ import bestaro.collectors.util.HttpDownloader
 import bestaro.core.ProgressStatus.LOST
 import bestaro.core.{OlxId, RawRecord, RecordId}
 import bestaro.extractors.PolishDateExtractor
+import bestaro.service.Voivodeship
 import bestaro.util.ImageUtil
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -78,7 +79,8 @@ class OlxCollector(httpDownloader: HttpDownloader) {
     }
 
     RawRecord(id, LOST, messageContent,
-      postDate = extractedDate.map(_.toEpochMilli).getOrElse(1L),
+      extractedDate.map(_.toEpochMilli).getOrElse(1L),
+      Voivodeship.MALOPOLSKIE,
       location = locationString, title = title,
       pictures = pictures,
       eventDate = extractedEventDate.map(_.toEpochMilli).getOrElse(2L),

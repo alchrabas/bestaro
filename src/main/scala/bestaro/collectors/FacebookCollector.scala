@@ -6,6 +6,7 @@ import java.util.concurrent.TimeUnit
 
 import bestaro.core.ProgressStatus.LOST
 import bestaro.core.{FbId, RawRecord}
+import bestaro.service.Voivodeship
 import bestaro.util.ImageUtil
 import facebook4j._
 
@@ -77,6 +78,7 @@ class FacebookCollector(recordConsumer: RawRecord => Unit, isAlreadyStored: RawR
     }
 
     RawRecord(id, LOST, post.getMessage, post.getCreatedTime.getTime,
-      picturePath.map(_.toString).toList, Option(post.getPermalinkUrl).map(_.toString).orNull)
+      Voivodeship.MALOPOLSKIE, picturePath.map(_.toString).toList,
+      Option(post.getPermalinkUrl).map(_.toString).orNull)
   }
 }

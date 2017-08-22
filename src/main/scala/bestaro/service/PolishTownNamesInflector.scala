@@ -13,11 +13,30 @@ object PolishTownNamesInflector {
 
   def main(args: Array[String]): Unit = {
     val converter = new PolishTownNamesInflector
-//    println(converter.generateInflectedForms(converter.loadTownEntriesFromUrzedowyWykazNazwMiejscowosci())
-//      .filter(_.location.voivodeship.map(_.name).contains("MAŁOPOLSKIE")).mkString("\n"))
+    //    println(converter.generateInflectedForms(converter.loadTownEntriesFromUrzedowyWykazNazwMiejscowosci())
+    //      .filter(_.location.voivodeship.map(_.name).contains("MAŁOPOLSKIE")).mkString("\n"))
     //    converter.printMostIgnoredSuffixes(converter.loadTownEntriesFromFile())
     converter.filterOutUnusedData()
   }
+}
+
+object Voivodeship {
+  val MALOPOLSKIE = Voivodeship("MAŁOPOLSKIE")
+  val LUBUSKIE = Voivodeship("LUBUSKIE")
+  val KUJAWSKO_POMORSKIE = Voivodeship("KUJAWSKO-POMORSKIE")
+  val POMORSKIE = Voivodeship("POMORSKIE")
+  val SWIETOKRZYSKIE = Voivodeship("ŚWIĘTOKRZYSKIE")
+  val SLASKIE = Voivodeship("ŚLĄSKIE")
+  val OPOLSKIE = Voivodeship("OPOLSKIE")
+  val LODZKIE = Voivodeship("ŁÓDZKIE")
+  val ZACHODNIOPOMORSKIE = Voivodeship("ZACHODNIOPOMORSKIE")
+  val LUBELSKIE = Voivodeship("LUBELSKIE")
+  val MAZOWIECKIE = Voivodeship("MAZOWIECKIE")
+  val PODLASKIE = Voivodeship("PODLASKIE")
+  val DOLNOSLASKIE = Voivodeship("DOLNOŚLĄSKIE")
+  val PODKARPACKIE = Voivodeship("PODKARPACKIE")
+  val WIELKOPOLSKIE = Voivodeship("WIELKOPOLSKIE")
+  val WARMINSKO_MAZURSKIE = Voivodeship("WARMIŃSKO-MAZURSKIE")
 }
 
 case class Voivodeship(name: String)
@@ -55,7 +74,7 @@ class PolishTownNamesInflector {
     val kind = csvEntry("NAZWA_DOD")
 
     InflectedLocation(originalName, Location(originalName, originalName, "town",
-      Some(Voivodeship(VOIVODESHIP_ID_TO_NAME(voivodeshipId)))))
+      Some(VOIVODESHIP_BY_ID(voivodeshipId))))
   }
 
   private val TOWN_NAME_COLUMN = "Nazwa miejscowości "
@@ -167,21 +186,22 @@ class PolishTownNamesInflector {
     writer.writeAll(filteredRows)
   }
 
-  val VOIVODESHIP_ID_TO_NAME = Map(
-    12 -> "MAŁOPOLSKIE",
-    8 -> "LUBUSKIE",
-    4 -> "KUJAWSKO-POMORSKIE",
-    22 -> "POMORSKIE",
-    26 -> "ŚWIĘTOKRZYSKIE",
-    24 -> "ŚLĄSKIE",
-    16 -> "OPOLSKIE",
-    10 -> "ŁÓDZKIE",
-    32 -> "ZACHODNIOPOMORSKIE",
-    6 -> "LUBELSKIE",
-    14 -> "MAZOWIECKIE",
-    20 -> "PODLASKIE",
-    2 -> "DOLNOŚLĄSKIE",
-    18 -> "PODKARPACKIE",
-    30 -> "WIELKOPOLSKIE",
-    28 -> "WARMIŃSKO-MAZURSKIE")
+  val VOIVODESHIP_BY_ID = Map(
+    12 -> Voivodeship.MALOPOLSKIE,
+    8 -> Voivodeship.LUBUSKIE,
+    4 -> Voivodeship.KUJAWSKO_POMORSKIE,
+    22 -> Voivodeship.POMORSKIE,
+    26 -> Voivodeship.SWIETOKRZYSKIE,
+    24 -> Voivodeship.SLASKIE,
+    16 -> Voivodeship.OPOLSKIE,
+    10 -> Voivodeship.LODZKIE,
+    32 -> Voivodeship.ZACHODNIOPOMORSKIE,
+    6 -> Voivodeship.LUBELSKIE,
+    14 -> Voivodeship.MAZOWIECKIE,
+    20 -> Voivodeship.PODLASKIE,
+    2 -> Voivodeship.DOLNOSLASKIE,
+    18 -> Voivodeship.PODKARPACKIE,
+    30 -> Voivodeship.WIELKOPOLSKIE,
+    28 -> Voivodeship.WARMINSKO_MAZURSKIE
+  )
 }

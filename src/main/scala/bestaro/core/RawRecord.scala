@@ -1,15 +1,18 @@
 package bestaro.core
 
+import bestaro.service.Voivodeship
+
 case class RawRecord(recordId: RecordId,
                      status: AnimalStatus,
                      message: String,
                      postDate: Long,
+                     voivodeship: Voivodeship,
                      pictures: List[String] = List(),
                      link: String = "",
                      location: String = "",
                      eventDate: Long = 0,
                      title: String = ""
-                 )
+                    )
 
 sealed case class AnimalStatus(value: String)
 
