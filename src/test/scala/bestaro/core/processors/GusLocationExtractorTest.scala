@@ -3,7 +3,7 @@ package bestaro.core.processors
 
 import bestaro.core.ProgressStatus.LOST
 import bestaro.core.{FbId, RawRecord, RecordId, Tokenizer}
-import bestaro.extractors.{GusLocationExtractor, MatchedStreet}
+import bestaro.extractors.{GusLocationExtractor, MatchedLocation}
 import bestaro.helpers.TaggedRecordsManager.TaggedRecord
 import org.scalatest.FunSpec
 
@@ -21,7 +21,7 @@ class GusLocationExtractorTest extends FunSpec {
       val tokenizedText = new Tokenizer().tokenize(record.message)
       val (tokens, result) = locationExtractor.extractLocationName(tokenizedText)
       assert(result == List(
-        MatchedStreet(StreetEntry("Monte Cassino", "ul.", "monte cassino", "monte cassino"), 3, 2)
+        MatchedLocation(Location("monte cassino", "Monte Cassino", "ulica"), 3, 2)
       ))
     }
   }

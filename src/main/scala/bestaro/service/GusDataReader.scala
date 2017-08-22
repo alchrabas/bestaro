@@ -1,6 +1,6 @@
 package bestaro.service
 
-import bestaro.core.processors.{BaseNameProducer, StreetEntry}
+import bestaro.core.processors.{BaseNameProducer, Location}
 import com.github.tototoshi.csv.{CSVReader, DefaultCSVFormat}
 
 object GusDataReader {
@@ -21,7 +21,7 @@ class GusDataReader {
 
   private val streetNamesResource = getClass.getClassLoader.getResource(STREET_NAMES_CSV)
   private val reader = CSVReader.open(streetNamesResource.getFile)
-  val streetsInKrakow: Seq[StreetEntry] = reader.allWithHeaders()
+  val streetsInKrakow: Seq[Location] = reader.allWithHeaders()
     .filter(isInKrakow)
     .map(convertToStreetEntry)
 
@@ -30,13 +30,12 @@ class GusDataReader {
       street.get("POW").map(_.toInt).contains(61)
   }
 
-  private def convertToStreetEntry(csvEntry: Map[String, String]): StreetEntry = {
+  private def convertToStreetEntry(csvEntry: Map[String, String]): Location = {
     val originalName = csvEntry("NAZWA_1")
     val kind = csvEntry("CECHA")
     val strippedName = stripAndShortenName(originalName)
-    val stemmedName = stemTheWords(strippedName)
 
-    StreetEntry(originalName, kind, strippedName, stemmedName)
+    Location(strippedName, originalName, kind)
   }
 
   private def stripAndShortenName(str: String): String = {

@@ -1,10 +1,11 @@
 package bestaro.extractors
 
 import bestaro.core.processors._
+import bestaro.service.Voivodeship
 
 import scala.collection.mutable.ListBuffer
 
-case class MatchedStreet(street: StreetEntry, position: Int, wordCount: Int)
+case class MatchedLocation(location: Location, position: Int, wordCount: Int)
 
 abstract class AbstractLocationExtractor {
 
@@ -16,7 +17,9 @@ abstract class AbstractLocationExtractor {
 
   protected val baseNameProducer = new BaseNameProducer
 
-  def extractLocationName(tokens: List[String]): (List[Token], List[MatchedStreet]) = {
+  protected val townNamesExtractor = new InflectedTownNamesExtractor
+
+  def extractLocationName(tokens: List[String]): (List[Token], List[MatchedLocation]) = {
 
     println("########################")
     var stemmedTokens = tokens.map { tokenText =>
@@ -63,7 +66,7 @@ abstract class AbstractLocationExtractor {
       })
   }
 
-  protected def specificExtract(stemmedTokens: List[Token]): (ListBuffer[Token], ListBuffer[MatchedStreet])
+  protected def specificExtract(stemmedTokens: List[Token]): (ListBuffer[Token], ListBuffer[MatchedLocation])
 
 
   private def updateTokenEvaluationUsingContext(tokens: List[Token]): List[Token] = {
@@ -153,5 +156,4 @@ abstract class AbstractLocationExtractor {
   def isUpperCase(original: String): Boolean = {
     original.toUpperCase == original
   }
-
 }

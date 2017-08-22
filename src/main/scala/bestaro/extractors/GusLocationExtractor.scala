@@ -12,14 +12,15 @@ class GusLocationExtractor extends AbstractLocationExtractor {
 
   private val gusData = new GusDataReader
   private val streets = gusData.streetsInKrakow
-  private val streetsByFirstStemmedWord: Map[String, Seq[StreetEntry]] = streets.groupBy(_.stemmedName
-    .split(" ")(0))
-  private val streetsByFirstSimpleWord: Map[String, Seq[StreetEntry]] = streets.groupBy(_.strippedName
+  private val streetsByFirstStemmedWord: Map[String, Seq[Location]] = streets.groupBy(strippedName(_)
+    .split(" ")(0)
+  )
+  private val streetsByFirstSimpleWord: Map[String, Seq[Location]] = streets.groupBy(_.stripped
     .split(" ")(0))
 
-  override protected def specificExtract(stemmedTokens: List[Token]): (ListBuffer[Token], ListBuffer[MatchedStreet]) = {
+  override protected def specificExtract(stemmedTokens: List[Token]): (ListBuffer[Token], ListBuffer[MatchedLocation]) = {
     val mutableTokens = stemmedTokens.to[ListBuffer]
-    val matchedStreets = new ListBuffer[MatchedStreet]
+    val matchedStreets = new ListBuffer[MatchedLocation]
     for (idx <- mutableTokens.indices) {
       if (streetsByFirstSimpleWord.contains(mutableTokens(idx).stripped)) {
         streetsByFirstSimpleWord(mutableTokens(idx).stripped).find(streetEntry =>
@@ -32,29 +33,33 @@ class GusLocationExtractor extends AbstractLocationExtractor {
     (mutableTokens, matchedStreets)
   }
 
+  private def strippedName(location: Location): String = {
+    baseNameProducer.getBestBaseName(location.stripped)
+  }
+
   private def managedToMatchStemmedStreetName(mutableTokens: ListBuffer[Token],
-                                              idx: Int, streetEntry: StreetEntry,
-                                              matchedStreets: ListBuffer[MatchedStreet]): Boolean = {
-    managedToMatchStreetName(mutableTokens, idx, streetEntry, _.stemmedName, _.stem, matchedStreets)
+                                              idx: Int, streetEntry: Location,
+                                              matchedStreets: ListBuffer[MatchedLocation]): Boolean = {
+    managedToMatchStreetName(mutableTokens, idx, streetEntry, strippedName, _.stem, matchedStreets)
   }
 
   private def managedToMatchStrippedStreetName(mutableTokens: ListBuffer[Token],
-                                               idx: Int, streetEntry: StreetEntry,
-                                               matchedStreets: ListBuffer[MatchedStreet]): Boolean = {
-    managedToMatchStreetName(mutableTokens, idx, streetEntry, _.strippedName, _.stripped, matchedStreets)
+                                               idx: Int, streetEntry: Location,
+                                               matchedStreets: ListBuffer[MatchedLocation]): Boolean = {
+    managedToMatchStreetName(mutableTokens, idx, streetEntry, _.stripped, _.stripped, matchedStreets)
   }
 
   private def managedToMatchStreetName(mutableTokens: ListBuffer[Token],
-                                       startPos: Int, streetEntry: StreetEntry,
-                                       streetProperty: StreetEntry => String,
+                                       startPos: Int, streetEntry: Location,
+                                       streetProperty: Location => String,
                                        tokenProperty: Token => String,
-                                       matchedStreets: ListBuffer[MatchedStreet]): Boolean = {
+                                       matchedStreets: ListBuffer[MatchedLocation]): Boolean = {
     val streetWords = streetProperty(streetEntry).split(" ")
     if (streetNameFullyMatches(mutableTokens, startPos, streetWords, tokenProperty)) {
       for (wordToReplace <- streetWords.indices) {
         increaseScoreForExistingStreet(mutableTokens, startPos + wordToReplace)
       }
-      matchedStreets.append(MatchedStreet(streetEntry, startPos, streetWords.size))
+      matchedStreets.append(MatchedLocation(streetEntry, startPos, streetWords.size))
       return true
     }
     false
@@ -73,12 +78,7 @@ class GusLocationExtractor extends AbstractLocationExtractor {
     if (streetNameExceedsTextLength) {
       return false
     }
-    for (wordId <- streetWords.indices) {
-      if (tokenProperty(tokens(firstTokenPos + wordId)) != streetWords(wordId)) {
-        return false
-      }
-    }
-    true
+    streetWords.indices.forall(wordId => tokenProperty(tokens(firstTokenPos + wordId)) == streetWords(wordId))
   }
 
 }

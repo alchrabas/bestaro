@@ -1,6 +1,6 @@
 package bestaro.extractors
 
-import bestaro.core.processors.{StreetEntry, Token}
+import bestaro.core.processors.{Location, Token}
 import bestaro.service.CachedGoogleApiClient
 import com.google.maps.model.{AddressComponent, AddressComponentType, GeocodingResult}
 
@@ -20,17 +20,17 @@ class GoogleLocationExtractor extends AbstractLocationExtractor {
     }
   }
 
-  override protected def specificExtract(stemmedTokens: List[Token]): (ListBuffer[Token], ListBuffer[MatchedStreet]) = {
+  override protected def specificExtract(stemmedTokens: List[Token]): (ListBuffer[Token], ListBuffer[MatchedLocation]) = {
     val mutableTokens = stemmedTokens.to[ListBuffer]
 
     val multiWordLocationNameExtractor = new MultiWordLocationNameExtractor
     val multiWordNames = multiWordLocationNameExtractor.mostSuitableMultiWordNames(stemmedTokens)
-    println(multiWordNames.map(_.stripped).mkString(";; "))
+//    println(multiWordNames.map(_.stripped).mkString(";; "))
     val bestWordAndResult = multiWordNames.map(getGeocodingResultForMultiWordName).find(_._2.nonEmpty)
 
     val bestResults = bestWordAndResult
       .map { case (name, results) =>
-        MatchedStreet(streetEntryFromGeocodingResults(results),
+        MatchedLocation(streetEntryFromGeocodingResults(results),
           name.startIndex, name.wordsCount)
       }.to[ListBuffer]
 
@@ -62,13 +62,14 @@ class GoogleLocationExtractor extends AbstractLocationExtractor {
     "pl" -> "plac"
   )
 
-  private def streetEntryFromGeocodingResults(results: List[GeocodingResult]): StreetEntry = {
+  private def streetEntryFromGeocodingResults(results: List[GeocodingResult]): Location = {
     if (results.size > 1) {
-      println("MULTIPLE SOLUTIONS AVAILABLE:\n" + results.map(_.formattedAddress).mkString(";; \n"))
+      println("MULTIPLE SOLUTIONS AVAILABLE:" + results.map(_.formattedAddress).mkString(";; \n"))
     }
-    StreetEntry(getStreetName(results.head), "street",
+    Location(
       baseNameProducer.strippedForStemming(getStreetName(results.head)),
-      baseNameProducer.strippedForStemming(getStreetName(results.head)))
+      getStreetName(results.head),
+      "street")
   }
 
   private def getStreetName(geoResult: GeocodingResult): String = {
