@@ -14,7 +14,10 @@ class BaseNameProducer {
   private val _notFoundWords = mutable.HashMap[String, Int]()
 
   def strippedForStemming(original: String): String = {
-    original.toLowerCase.replaceAll("[^0-9a-ząćęłńóśżź ]", "").replaceAll("\\s+", " ").trim
+    original.toLowerCase
+      .replaceAll("[^0-9a-ząćęłńóśżź]", " ")
+      .replaceAll("\\s+", " ")
+      .trim
   }
 
   def maybeBestBaseToken(original: String): Option[Token] = {

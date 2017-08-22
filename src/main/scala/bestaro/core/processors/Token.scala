@@ -50,7 +50,6 @@ case class Token(
                   partsOfSpeech: List[PartOfSpeech],
                   genders: List[Gender],
                   placenessScore: Int,
-                  locationType: LocationType = LocationType.UNKNOWN,
                   importance: Importance = Importance.PRIMARY,
                   flags: Set[Flag] = Set()
                 ) {
