@@ -2,7 +2,7 @@ package bestaro.service
 
 import bestaro.core.processors.{BaseNameProducer, Location}
 import bestaro.util.FileIO
-import com.github.tototoshi.csv.{CSVReader, DefaultCSVFormat}
+import com.github.tototoshi.csv.{CSVReader, CSVWriter, DefaultCSVFormat}
 import upickle.default.read
 
 object PolishTownNamesInflector {
@@ -13,9 +13,10 @@ object PolishTownNamesInflector {
 
   def main(args: Array[String]): Unit = {
     val converter = new PolishTownNamesInflector
-    println(converter.generateInflectedForms(converter.loadTownEntriesFromUrzedowyWykazNazwMiejscowosci())
-      .filter(_.location.voivodeship.map(_.name).contains("MAŁOPOLSKIE")).mkString("\n"))
+//    println(converter.generateInflectedForms(converter.loadTownEntriesFromUrzedowyWykazNazwMiejscowosci())
+//      .filter(_.location.voivodeship.map(_.name).contains("MAŁOPOLSKIE")).mkString("\n"))
     //    converter.printMostIgnoredSuffixes(converter.loadTownEntriesFromFile())
+    converter.filterOutUnusedData()
   }
 }
 
@@ -28,7 +29,8 @@ class PolishTownNamesInflector {
   import PolishTownNamesInflector._
 
   val TOWN_NAMES_CSV = "gus/TERC_Adresowy_2017-07-17.csv"
-  val URZEDOWY_WYKAZ_NAZW_CSV = "gus/urzedowy_wykaz_nazw_miejscowosci_2015_filtered.csv"
+  val URZEDOWY_WYKAZ_NAZW_CSV = "gus/urzedowy_wykaz_nazw_miejscowosci_2015.csv"
+  val FILTERED_URZEDOWY_WYKAZ_NAZW_CSV = "gus/urzedowy_wykaz_nazw_miejscowosci_2015_filtered.csv"
 
   private type suffixReplacementMapType = Map[String, Set[String]]
   private type allSuffixesMapType = Map[String, suffixReplacementMapType]
@@ -61,7 +63,7 @@ class PolishTownNamesInflector {
   private val VOIVODESHIP_COLUMN = "Województwo"
 
   def loadTownEntriesFromUrzedowyWykazNazwMiejscowosci(): Seq[InflectedLocation] = {
-    val townNamesResource = getClass.getClassLoader.getResource(URZEDOWY_WYKAZ_NAZW_CSV)
+    val townNamesResource = getClass.getClassLoader.getResource(FILTERED_URZEDOWY_WYKAZ_NAZW_CSV)
     val reader = CSVReader.open(townNamesResource.getFile)
     reader.allWithHeaders()
       .filter(row => {
@@ -144,6 +146,25 @@ class PolishTownNamesInflector {
         .toSeq.sortBy(_._2)
         .reverse.mkString("\n")
     )
+  }
+
+  def filterOutUnusedData(): Unit = {
+    val townNamesResource = getClass.getClassLoader.getResource(URZEDOWY_WYKAZ_NAZW_CSV)
+    val reader = CSVReader.open(townNamesResource.getFile)
+    val filteredRows = reader.allWithHeaders()
+      .filter(row => {
+        Set("wieś", "miasto").contains(row(KIND_COLUMN)) ||
+          row(KIND_COLUMN).startsWith("część miasta")
+      })
+      .map(row => List(
+        row("Nazwa miejscowości "),
+        row("Rodzaj"),
+        row("Województwo")
+      ))
+
+    val writer = CSVWriter.open("src/main/resources/" + FILTERED_URZEDOWY_WYKAZ_NAZW_CSV)
+    writer.writeRow(List("Nazwa miejscowości ", "Rodzaj", "Województwo"))
+    writer.writeAll(filteredRows)
   }
 
   val VOIVODESHIP_ID_TO_NAME = Map(
