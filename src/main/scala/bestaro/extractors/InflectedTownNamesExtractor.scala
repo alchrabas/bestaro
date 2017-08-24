@@ -13,8 +13,7 @@ class InflectedTownNamesExtractor {
 
   private def setUpTownEntryByVoivodeshipAndFirstWord(): util.HashMap[Voivodeship, util.HashMap[String, Seq[InflectedLocation]]] = {
     val townNamesInflector = new PolishTownNamesInflector
-    val inflectedForms = townNamesInflector.generateInflectedForms(
-      townNamesInflector.loadTownEntriesFromUrzedowyWykazNazwMiejscowosci())
+    val inflectedForms = townNamesInflector.loadCachedInflectedTownNames()
     val inflectedFormsByVoivodeship = inflectedForms.groupBy(_.location.voivodeship.get)
     val scalaMap = inflectedFormsByVoivodeship
       .mapValues(_.groupBy(townEntry => townEntry.stripped.split(" ")(0)))

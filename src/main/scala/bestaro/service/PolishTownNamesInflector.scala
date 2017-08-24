@@ -1,8 +1,10 @@
 package bestaro.service
 
+import java.io._
+
 import bestaro.core.processors.{BaseNameProducer, Location}
 import bestaro.util.FileIO
-import com.github.tototoshi.csv.{CSVReader, CSVWriter, DefaultCSVFormat}
+import com.github.tototoshi.csv.{CSVReader, DefaultCSVFormat}
 import upickle.default.read
 
 object PolishTownNamesInflector {
@@ -16,7 +18,7 @@ object PolishTownNamesInflector {
     //    println(converter.generateInflectedForms(converter.loadTownEntriesFromUrzedowyWykazNazwMiejscowosci())
     //      .filter(_.location.voivodeship.map(_.name).contains("MAŁOPOLSKIE")).mkString("\n"))
     //    converter.printMostIgnoredSuffixes(converter.loadTownEntriesFromFile())
-    converter.filterOutUnusedData()
+    converter.generateBinaryInflectedTownNamesCache()
   }
 }
 
@@ -49,7 +51,7 @@ class PolishTownNamesInflector {
 
   val TOWN_NAMES_CSV = "gus/TERC_Adresowy_2017-07-17.csv"
   val URZEDOWY_WYKAZ_NAZW_CSV = "gus/urzedowy_wykaz_nazw_miejscowosci_2015.csv"
-  val FILTERED_URZEDOWY_WYKAZ_NAZW_CSV = "gus/urzedowy_wykaz_nazw_miejscowosci_2015_filtered.csv"
+  val BINARY_INFLECTED_TOWN_NAMES = "gus/urzedowy_wykaz_nazw_miejscowosci_2015.bin"
 
   private type suffixReplacementMapType = Map[String, Set[String]]
   private type allSuffixesMapType = Map[String, suffixReplacementMapType]
@@ -81,8 +83,14 @@ class PolishTownNamesInflector {
   private val KIND_COLUMN = "Rodzaj"
   private val VOIVODESHIP_COLUMN = "Województwo"
 
-  def loadTownEntriesFromUrzedowyWykazNazwMiejscowosci(): Seq[InflectedLocation] = {
-    val townNamesResource = getClass.getClassLoader.getResource(FILTERED_URZEDOWY_WYKAZ_NAZW_CSV)
+  def loadCachedInflectedTownNames(): Seq[InflectedLocation] = {
+    val townNamesResource = getClass.getClassLoader.getResource(BINARY_INFLECTED_TOWN_NAMES)
+    val objectInputStream = new ObjectInputStream(new FileInputStream(townNamesResource.getFile))
+    objectInputStream.readObject().asInstanceOf[Seq[InflectedLocation]]
+  }
+
+  def loadTownEntriesFromUrzedowyWykazNazwMiejscowosciCSV(): Seq[InflectedLocation] = {
+    val townNamesResource = getClass.getClassLoader.getResource(URZEDOWY_WYKAZ_NAZW_CSV)
     val reader = CSVReader.open(townNamesResource.getFile)
     reader.allWithHeaders()
       .filter(row => {
@@ -105,19 +113,11 @@ class PolishTownNamesInflector {
   }
 
   def inflectedVersionsOfName(original: InflectedLocation): Seq[InflectedLocation] = {
-    makeGenetivus(original) ++ makeLocativus(original)
+    makeInflectedVersion(original, genetivusSuffixes) ++ makeInflectedVersion(original, locativusSuffixes)
   }
 
-  private def makeGenetivus(townEntry: InflectedLocation): Seq[InflectedLocation] = {
-    makeNonNominativus(townEntry, genetivusSuffixes)
-  }
-
-  private def makeLocativus(townEntry: InflectedLocation): Seq[InflectedLocation] = {
-    makeNonNominativus(townEntry, locativusSuffixes)
-  }
-
-  private def makeNonNominativus(nominativusTown: InflectedLocation,
-                                 suffixReplacements: Map[String, Set[String]]): Seq[InflectedLocation] = {
+  private def makeInflectedVersion(nominativusTown: InflectedLocation,
+                                   suffixReplacements: Map[String, Set[String]]): Seq[InflectedLocation] = {
     val wordsOfOriginalName = nominativusTown.location.stripped.split(" ")
     val allWordVariants = wordsOfOriginalName.toSeq.map {
       originalWordOfName =>
@@ -167,23 +167,11 @@ class PolishTownNamesInflector {
     )
   }
 
-  def filterOutUnusedData(): Unit = {
-    val townNamesResource = getClass.getClassLoader.getResource(URZEDOWY_WYKAZ_NAZW_CSV)
-    val reader = CSVReader.open(townNamesResource.getFile)
-    val filteredRows = reader.allWithHeaders()
-      .filter(row => {
-        Set("wieś", "miasto").contains(row(KIND_COLUMN)) ||
-          row(KIND_COLUMN).startsWith("część miasta")
-      })
-      .map(row => List(
-        row("Nazwa miejscowości "),
-        row("Rodzaj"),
-        row("Województwo")
-      ))
-
-    val writer = CSVWriter.open("src/main/resources/" + FILTERED_URZEDOWY_WYKAZ_NAZW_CSV)
-    writer.writeRow(List("Nazwa miejscowości ", "Rodzaj", "Województwo"))
-    writer.writeAll(filteredRows)
+  def generateBinaryInflectedTownNamesCache(): Unit = {
+    val inflectedLocations = generateInflectedForms(loadTownEntriesFromUrzedowyWykazNazwMiejscowosciCSV())
+    val dataOutputStream = new ObjectOutputStream(
+      new FileOutputStream("src/main/resources/" + BINARY_INFLECTED_TOWN_NAMES))
+    dataOutputStream.writeObject(inflectedLocations)
   }
 
   val VOIVODESHIP_BY_ID = Map(
