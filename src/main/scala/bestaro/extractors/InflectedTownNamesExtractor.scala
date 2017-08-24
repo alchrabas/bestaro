@@ -9,7 +9,7 @@ class InflectedTownNamesExtractor {
 
   private val townEntryByVoivodeshipAndFirstWord = setUpTownEntryByVoivodeshipAndFirstWord()
 
-  case class TownEntryMatch(townEntry: InflectedLocation, initialPos: Int, wordCount: Int)
+  case class MatchedInflectedLocation(inflectedLocation: InflectedLocation, initialPos: Int, wordCount: Int)
 
   private def setUpTownEntryByVoivodeshipAndFirstWord(): util.HashMap[Voivodeship, util.HashMap[String, Seq[InflectedLocation]]] = {
     val townNamesInflector = new PolishTownNamesInflector
@@ -27,18 +27,18 @@ class InflectedTownNamesExtractor {
     newMap
   }
 
-  def findTownNames(tokens: List[Token], voivodeship: Voivodeship): Seq[TownEntryMatch] = {
+  def findTownNames(tokens: List[Token], voivodeship: Voivodeship): Seq[MatchedInflectedLocation] = {
     val potentialMatches = tokens
       .zipWithIndex
       .flatMap { case (token, position) =>
         val firstWord = token.stripped.split(" ")(0)
         Option(townEntryByVoivodeshipAndFirstWord.get(voivodeship).get(firstWord))
           .toSeq.flatten
-          .map(TownEntryMatch(_, position, token.stripped.split(" ").length))
+          .map(MatchedInflectedLocation(_, position, token.stripped.split(" ").length))
       }
     potentialMatches.filter {
       townEntryMatch =>
-        val townNameTokens = townEntryMatch.townEntry.stripped.split(" ")
+        val townNameTokens = townEntryMatch.inflectedLocation.stripped.split(" ")
         val tokensToUse = tokens.slice(
           townEntryMatch.initialPos,
           townEntryMatch.initialPos + townNameTokens.length
