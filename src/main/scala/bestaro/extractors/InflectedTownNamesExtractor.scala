@@ -34,7 +34,8 @@ class InflectedTownNamesExtractor {
         val firstWord = token.stripped.split(" ")(0)
         Option(townEntryByVoivodeshipAndFirstWord.get(voivodeship).get(firstWord))
           .toSeq.flatten
-          .map(MatchedInflectedLocation(_, position, token.stripped.split(" ").length))
+          .map(inflectedLocaton => MatchedInflectedLocation(inflectedLocaton, position,
+            inflectedLocaton.stripped.split(" ").length))
       }
     potentialMatches.filter {
       townEntryMatch =>
