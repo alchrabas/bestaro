@@ -25,9 +25,12 @@ class CachedGoogleApiClient(requestLogger: String => Unit = _ => Unit)
     (if (existsInCache(queryString)) {
       loadFromCache(queryString)
     } else {
-      val context = new GeoApiContext.Builder().apiKey(properties.getProperty("apiKey")).build
-      Thread.sleep(20)
-      val results: java.util.List[GeocodingResult] = GeocodingApi.geocode(context, queryString).await.toList.asJava
+      val context = new GeoApiContext.Builder()
+        .apiKey(properties.getProperty("apiKey"))
+        .queryRateLimit(40)
+        .build
+      val results: java.util.List[GeocodingResult] = GeocodingApi.geocode(context, queryString)
+        .language("pl").await.toList.asJava
       saveInCache(queryString, results)
 
       requestLogger(queryString)
