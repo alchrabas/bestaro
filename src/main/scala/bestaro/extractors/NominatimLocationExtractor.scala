@@ -1,14 +1,15 @@
 package bestaro.extractors
 
-import bestaro.core.processors.{Location, Token}
-import bestaro.service.CachedNominatimClient
+import bestaro.core.FullLocation
+import bestaro.core.processors.{Location, LocationType, Token}
+import bestaro.service.{CachedNominatimClient, Voivodeship}
 import fr.dudie.nominatim.client.JsonNominatimClient
 import fr.dudie.nominatim.model.Address
 import org.apache.http.impl.client.DefaultHttpClient
 
 import scala.collection.mutable.ListBuffer
 
-case class NominatimMatchedStreet(street: Location, position: Int, wordCount: Int, address: Address)
+case class NominatimMatchedStreet(primary: Location, secondary: Location, position: Int, wordCount: Int, address: Address)
 
 class NominatimLocationExtractor extends AbstractLocationExtractor {
 
@@ -29,7 +30,12 @@ class NominatimLocationExtractor extends AbstractLocationExtractor {
 
   private val STREET_MAX_WORDS = 3
 
-  override protected def specificExtract(stemmedTokens: List[Token]): (ListBuffer[Token], ListBuffer[MatchedLocation]) = {
+  /*override protected def specificExtract(stemmedTokens: List[Token]): (ListBuffer[Token], ListBuffer[MatchedFullLocation]) = {
+    null
+  }
+
+  */
+  override protected def specificExtract(stemmedTokens: List[Token]): (ListBuffer[Token], ListBuffer[MatchedFullLocation]) = {
     val mutableTokens = stemmedTokens.to[ListBuffer]
 
     val multiWordLocationNameExtractor = new MultiWordLocationNameExtractor
@@ -53,11 +59,17 @@ class NominatimLocationExtractor extends AbstractLocationExtractor {
     (mutableTokens, krakowMatchedStreets.map(matchedStreetFromNominatimMatchedStreet).to[ListBuffer])
   }
 
-  private def matchedStreetFromNominatimMatchedStreet(nominatimStreet: NominatimMatchedStreet): MatchedLocation = {
+  private def matchedStreetFromNominatimMatchedStreet(nominatimStreet: NominatimMatchedStreet): MatchedFullLocation = {
     val streetName = getLeftMostAddressKey(nominatimStreet.address, "road", "residental").map(_.toLowerCase)
       .getOrElse(nominatimStreet.address.getAddressElements.head.getValue)
-    MatchedLocation(
-      nominatimStreet.street.copy(stripped = streetName),
+    val townName = getLeftMostAddressKey(nominatimStreet.address, "town", "county").map(_.toLowerCase)
+      .getOrElse(nominatimStreet.address.getAddressElements.head.getValue)
+    MatchedFullLocation(
+      FullLocation(
+        Some(Location(baseNameProducer.strippedForStemming(streetName), streetName,
+          LocationType.STREET, Some(Voivodeship.MALOPOLSKIE))),
+        Some(Location(baseNameProducer.strippedForStemming(townName), townName,
+          LocationType.TOWN, Some(Voivodeship.MALOPOLSKIE))), None),
       nominatimStreet.position,
       nominatimStreet.wordCount
     )
@@ -105,8 +117,14 @@ class NominatimLocationExtractor extends AbstractLocationExtractor {
     }
     addresses.map { address =>
       val locationName = getAddressKey(address, "road").getOrElse(address.getDisplayName)
-      NominatimMatchedStreet(Location(baseNameProducer.strippedForStemming(locationName),
-        locationName, address.getElementType), initialPos, wordCount, address)
+      val townName = getAddressKey(address, "town").getOrElse(address.getDisplayName)
+
+      NominatimMatchedStreet(
+        Location(baseNameProducer.strippedForStemming(locationName),
+          locationName, LocationType.STREET),
+        Location(baseNameProducer.strippedForStemming(townName),
+          townName, LocationType.TOWN),
+        initialPos, wordCount, address)
     }
   }
 

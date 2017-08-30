@@ -30,8 +30,10 @@ case class LocationType(name: String)
 
 object LocationType {
   val STREET = LocationType("street")
-  val ESTATE = LocationType("estate") // = "osiedle"
-  val CITY = LocationType("city") // or town or village
+  val ESTATE = LocationType("estate") // osiedle
+  val DISTRICT = LocationType("district") // dzielnica
+  val TOWN = LocationType("town")
+  val MUNCIPALITY = LocationType("muncipality") // gmina
   val UNKNOWN = LocationType("unknown")
 }
 

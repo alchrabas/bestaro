@@ -15,7 +15,7 @@ case class VerificationResult(success: Int, all: Int, invalidPairs: Seq[InvalidP
 
 case class InvalidPair(record: RawRecord, expectedLocations: Seq[String], expectedCities: Seq[String]) {
   override def toString: String = {
-    s"Expected $expectedLocations, in $expectedCities, but found ${record.location}"
+    s"Expected $expectedLocations, in $expectedCities, but found ${record.fullLocation.primary.map(_.stripped)}, ${record.fullLocation.secondary.map(_.stripped)}"
   }
 }
 
@@ -32,7 +32,7 @@ class LocationVerifier(recordTags: Map[RecordId, TaggedRecord]) {
         allLocations += 1
         recordTag.map {
           taggedRecord =>
-            val successfulMatch = rawRecord.location != null && anyLocMatches(taggedRecord, rawRecord.location)
+            val successfulMatch = anyLocMatches(taggedRecord, rawRecord.fullLocation)
             if (!successfulMatch) {
               invalidPairs.append(InvalidPair(rawRecord, taggedRecord.locs ++ taggedRecord.altLocs, taggedRecord.cities))
             }
@@ -44,19 +44,24 @@ class LocationVerifier(recordTags: Map[RecordId, TaggedRecord]) {
     VerificationResult(successfulMatches, allLocations, invalidPairs)
   }
 
-  private def anyLocMatches(taggedRecord: TaggedRecord, location: String): Boolean = {
-    val foundLocation = (taggedRecord.locs ++ taggedRecord.altLocs)
-      .map(stripForVerification)
-      .contains(
-        stripForVerification(location)
-      )
-    val foundCityAndNoMoreAccurateLocation = (taggedRecord.locs.isEmpty && taggedRecord.altLocs.isEmpty) &&
-      taggedRecord.cities
-        .map(stripForVerification)
-        .contains(
-          stripForVerification(location))
+  private def anyLocMatches(taggedRecord: TaggedRecord, fullLocation: FullLocation): Boolean = {
+    val locationMatches =
+      (taggedRecord.locs.isEmpty && taggedRecord.altLocs.isEmpty) ||
+        (fullLocation.primary.isDefined &&
+          (taggedRecord.locs ++ taggedRecord.altLocs)
+            .map(stripForVerification)
+            .contains(
+              stripForVerification(fullLocation.primary.get.stripped)))
 
-    foundLocation || foundCityAndNoMoreAccurateLocation
+    val townMatches =
+      taggedRecord.cities.isEmpty ||
+        (fullLocation.secondary.isDefined &&
+          taggedRecord.cities
+            .map(stripForVerification)
+            .contains(
+              stripForVerification(fullLocation.secondary.get.stripped)))
+
+    locationMatches && townMatches
   }
 
   private val baseNameProducer = new BaseNameProducer
@@ -64,7 +69,7 @@ class LocationVerifier(recordTags: Map[RecordId, TaggedRecord]) {
 
   private def stripForVerification(name: String): String = {
     asciizer.convertToAscii(
-      baseNameProducer.strippedForStemming(
-        name.replaceAll("-", " ")))
+      baseNameProducer.strippedForStemming(name)
+    )
   }
 }

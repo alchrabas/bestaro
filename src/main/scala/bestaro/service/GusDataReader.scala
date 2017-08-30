@@ -1,6 +1,6 @@
 package bestaro.service
 
-import bestaro.core.processors.{BaseNameProducer, Location}
+import bestaro.core.processors.{BaseNameProducer, Location, LocationType}
 import com.github.tototoshi.csv.{CSVReader, DefaultCSVFormat}
 
 object GusDataReader {
@@ -35,7 +35,7 @@ class GusDataReader {
     val kind = csvEntry("CECHA")
     val strippedName = stripAndShortenName(originalName)
 
-    Location(strippedName, originalName, kind)
+    Location(strippedName, originalName, LocationType.STREET)
   }
 
   private def stripAndShortenName(str: String): String = {

@@ -2,9 +2,9 @@ package bestaro.service
 
 import java.io._
 
-import bestaro.core.processors.{BaseNameProducer, Location}
+import bestaro.core.processors.{BaseNameProducer, Location, LocationType}
 import bestaro.util.FileIO
-import com.github.tototoshi.csv.{CSVReader, DefaultCSVFormat}
+import com.github.tototoshi.csv.{CSVReader, CSVWriter, DefaultCSVFormat}
 import upickle.default.read
 
 object PolishTownNamesInflector {
@@ -39,6 +39,10 @@ object Voivodeship {
   val PODKARPACKIE = Voivodeship("PODKARPACKIE")
   val WIELKOPOLSKIE = Voivodeship("WIELKOPOLSKIE")
   val WARMINSKO_MAZURSKIE = Voivodeship("WARMIŃSKO-MAZURSKIE")
+
+  val values = List(MALOPOLSKIE, LUBUSKIE, KUJAWSKO_POMORSKIE, POMORSKIE,
+    SWIETOKRZYSKIE, SLASKIE, OPOLSKIE, LODZKIE, ZACHODNIOPOMORSKIE, LUBELSKIE,
+    MAZOWIECKIE, PODLASKIE, DOLNOSLASKIE, PODKARPACKIE, WIELKOPOLSKIE, WARMINSKO_MAZURSKIE)
 }
 
 case class Voivodeship(name: String)
@@ -75,7 +79,7 @@ class PolishTownNamesInflector {
     val voivodeshipId = Integer.parseInt(csvEntry("WOJ"))
     val kind = csvEntry("NAZWA_DOD")
 
-    InflectedLocation(originalName, Location(originalName, originalName, "town",
+    InflectedLocation(originalName, Location(originalName, originalName, LocationType.TOWN,
       Some(VOIVODESHIP_BY_ID(voivodeshipId))))
   }
 
@@ -101,7 +105,7 @@ class PolishTownNamesInflector {
         row =>
           val stripped = baseNameProducer.strippedForStemming(row(TOWN_NAME_COLUMN))
           InflectedLocation(stripped,
-            Location(stripped, row(TOWN_NAME_COLUMN), "town",
+            Location(stripped, row(TOWN_NAME_COLUMN), LocationType.TOWN,
               Some(Voivodeship(row(VOIVODESHIP_COLUMN).toUpperCase))
             )
           )
