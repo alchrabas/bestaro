@@ -21,17 +21,19 @@ class GoogleLocationExtractor extends AbstractLocationExtractor {
     }
   }
 
-  override protected def specificExtract(stemmedTokens: List[Token]): (ListBuffer[Token], ListBuffer[MatchedFullLocation]) = {
+  override protected def specificExtract(stemmedTokens: List[Token],
+                                         foundLocationNames: Seq[MatchedInflectedLocation]):
+  (ListBuffer[Token], ListBuffer[MatchedFullLocation]) = {
     val mutableTokens = stemmedTokens.to[ListBuffer]
 
     val multiWordLocationNameExtractor = new MultiWordLocationNameExtractor
     val multiWordNames = multiWordLocationNameExtractor.mostSuitableMultiWordNames(stemmedTokens)
-    //    println(multiWordNames.map(_.stripped).mkString(";; "))
+    println(multiWordNames.map(_.stripped).mkString(";; "))
     val bestWordAndResult = multiWordNames.map(getGeocodingResultForMultiWordName).find(_._2.nonEmpty)
     println(bestWordAndResult)
     val bestResults = bestWordAndResult
       .map { case (name, results) =>
-        MatchedFullLocation(locationFromGeocodingResults(results),
+        MatchedFullLocation(fullLocationFromGeocodingResults(results, foundLocationNames, multiWordNames),
           name.startIndex, name.wordsCount)
       }.to[ListBuffer]
 
@@ -63,11 +65,14 @@ class GoogleLocationExtractor extends AbstractLocationExtractor {
     "pl" -> "plac"
   )
 
-  private def locationFromGeocodingResults(results: List[GeocodingResult]): FullLocation = {
+  private def fullLocationFromGeocodingResults(results: Seq[GeocodingResult],
+                                               foundLocationNames: Seq[MatchedInflectedLocation],
+                                               multiWordNames: Seq[MultiWordName]
+                                              ): FullLocation = {
     if (results.size > 1) {
       println("MULTIPLE SOLUTIONS AVAILABLE:" + results.map(_.formattedAddress).mkString(";; \n"))
     }
-    val firstResult = results.head
+    val firstResult = getBestResult(results, foundLocationNames, multiWordNames)
     val voivodeshipName = firstResult.addressComponents
       .find(_.types.contains(AddressComponentType.ADMINISTRATIVE_AREA_LEVEL_1))
       .map(_.shortName).getOrElse("UKNOWN").toLowerCase.replaceAll("województwo ", "")
@@ -120,5 +125,11 @@ class GoogleLocationExtractor extends AbstractLocationExtractor {
 
   private def isOfType(component: AddressComponent, addressComponentType: AddressComponentType) = {
     component.types.contains(addressComponentType)
+  }
+
+  def getBestResult(results: Seq[GeocodingResult],
+                    foundLocationNames: Seq[MatchedInflectedLocation],
+                    multiWordNames: Seq[MultiWordName]) = {
+    results.head
   }
 }

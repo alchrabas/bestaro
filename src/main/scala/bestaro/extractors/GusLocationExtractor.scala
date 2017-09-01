@@ -18,7 +18,9 @@ class GusLocationExtractor extends AbstractLocationExtractor {
   private val streetsByFirstSimpleWord: Map[String, Seq[Location]] = streets.groupBy(_.stripped
     .split(" ")(0))
 
-  override protected def specificExtract(stemmedTokens: List[Token]): (ListBuffer[Token], ListBuffer[MatchedFullLocation]) = {
+  override protected def specificExtract(stemmedTokens: List[Token],
+                                         foundLocationNames: Seq[MatchedInflectedLocation]):
+  (ListBuffer[Token], ListBuffer[MatchedFullLocation]) = {
     null
   }
 

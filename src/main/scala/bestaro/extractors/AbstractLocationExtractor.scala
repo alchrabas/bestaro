@@ -45,11 +45,11 @@ abstract class AbstractLocationExtractor {
     if (stemmedTokens.nonEmpty) {
       stemmedTokens = updateTokenEvaluationUsingContext(stemmedTokens)
     }
+    val foundLocationNames = townNamesExtractor.findLocationNames(stemmedTokens, voivodeship)
     if (stemmedTokens.nonEmpty) {
-      val foundTownNames = townNamesExtractor.findTownNames(stemmedTokens, voivodeship)
-      println(">>> " + foundTownNames)
+      println(">>> " + foundLocationNames)
       stemmedTokens = stemmedTokens.zipWithIndex.map { case (token, position) =>
-        val tokenMatches = foundTownNames.exists(townName =>
+        val tokenMatches = foundLocationNames.exists(townName =>
           (townName.initialPos until (townName.initialPos + townName.wordCount)) contains position)
         if (tokenMatches) {
           token.withAlteredPlacenessScore(5)
@@ -59,7 +59,7 @@ abstract class AbstractLocationExtractor {
       }
     }
 
-    val (mutableTokens, matchedStreets) = specificExtract(stemmedTokens)
+    val (mutableTokens, matchedStreets) = specificExtract(stemmedTokens, foundLocationNames)
     (mutableTokens.toList, matchedStreets.toList)
   }
 
@@ -83,7 +83,9 @@ abstract class AbstractLocationExtractor {
       })
   }
 
-  protected def specificExtract(stemmedTokens: List[Token]): (ListBuffer[Token], ListBuffer[MatchedFullLocation])
+  protected def specificExtract(stemmedTokens: List[Token],
+                                foundLocationNames: Seq[MatchedInflectedLocation]
+                               ): (ListBuffer[Token], ListBuffer[MatchedFullLocation])
 
 
   private def updateTokenEvaluationUsingContext(tokens: List[Token]): List[Token] = {

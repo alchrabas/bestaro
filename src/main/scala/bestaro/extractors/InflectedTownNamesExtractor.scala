@@ -5,11 +5,11 @@ import java.util
 import bestaro.core.processors.Token
 import bestaro.service.{InflectedLocation, PolishTownNamesInflector, Voivodeship}
 
+case class MatchedInflectedLocation(inflectedLocation: InflectedLocation, initialPos: Int, wordCount: Int)
+
 class InflectedTownNamesExtractor {
 
   private val townEntryByVoivodeshipAndFirstWord = setUpTownEntryByVoivodeshipAndFirstWord()
-
-  case class MatchedInflectedLocation(inflectedLocation: InflectedLocation, initialPos: Int, wordCount: Int)
 
   private def setUpTownEntryByVoivodeshipAndFirstWord(): util.HashMap[Voivodeship, util.HashMap[String, Seq[InflectedLocation]]] = {
     val townNamesInflector = new PolishTownNamesInflector
@@ -27,7 +27,7 @@ class InflectedTownNamesExtractor {
     newMap
   }
 
-  def findTownNames(tokens: List[Token], voivodeship: Voivodeship): Seq[MatchedInflectedLocation] = {
+  def findLocationNames(tokens: List[Token], voivodeship: Voivodeship): Seq[MatchedInflectedLocation] = {
     val potentialMatches = tokens
       .zipWithIndex
       .flatMap { case (token, position) =>

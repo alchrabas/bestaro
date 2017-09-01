@@ -33,9 +33,10 @@ class NominatimLocationExtractor extends AbstractLocationExtractor {
   /*override protected def specificExtract(stemmedTokens: List[Token]): (ListBuffer[Token], ListBuffer[MatchedFullLocation]) = {
     null
   }
-
   */
-  override protected def specificExtract(stemmedTokens: List[Token]): (ListBuffer[Token], ListBuffer[MatchedFullLocation]) = {
+  override protected def specificExtract(stemmedTokens: List[Token],
+                                         foundLocationNames: Seq[MatchedInflectedLocation]):
+  (ListBuffer[Token], ListBuffer[MatchedFullLocation]) = {
     val mutableTokens = stemmedTokens.to[ListBuffer]
 
     val multiWordLocationNameExtractor = new MultiWordLocationNameExtractor
