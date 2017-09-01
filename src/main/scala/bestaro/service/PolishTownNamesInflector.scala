@@ -4,7 +4,7 @@ import java.io._
 
 import bestaro.core.processors.{BaseNameProducer, Location, LocationType}
 import bestaro.util.FileIO
-import com.github.tototoshi.csv.{CSVReader, CSVWriter, DefaultCSVFormat}
+import com.github.tototoshi.csv.{CSVReader, DefaultCSVFormat}
 import upickle.default.read
 
 object PolishTownNamesInflector {
@@ -83,7 +83,7 @@ class PolishTownNamesInflector {
       Some(VOIVODESHIP_BY_ID(voivodeshipId))))
   }
 
-  private val TOWN_NAME_COLUMN = "Nazwa miejscowości "
+  private val NAME_COLUMN = "Nazwa miejscowości "
   private val KIND_COLUMN = "Rodzaj"
   private val VOIVODESHIP_COLUMN = "Województwo"
 
@@ -96,20 +96,43 @@ class PolishTownNamesInflector {
   def loadTownEntriesFromUrzedowyWykazNazwMiejscowosciCSV(): Seq[InflectedLocation] = {
     val townNamesResource = getClass.getClassLoader.getResource(URZEDOWY_WYKAZ_NAZW_CSV)
     val reader = CSVReader.open(townNamesResource.getFile)
-    reader.allWithHeaders()
-      .filter(row => {
-        Set("wieś", "miasto").contains(row(KIND_COLUMN)) ||
-          row(KIND_COLUMN).startsWith("część miasta")
-      })
+    val dataFromWykaz = reader.allWithHeaders()
+    val towns = dataFromWykaz
+      .filter(row =>
+        Set("wieś", "miasto").contains(row(KIND_COLUMN))
+      ).map {
+      row =>
+        val stripped = baseNameProducer.strippedForStemming(row(NAME_COLUMN))
+        InflectedLocation(stripped,
+          Location(stripped, row(NAME_COLUMN), LocationType.TOWN,
+            Some(Voivodeship(row(VOIVODESHIP_COLUMN).toUpperCase))
+          )
+        )
+    }
+
+    val districts = dataFromWykaz
+      .filter(_ (KIND_COLUMN).startsWith("część miasta"))
       .map {
         row =>
-          val stripped = baseNameProducer.strippedForStemming(row(TOWN_NAME_COLUMN))
-          InflectedLocation(stripped,
-            Location(stripped, row(TOWN_NAME_COLUMN), LocationType.TOWN,
-              Some(Voivodeship(row(VOIVODESHIP_COLUMN).toUpperCase))
+          val townParentName = row(KIND_COLUMN) replaceAll("część miasta ", "")
+          val strippedDistrictName = baseNameProducer.strippedForStemming(row(NAME_COLUMN))
+          InflectedLocation(strippedDistrictName,
+            Location(strippedDistrictName,
+              row(NAME_COLUMN),
+              LocationType.DISTRICT,
+              Some(Voivodeship(row(VOIVODESHIP_COLUMN).toUpperCase)),
+              Some(
+                Location(townParentName,
+                  baseNameProducer.strippedForStemming(townParentName),
+                  LocationType.TOWN,
+                  Some(Voivodeship(row(VOIVODESHIP_COLUMN).toUpperCase))
+                )
+              )
             )
           )
       }
+
+    towns ++ districts
   }
 
   def generateInflectedForms(townsInNominativus: Seq[InflectedLocation]): Seq[InflectedLocation] = {
@@ -169,6 +192,18 @@ class PolishTownNamesInflector {
         .toSeq.sortBy(_._2)
         .reverse.mkString("\n")
     )
+  }
+
+  def printNumberOfTownsInVoivodeshipWithSameName(): Unit = {
+    val townNamesResource = getClass.getClassLoader.getResource(URZEDOWY_WYKAZ_NAZW_CSV)
+    val reader = CSVReader.open(townNamesResource.getFile)
+    val towns = reader.allWithHeaders()
+      .filter(row => {
+        row(KIND_COLUMN) == "miasto"
+      })
+      .groupBy(_ (VOIVODESHIP_COLUMN))
+      .mapValues(items => items.groupBy(_ (NAME_COLUMN)).mapValues(_.size).toSeq.sortBy(_._2).reverse.slice(0, 10))
+    println(towns.mkString("\n"))
   }
 
   def generateBinaryInflectedTownNamesCache(): Unit = {
