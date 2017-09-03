@@ -6,14 +6,17 @@ import bestaro.util.PolishCharactersAsciizer
 
 import scala.collection.mutable.ListBuffer
 
-case class VerificationResult(success: Int, all: Int, invalidPairs: Seq[InvalidPair]) {
+case class VerificationResult(success: Int, all: Int, resultPairs: Seq[ResultPair]) {
   override def toString: String = {
     val successfulPercent = success * 100.0 / all
-    invalidPairs.mkString("\n") + "\n\n" + f"Verification: $success / $all = $successfulPercent%1.2f%%"
+    "Successful: \n" + resultPairs.filter(_.matched).mkString("\n") +
+      "\n#################################\n" +
+      "Failed: \n" + resultPairs.filter(!_.matched).mkString("\n") + "\n\n" +
+      f"Verification: $success / $all = $successfulPercent%1.2f%%"
   }
 }
 
-case class InvalidPair(record: RawRecord, expectedLocations: Seq[String], expectedCities: Seq[String]) {
+case class ResultPair(record: RawRecord, expectedLocations: Seq[String], expectedCities: Seq[String], matched: Boolean) {
   override def toString: String = {
     s"Expected $expectedLocations, in $expectedCities, but found ${record.fullLocation.primary.map(_.stripped)}, ${record.fullLocation.secondary.map(_.stripped)}"
   }
@@ -23,25 +26,19 @@ class LocationVerifier(recordTags: Map[RecordId, TaggedRecord]) {
 
   def verify(processed: Seq[RawRecord]): VerificationResult = {
 
-    var successfulMatches = 0
-    var allLocations = 0
-    val invalidPairs = new ListBuffer[InvalidPair]
+    val resultPairs = new ListBuffer[ResultPair]
     processed.foreach { rawRecord =>
       val recordTag = recordTags.get(rawRecord.recordId)
       if (recordTag.exists(r => (r.locs ++ r.altLocs ++ r.cities).nonEmpty)) {
-        allLocations += 1
         recordTag.map {
           taggedRecord =>
             val successfulMatch = anyLocMatches(taggedRecord, rawRecord.fullLocation)
-            if (!successfulMatch) {
-              invalidPairs.append(InvalidPair(rawRecord, taggedRecord.locs ++ taggedRecord.altLocs, taggedRecord.cities))
-            }
-            successfulMatch
-        }.filter(_ == true).foreach(_ => successfulMatches += 1)
+            ResultPair(rawRecord, taggedRecord.locs ++ taggedRecord.altLocs, taggedRecord.cities, successfulMatch)
+        }.foreach(resultPairs.append(_))
       }
     }
 
-    VerificationResult(successfulMatches, allLocations, invalidPairs)
+    VerificationResult(resultPairs.count(_.matched), resultPairs.size, resultPairs)
   }
 
   private def anyLocMatches(taggedRecord: TaggedRecord, fullLocation: FullLocation): Boolean = {
