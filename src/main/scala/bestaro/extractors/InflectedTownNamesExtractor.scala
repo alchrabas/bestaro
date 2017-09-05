@@ -27,7 +27,8 @@ class InflectedTownNamesExtractor {
     newMap
   }
 
-  def findLocationNames(tokens: List[Token], voivodeship: Voivodeship): Seq[MatchedInflectedLocation] = {
+  def findLocationNamesFromDatabase(tokens: List[Token], voivodeship: Voivodeship): Seq[MatchedInflectedLocation] = {
+
     val potentialMatches = tokens
       .zipWithIndex
       .flatMap { case (token, position) =>

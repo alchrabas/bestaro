@@ -1,8 +1,8 @@
 package bestaro.extractors
 
-import bestaro.core.processors.{Flag, Token}
+import bestaro.core.processors.{LocationType, Token}
 
-case class MultiWordName(tokens: List[Token], startIndex: Int) {
+case class MultiWordName(tokens: List[Token], startIndex: Int, locType: Option[LocationType] = None) {
   def pushWord(token: Token): MultiWordName = {
     copy(tokens = tokens :+ token)
   }
@@ -11,7 +11,7 @@ case class MultiWordName(tokens: List[Token], startIndex: Int) {
     tokens.map(_.placenessScore).sum
   }
 
-  def wordsCount: Int = {
+  def wordCount: Int = {
     tokens.size
   }
 
@@ -30,7 +30,9 @@ case class MultiWordName(tokens: List[Token], startIndex: Int) {
 
 class MultiWordLocationNameExtractor {
 
-  def mostSuitableMultiWordNames(tokens: List[Token]): List[MultiWordName] = {
+  def mostSuitableMultiWordNames(tokens: List[Token],
+                                 foundLocationNames: Seq[MatchedInflectedLocation]
+                                ): List[MultiWordName] = {
 
     tokens.zipWithIndex
       .filter(_._1.placenessScore >= 5)

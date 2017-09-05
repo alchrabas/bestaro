@@ -40,9 +40,9 @@ class NominatimLocationExtractor extends AbstractLocationExtractor {
     val mutableTokens = stemmedTokens.to[ListBuffer]
 
     val multiWordLocationNameExtractor = new MultiWordLocationNameExtractor
-    val multiWordNames = multiWordLocationNameExtractor.mostSuitableMultiWordNames(stemmedTokens)
+    val multiWordNames = multiWordLocationNameExtractor.mostSuitableMultiWordNames(stemmedTokens, foundLocationNames)
     println(multiWordNames.map(_.stripped).mkString(";; "))
-    val matchedStreets = multiWordNames.flatMap(a => allAddressesGotFromWordList(mutableTokens, a.startIndex, a.wordsCount))
+    val matchedStreets = multiWordNames.flatMap(a => allAddressesGotFromWordList(mutableTokens, a.startIndex, a.wordCount))
 
     //    val matchedStreets = allAddressesFoundInWholeMessage(mutableTokens)
     val mostImportantCity = matchedStreets.map(_.address).filter(_.getElementType == "city").sortBy(_.getImportance).reverse.headOption

@@ -45,7 +45,7 @@ abstract class AbstractLocationExtractor {
     if (stemmedTokens.nonEmpty) {
       stemmedTokens = updateTokenEvaluationUsingContext(stemmedTokens)
     }
-    val foundLocationNames = townNamesExtractor.findLocationNames(stemmedTokens, voivodeship)
+    val foundLocationNames = townNamesExtractor.findLocationNamesFromDatabase(stemmedTokens, voivodeship)
     if (stemmedTokens.nonEmpty) {
       println(">>> " + foundLocationNames)
       stemmedTokens = stemmedTokens.zipWithIndex.map { case (token, position) =>
