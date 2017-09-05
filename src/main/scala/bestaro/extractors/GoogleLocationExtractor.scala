@@ -27,22 +27,38 @@ class GoogleLocationExtractor extends AbstractLocationExtractor {
     val mutableTokens = stemmedTokens.to[ListBuffer]
 
     val multiWordLocationNameExtractor = new MultiWordLocationNameExtractor
-    val multiWordNames = multiWordLocationNameExtractor.mostSuitableMultiWordNames(stemmedTokens)
+    val multiWordNames = multiWordLocationNameExtractor.mostSuitableMultiWordNames(stemmedTokens, foundLocationNames)
     println(multiWordNames.map(_.stripped).mkString(";; "))
-    val bestWordAndResult = multiWordNames.map(getGeocodingResultForMultiWordName).find(_._2.nonEmpty)
-    println(bestWordAndResult)
-    val bestResults = bestWordAndResult
+
+    val bestResults = getBestResultForProposedNames(multiWordNames)
       .map { case (name, results) =>
         MatchedFullLocation(fullLocationFromGeocodingResults(results, foundLocationNames, multiWordNames),
-          name.startIndex, name.wordsCount)
+          name.startIndex, name.wordCount)
       }.to[ListBuffer]
 
     (mutableTokens, bestResults)
   }
 
+  private def getBestResultForProposedNames(multiWordNames: Seq[MultiWordName]
+                                           ): Option[(MultiWordName, Seq[GeocodingResult])] = {
+    for (name <- multiWordNames) {
+      //name.locType
+      val result = getGeocodingResultForMultiWordName(name)
+      if (result._2.nonEmpty) {
+        return Some(result)
+      }
+    }
+    None
+    // cities need to be treated separately and used as part of the search query for non-city MWNs
+
+    // if none of 3 top items works then try without this city
+
+  }
+
   private def getGeocodingResultForMultiWordName(multiWordName: MultiWordName) = {
-    (multiWordName, geocodingClient.search(
-      replaceAbbreviatedNouns(multiWordName).stripped + ", województwo małopolskie"))
+    val nameToSearchFor = replaceAbbreviatedNouns(multiWordName).stripped + ", województwo małopolskie"
+    val locType = multiWordName.locType
+    (multiWordName, geocodingClient.search(nameToSearchFor))
   }
 
   private def replaceAbbreviatedNouns(multiWordName: MultiWordName): MultiWordName = {
@@ -69,10 +85,7 @@ class GoogleLocationExtractor extends AbstractLocationExtractor {
                                                foundLocationNames: Seq[MatchedInflectedLocation],
                                                multiWordNames: Seq[MultiWordName]
                                               ): FullLocation = {
-    if (results.size > 1) {
-      println("MULTIPLE SOLUTIONS AVAILABLE:" + results.map(_.formattedAddress).mkString(";; \n"))
-    }
-    val firstResult = getBestResult(results, foundLocationNames, multiWordNames)
+    val firstResult = getBestResult(results, foundLocationNames, multiWordNames, List("kraków"))
     val voivodeshipName = firstResult.addressComponents
       .find(_.types.contains(AddressComponentType.ADMINISTRATIVE_AREA_LEVEL_1))
       .map(_.shortName).getOrElse("UKNOWN").toLowerCase.replaceAll("województwo ", "")
@@ -127,9 +140,24 @@ class GoogleLocationExtractor extends AbstractLocationExtractor {
     component.types.contains(addressComponentType)
   }
 
-  def getBestResult(results: Seq[GeocodingResult],
-                    foundLocationNames: Seq[MatchedInflectedLocation],
-                    multiWordNames: Seq[MultiWordName]) = {
+  private def getBestResult(results: Seq[GeocodingResult],
+                            foundLocationNames: Seq[MatchedInflectedLocation],
+                            multiWordNames: Seq[MultiWordName],
+                            implicitMainTownNames: Seq[String]): GeocodingResult = {
+    val resultsAndTheirTownNames = results.map(result => (result, result.addressComponents.filter(addressPart =>
+      Set(AddressComponentType.LOCALITY, AddressComponentType.ADMINISTRATIVE_AREA_LEVEL_3)
+        .exists(addressPart.types.contains(_))).map(addressPart => baseNameProducer.strippedForStemming(addressPart.longName))))
+    for (resultAndItsTownNames <- resultsAndTheirTownNames) {
+      if (resultAndItsTownNames._2.exists(locName =>
+        foundLocationNames.map(_.inflectedLocation.location.stripped).contains(locName))) {
+        return resultAndItsTownNames._1
+      }
+    }
+    for (resultAndItsTownNames <- resultsAndTheirTownNames) {
+      if (resultAndItsTownNames._2.exists(implicitMainTownNames.contains(_))) {
+        return resultAndItsTownNames._1
+      }
+    }
     results.head
   }
 }
