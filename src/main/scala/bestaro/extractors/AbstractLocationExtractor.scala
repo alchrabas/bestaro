@@ -12,7 +12,7 @@ case class MatchedFullLocation(fullLocation: FullLocation, position: Int, wordCo
 
 abstract class AbstractLocationExtractor {
 
-  private val NOUN_PRECEDING_NAME_SCORE = 5
+  private val NOUN_PRECEDING_NAME_SCORE = 11
   private val CAPITALIZED_WORD_SCORE = 5
   private val PRECEDED_BY_NOUN_THAT_SUGGESTS_LOCATION_SCORE = 8
   private val PRECEDED_BY_LOC_SPECIFIC_PREPOSITION_SCORE = 5
