@@ -17,8 +17,11 @@ object PolishTownNamesInflector {
     val converter = new PolishTownNamesInflector
     //    println(converter.generateInflectedForms(converter.loadTownEntriesFromUrzedowyWykazNazwMiejscowosci())
     //      .filter(_.location.voivodeship.map(_.name).contains("MAŁOPOLSKIE")).mkString("\n"))
-    //    converter.printMostIgnoredSuffixes(converter.loadTownEntriesFromFile())
+//        converter.printMostIgnoredSuffixes(converter.loadCachedInflectedTownNames())
     converter.generateBinaryInflectedTownNamesCache()
+//    println(converter.inflectedVersionsOfName(InflectedLocation(
+//      "wolbrom", Location("wolbrom", "Wolbrom", LocationType.CITY)))
+//      .map(_.stripped))
   }
 }
 
@@ -79,7 +82,7 @@ class PolishTownNamesInflector {
     val voivodeshipId = Integer.parseInt(csvEntry("WOJ"))
     val kind = csvEntry("NAZWA_DOD")
 
-    InflectedLocation(originalName, Location(originalName, originalName, LocationType.TOWN,
+    InflectedLocation(originalName, Location(originalName, originalName, locationTypeByKindColumn(csvEntry),
       Some(VOIVODESHIP_BY_ID(voivodeshipId))))
   }
 
@@ -104,7 +107,7 @@ class PolishTownNamesInflector {
       row =>
         val stripped = baseNameProducer.strippedForStemming(row(NAME_COLUMN))
         InflectedLocation(stripped,
-          Location(stripped, row(NAME_COLUMN), LocationType.TOWN,
+          Location(stripped, row(NAME_COLUMN), locationTypeByKindColumn(row),
             Some(Voivodeship(row(VOIVODESHIP_COLUMN).toUpperCase))
           )
         )
@@ -124,7 +127,7 @@ class PolishTownNamesInflector {
               Some(
                 Location(townParentName,
                   baseNameProducer.strippedForStemming(townParentName),
-                  LocationType.TOWN,
+                  LocationType.CITY,
                   Some(Voivodeship(row(VOIVODESHIP_COLUMN).toUpperCase))
                 )
               )
@@ -177,10 +180,18 @@ class PolishTownNamesInflector {
     subject.substring(0, subject.length - pattern.length) + replacement
   }
 
+  private def locationTypeByKindColumn(row: Map[String, String]): LocationType = {
+    row(KIND_COLUMN) match {
+      case "wieś" => LocationType.VILLAGE
+      case "miasto" => LocationType.CITY
+    }
+  }
+
   def printMostIgnoredSuffixes(townsInNominativus: Seq[InflectedLocation]) {
     val mostIgnoredSuffixes = townsInNominativus
       .map(_.stripped)
       .filter(a => !genetivusSuffixes.keys.exists(a.endsWith))
+        .filter(_.length >= 3)
       .map(a => a.substring(a.length - 3, a.length))
       .groupBy(a => a)
       .mapValues(_.size)

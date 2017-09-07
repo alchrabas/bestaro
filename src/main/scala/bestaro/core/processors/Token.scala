@@ -32,7 +32,8 @@ object LocationType {
   val STREET = LocationType("street")
   val ESTATE = LocationType("estate") // osiedle
   val DISTRICT = LocationType("district") // dzielnica
-  val TOWN = LocationType("town")
+  val CITY = LocationType("city")
+  val VILLAGE = LocationType("village")
   val MUNCIPALITY = LocationType("muncipality") // gmina
   val UNKNOWN = LocationType("unknown")
 }

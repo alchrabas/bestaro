@@ -119,7 +119,7 @@ class GoogleLocationExtractor extends AbstractLocationExtractor {
     (AddressComponentType.SUBLOCALITY, LocationType.DISTRICT)
   )
   private val SECONDARY_LOCATION_TYPES = List(
-    (AddressComponentType.LOCALITY, LocationType.TOWN),
+    (AddressComponentType.LOCALITY, LocationType.CITY),
     (AddressComponentType.ADMINISTRATIVE_AREA_LEVEL_3, LocationType.MUNCIPALITY)
   )
   private val ALL_TYPES = PRIMARY_LOCATION_TYPES ++ SECONDARY_LOCATION_TYPES

@@ -70,7 +70,7 @@ class NominatimLocationExtractor extends AbstractLocationExtractor {
         Some(Location(baseNameProducer.strippedForStemming(streetName), streetName,
           LocationType.STREET, Some(Voivodeship.MALOPOLSKIE))),
         Some(Location(baseNameProducer.strippedForStemming(townName), townName,
-          LocationType.TOWN, Some(Voivodeship.MALOPOLSKIE))), None),
+          LocationType.CITY, Some(Voivodeship.MALOPOLSKIE))), None),
       nominatimStreet.position,
       nominatimStreet.wordCount
     )
@@ -124,7 +124,7 @@ class NominatimLocationExtractor extends AbstractLocationExtractor {
         Location(baseNameProducer.strippedForStemming(locationName),
           locationName, LocationType.STREET),
         Location(baseNameProducer.strippedForStemming(townName),
-          townName, LocationType.TOWN),
+          townName, LocationType.CITY),
         initialPos, wordCount, address)
     }
   }

@@ -28,6 +28,10 @@ case class MultiWordName(tokens: List[Token], startIndex: Int,
   def stemmed: String = {
     tokens.map(_.stem).mkString(" ")
   }
+  
+  def ofLocType(locTypes: LocationType*): Boolean = {
+    locType.exists(locTypes.contains(_))
+  }
 }
 
 class MultiWordLocationNameExtractor {
