@@ -18,7 +18,7 @@ case class VerificationResult(success: Int, all: Int, resultPairs: Seq[ResultPai
 
 case class ResultPair(record: RawRecord, expectedLocations: Seq[String], expectedCities: Seq[String], matched: Boolean) {
   override def toString: String = {
-    s"Expected $expectedLocations, in $expectedCities, but found ${record.fullLocation.primary.map(_.stripped)}, ${record.fullLocation.secondary.map(_.stripped)}"
+    s"Expected $expectedLocations, in $expectedCities, found ${record.fullLocation.primary.map(_.stripped)}, ${record.fullLocation.secondary.map(_.stripped)}"
   }
 }
 

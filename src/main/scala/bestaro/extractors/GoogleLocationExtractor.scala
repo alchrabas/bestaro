@@ -1,9 +1,9 @@
 package bestaro.extractors
 
-import bestaro.core.{Coordinate, FullLocation}
 import bestaro.core.processors.{Location, LocationType, Token}
+import bestaro.core.{Coordinate, FullLocation}
 import bestaro.service.{CachedGoogleApiClient, Voivodeship}
-import com.google.maps.model.{AddressComponent, AddressComponentType, AddressType, GeocodingResult}
+import com.google.maps.model.{AddressComponent, AddressComponentType, GeocodingResult}
 
 import scala.collection.mutable.ListBuffer
 
@@ -16,7 +16,7 @@ class GoogleLocationExtractor extends AbstractLocationExtractor {
     _: String => {
       requests += 1
       if (requests % 100 == 0) {
-        println(s"Done $requests requests to Nominatim")
+        println(s"Done $requests requests to Google API")
       }
     }
   }
@@ -41,31 +41,41 @@ class GoogleLocationExtractor extends AbstractLocationExtractor {
 
   private def getBestResultForProposedNames(multiWordNames: Seq[MultiWordName]
                                            ): Option[(MultiWordName, Seq[GeocodingResult])] = {
+    val (foundCities, remainderOfLocations) = multiWordNames.partition(_.ofLocType(LocationType.CITY))
+
+    for (street <- remainderOfLocations) { // TODO create two classes for MWN to avoid Option fields
+      for (city <- foundCities) {
+        val result = getGeocodingResultForLocationName(street, Some(city))
+        if (result._2.nonEmpty) {
+          return Some(result)
+        }
+      }
+    }
+
     for (name <- multiWordNames) {
-      //name.locType
-      val result = getGeocodingResultForMultiWordName(name)
+      val result = getGeocodingResultForLocationName(name)
       if (result._2.nonEmpty) {
         return Some(result)
       }
     }
     None
-    // cities need to be treated separately and used as part of the search query for non-city MWNs
-
-    // if none of 3 top items works then try without this city
-
   }
 
-  private def getGeocodingResultForMultiWordName(multiWordName: MultiWordName) = {
-    val nameToSearchFor = replaceAbbreviatedNouns(multiWordName).stripped + ", województwo małopolskie"
-    val locType = multiWordName.locType
+  private def getGeocodingResultForLocationName(multiWordName: MultiWordName,
+                                                additionalName: Option[MultiWordName] = None) = {
+    val nameToSearchFor = replaceAbbreviatedNouns(multiWordName).stripped +
+      additionalName.map(", " + _.stripped).getOrElse("") +
+      ", województwo małopolskie"
     (multiWordName, geocodingClient.search(nameToSearchFor))
   }
 
   private def replaceAbbreviatedNouns(multiWordName: MultiWordName): MultiWordName = {
-    multiWordName.copy(tokens = multiWordName.tokens.map(expandAbbreviatedNounsPrecedingLocation))
+    multiWordName.copy(tokens = multiWordName.tokens
+      .map(expandAndNominativizeAbbreviatedNounsPrecedingLocation)
+      .filterNot(isStopword))
   }
 
-  private def expandAbbreviatedNounsPrecedingLocation(token: Token): Token = {
+  private def expandAndNominativizeAbbreviatedNounsPrecedingLocation(token: Token): Token = {
     val strippedReplacements = REPLACEMENTS.get(token.stripped)
     if (strippedReplacements.isDefined) {
       token.copy(stripped = strippedReplacements.get, stem = strippedReplacements.get)
@@ -74,11 +84,32 @@ class GoogleLocationExtractor extends AbstractLocationExtractor {
     }
   }
 
+  private def isStopword(token: Token): Boolean = {
+    STOPWORDS.contains(token.stripped)
+  }
+
   private val REPLACEMENTS = Map(
     "os" -> "osiedle",
     "al" -> "aleja",
     "ul" -> "ulica",
-    "pl" -> "plac"
+    "pl" -> "plac",
+    "gm" -> "gmina",
+    "ulicy" -> "ulica",
+    "osiedlu" -> "osiedle",
+    "osiedla" -> "osiedle",
+    "alei" -> "aleja",
+    "placu" -> "plac",
+    "placem" -> "plac",
+    "gminy" -> "gmina",
+    "gminie" -> "gmina"
+  )
+
+  private val STOPWORDS = Set(
+    "okolicy",
+    "okolica",
+    "pobliżu",
+    "miejscowość",
+    "miejscowości"
   )
 
   private def fullLocationFromGeocodingResults(results: Seq[GeocodingResult],
