@@ -141,8 +141,8 @@ class PolishInflectionLearner {
     }
 
     Map(
-      "genetivus" -> genetivusReplacements.toMap,
-      "locativus" -> locativusReplacements.toMap
+      "genetivus" -> mergeMaps(genetivusReplacements.toMap, supplementaryGenetivusSuffixes),
+      "locativus" -> mergeMaps(locativusReplacements.toMap, supplementaryLocativusSuffixes)
     )
   }
 
@@ -231,7 +231,8 @@ class PolishInflectionLearner {
     "mża" -> Set("mży"),
     "słą" -> Set("słą"), // "X nad Wisłą"?
     "zyń" -> Set("zynia"),
-    "tyń" -> Set("tynia")
+    "tyń" -> Set("tynia"),
+    "om" -> Set("omia")
   )
 
   private val supplementaryLocativusSuffixes = Map(
@@ -287,7 +288,8 @@ class PolishInflectionLearner {
     "ądz" -> Set("ądzu"),
     "leń" -> Set("leniu"),
     "uty" -> Set("utach"),
-    "owe" -> Set("owem", "owych")
+    "owe" -> Set("owem", "owych"),
+    "om" -> Set("omiu")
   )
 
   private val supplementarySuffixes = Map(
