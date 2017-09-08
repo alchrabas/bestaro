@@ -1,7 +1,7 @@
 package bestaro.core.processors
 
-import bestaro.core.{FbId, FullLocation, RawRecord, Tokenizer}
-import bestaro.extractors.{GoogleLocationExtractor, GusLocationExtractor, MatchedFullLocation, NominatimLocationExtractor}
+import bestaro.core.{RawRecord, Tokenizer}
+import bestaro.extractors.GoogleLocationExtractor
 import bestaro.service.Voivodeship
 
 
