@@ -28,7 +28,6 @@ class GusLocationExtractor extends AbstractLocationExtractor {
     baseNameProducer.getBestBaseName(location.stripped)
   }
 
-  /*
   override protected def specificExtract(stemmedTokens: List[Token]): (ListBuffer[Token], ListBuffer[MatchedFullLocation]) = {
     val mutableTokens = stemmedTokens.to[ListBuffer]
     val matchedLocations = new ListBuffer[MatchedLocation]
@@ -87,6 +86,5 @@ class GusLocationExtractor extends AbstractLocationExtractor {
     }
     streetWords.indices.forall(wordId => tokenProperty(tokens(firstTokenPos + wordId)) == streetWords(wordId))
   }
-*/
-}
 
+}

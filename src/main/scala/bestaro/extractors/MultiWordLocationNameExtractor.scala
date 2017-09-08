@@ -3,7 +3,6 @@ package bestaro.extractors
 import bestaro.core.processors.{LocationType, Token}
 
 case class MultiWordName(tokens: List[Token], startIndex: Int,
-                         nominitavizedStripped: Option[String] = None,
                          locType: Option[LocationType] = None) {
   def pushWord(token: Token): MultiWordName = {
     copy(tokens = tokens :+ token)
@@ -28,7 +27,7 @@ case class MultiWordName(tokens: List[Token], startIndex: Int,
   def stemmed: String = {
     tokens.map(_.stem).mkString(" ")
   }
-  
+
   def ofLocType(locTypes: LocationType*): Boolean = {
     locType.exists(locTypes.contains(_))
   }

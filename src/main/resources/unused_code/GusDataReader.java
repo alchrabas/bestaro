@@ -1,15 +1,4 @@
-package bestaro.service
-
-import bestaro.core.processors.{BaseNameProducer, Location, LocationType}
-import com.github.tototoshi.csv.{CSVReader, DefaultCSVFormat}
-
-object GusDataReader {
-
-  implicit object MyFormat extends DefaultCSVFormat {
-    override val delimiter = ';'
-  }
-
-}
+package bestaro.service;
 
 class GusDataReader {
   //  val STREET_NAMES_CSV = "gus/ULIC_Adresowy_2017-07-17.csv"

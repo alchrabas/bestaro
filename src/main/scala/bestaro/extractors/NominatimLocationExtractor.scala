@@ -30,10 +30,6 @@ class NominatimLocationExtractor extends AbstractLocationExtractor {
 
   private val STREET_MAX_WORDS = 3
 
-  /*override protected def specificExtract(stemmedTokens: List[Token]): (ListBuffer[Token], ListBuffer[MatchedFullLocation]) = {
-    null
-  }
-  */
   override protected def specificExtract(stemmedTokens: List[Token],
                                          foundLocationNames: Seq[MatchedInflectedLocation]):
   (ListBuffer[Token], ListBuffer[MatchedFullLocation]) = {
