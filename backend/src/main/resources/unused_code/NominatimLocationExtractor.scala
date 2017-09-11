@@ -1,8 +1,9 @@
-package bestaro.extractors
+package unused_code
 
 import bestaro.core.FullLocation
 import bestaro.core.processors.{Location, LocationType, Token}
-import bestaro.service.{CachedNominatimClient, Voivodeship}
+import bestaro.extractors._
+import bestaro.service.Voivodeship
 import fr.dudie.nominatim.client.JsonNominatimClient
 import fr.dudie.nominatim.model.Address
 import org.apache.http.impl.client.DefaultHttpClient

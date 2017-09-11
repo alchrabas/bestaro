@@ -1,14 +1,10 @@
-package bestaro.service
+package unused_code
 
 import java.lang.reflect.Type
 
+import bestaro.service.GeocodingCacheTrait
 import com.google.gson.reflect.TypeToken
-import fr.dudie.nominatim.client.NominatimClient
-import fr.dudie.nominatim.client.request.NominatimSearchRequest
-import fr.dudie.nominatim.client.request.paramhelper.PolygonFormat
-import fr.dudie.nominatim.model.Address
 
-import scala.collection.JavaConverters._
 import scala.util.Random
 
 class CachedNominatimClient(nominatimClient: NominatimClient,
