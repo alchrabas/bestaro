@@ -5,7 +5,7 @@ import java.io._
 import bestaro.core.processors.{BaseNameProducer, Location, LocationType}
 import bestaro.util.FileIO
 import com.github.tototoshi.csv.{CSVReader, DefaultCSVFormat}
-import upickle.default.read
+import play.api.libs.json.{Json, OFormat}
 
 object PolishTownNamesInflector {
 
@@ -17,11 +17,11 @@ object PolishTownNamesInflector {
     val converter = new PolishTownNamesInflector
     //    println(converter.generateInflectedForms(converter.loadTownEntriesFromUrzedowyWykazNazwMiejscowosci())
     //      .filter(_.location.voivodeship.map(_.name).contains("MAŁOPOLSKIE")).mkString("\n"))
-//        converter.printMostIgnoredSuffixes(converter.loadCachedInflectedTownNames())
+    //        converter.printMostIgnoredSuffixes(converter.loadCachedInflectedTownNames())
     converter.generateBinaryInflectedTownNamesCache()
-//    println(converter.inflectedVersionsOfName(InflectedLocation(
-//      "wolbrom", Location("wolbrom", "Wolbrom", LocationType.CITY)))
-//      .map(_.stripped))
+    //    println(converter.inflectedVersionsOfName(InflectedLocation(
+    //      "wolbrom", Location("wolbrom", "Wolbrom", LocationType.CITY)))
+    //      .map(_.stripped))
   }
 }
 
@@ -46,6 +46,8 @@ object Voivodeship {
   val values = List(MALOPOLSKIE, LUBUSKIE, KUJAWSKO_POMORSKIE, POMORSKIE,
     SWIETOKRZYSKIE, SLASKIE, OPOLSKIE, LODZKIE, ZACHODNIOPOMORSKIE, LUBELSKIE,
     MAZOWIECKIE, PODLASKIE, DOLNOSLASKIE, PODKARPACKIE, WIELKOPOLSKIE, WARMINSKO_MAZURSKIE)
+
+  implicit val voivodeshipFormat: OFormat[Voivodeship] = Json.format[Voivodeship]
 }
 
 case class Voivodeship(name: String)
@@ -62,7 +64,9 @@ class PolishTownNamesInflector {
 
   private type suffixReplacementMapType = Map[String, Set[String]]
   private type allSuffixesMapType = Map[String, suffixReplacementMapType]
-  private val suffixesReadFromFile = read[allSuffixesMapType](FileIO.readFile("town_suffixes.json", "{}"))
+  private val suffixesReadFromFile = Json.parse(
+    FileIO.readFile("town_suffixes.json", "{}")
+  ).as[allSuffixesMapType]
 
   private val genetivusSuffixes = suffixesReadFromFile("genetivus")
   private val locativusSuffixes = suffixesReadFromFile("locativus")
@@ -191,7 +195,7 @@ class PolishTownNamesInflector {
     val mostIgnoredSuffixes = townsInNominativus
       .map(_.stripped)
       .filter(a => !genetivusSuffixes.keys.exists(a.endsWith))
-        .filter(_.length >= 3)
+      .filter(_.length >= 3)
       .map(a => a.substring(a.length - 3, a.length))
       .groupBy(a => a)
       .mapValues(_.size)

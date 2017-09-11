@@ -1,16 +1,10 @@
 package bestaro.core
 
-import java.util.Date
-
 import bestaro.collectors.util.SlowHttpDownloader
 import bestaro.collectors.{FacebookCollector, OlxCollector}
-import bestaro.core.processors.{BaseNameProducer, PlaintextProcessor}
+import bestaro.core.processors.PlaintextProcessor
 import bestaro.helpers.TaggedRecordsManager
 import bestaro.helpers.TaggedRecordsManager.TaggedRecord
-import bestaro.service.{CachedGoogleApiClient, CachedNominatimClient}
-import fr.dudie.nominatim.client.JsonNominatimClient
-import morfologik.stemming.polish.PolishStemmer
-import org.apache.http.impl.client.DefaultHttpClient
 
 
 object Main {

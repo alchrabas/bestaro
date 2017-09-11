@@ -1,5 +1,7 @@
 package bestaro.core.processors
 
+import play.api.libs.json.{Json, OFormat}
+
 case class PartOfSpeech(name: String)
 
 object PartOfSpeech {
@@ -36,6 +38,8 @@ object LocationType {
   val VILLAGE = LocationType("village")
   val MUNCIPALITY = LocationType("muncipality") // gmina
   val UNKNOWN = LocationType("unknown")
+
+  implicit val locationTypeFormat: OFormat[LocationType] = Json.format[LocationType]
 }
 
 case class Flag(name: String)

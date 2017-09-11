@@ -2,9 +2,9 @@ package bestaro.helpers
 
 import java.io.File
 
-import bestaro.core.{JsonSerializer, RecordId}
+import bestaro.core._
 import com.github.tototoshi.csv.{CSVReader, CSVWriter}
-import upickle.default.{read, write}
+import play.api.libs.json.Json
 
 import scala.collection.mutable.ListBuffer
 
@@ -19,8 +19,9 @@ object TaggedRecordsManager {
     val listOfRows = reader.allWithHeaders()
 
     val taggedRecords = ListBuffer[TaggedRecord]()
+
     for ((row, index) <- listOfRows.view.zipWithIndex if index < 480) {
-      val recordId = read[RecordId](row("ID"))
+      val recordId = Json.parse(row("ID")).as[RecordId]
       val locs =
         stringToList(row("Location-1")) ::: stringToList(row("Location-2")) :::
           stringToList(row("Location-3"))
@@ -48,14 +49,13 @@ object TaggedRecordsManager {
   }
 
   private def saveInCsv(): Unit = {
-    import RecordId._
     if (new File("records-for-tagging.csv").exists()) {
       throw new Exception("Do not overwrite this csv file")
     }
     val writer = CSVWriter.open("records-for-tagging.csv")
     val jsonSerializer = new JsonSerializer
     for (record <- jsonSerializer.readRecordsFromFile) {
-      writer.writeRow(List(write(record.recordId), record.message))
+      writer.writeRow(List(Json.stringify(Json.toJson(record.recordId)), record.message))
     }
     writer.close()
   }

@@ -1,17 +1,17 @@
 package bestaro.service
 
-import java.io.{File, FileInputStream}
-import java.util.zip.{ZipFile, ZipInputStream}
+import java.io.File
+import java.util.zip.ZipFile
 
 import bestaro.core.processors.BaseNameProducer
 import bestaro.util.FileIO
 import morfologik.stemming.WordData
 import morfologik.stemming.polish.PolishStemmer
-import upickle.default.write
+import play.api.libs.json.Json
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
-import scala.io.{BufferedSource, Source}
+import scala.io.Source
 
 object PolishInflectionLearner {
 
@@ -23,16 +23,18 @@ object PolishInflectionLearner {
   private def createSuffixFileFromAspell(): Unit = {
     val learner = new PolishInflectionLearner
     val result = learner.readAspellDict()
-    val jsonResult = write(result)
+
+    val jsonResult = Json.stringify(Json.toJson(result))
     FileIO.saveFile("town_suffixes.json", jsonResult)
   }
 
   private def createSuffixFileFromBooks(): Unit = {
     val learner = new PolishInflectionLearner
-    val jsonResult = write(Map(
+
+    val jsonResult = Json.stringify(Json.toJson(Map(
       "genetivus" -> learner.learnAboutCaseFromBooks("gen"),
       "locativus" -> learner.learnAboutCaseFromBooks("loc")
-    ))
+    )))
     FileIO.saveFile("town_suffixes.json", jsonResult)
   }
 }

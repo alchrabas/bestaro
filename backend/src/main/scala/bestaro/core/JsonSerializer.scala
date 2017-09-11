@@ -1,13 +1,13 @@
 package bestaro.core
 
 import bestaro.util.FileIO
-import upickle.default.{read, write}
+import play.api.libs.json.Json
 
 class JsonSerializer {
 
   def readRecordsFromFile: Seq[RawRecord] = {
     val fileContents = FileIO.readFile("rawData.json", "[]")
-    read[Seq[RawRecord]](fileContents)
+    Json.parse(fileContents).as[Seq[RawRecord]]
       .filter {
         record => record.link != null && record.link.contains("facebook")
       }
@@ -18,7 +18,7 @@ class JsonSerializer {
     if (!listOfRecords.exists(_.recordId == record.recordId)) {
       listOfRecords = listOfRecords :+ record
     }
-    FileIO.saveFile("rawData.json", write(listOfRecords))
+    FileIO.saveFile("rawData.json", Json.stringify(Json.toJson(listOfRecords)))
   }
 
 
