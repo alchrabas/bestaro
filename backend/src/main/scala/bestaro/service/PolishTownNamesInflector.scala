@@ -191,7 +191,7 @@ class PolishTownNamesInflector {
     }
   }
 
-  def printMostIgnoredSuffixes(townsInNominativus: Seq[InflectedLocation]) {
+  def printMostIgnoredSuffixes(townsInNominativus: Seq[InflectedLocation]): Unit = {
     val mostIgnoredSuffixes = townsInNominativus
       .map(_.stripped)
       .filter(a => !genetivusSuffixes.keys.exists(a.endsWith))

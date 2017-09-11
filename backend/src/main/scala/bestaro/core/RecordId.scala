@@ -38,9 +38,10 @@ object GumtreeId {
 
 object RecordId {
   implicit val topWrites: Writes[RecordId] = Writes[RecordId] {
-    case fbId: FbId => FbId.jsonFormat.writes(fbId) + ("service", JsString(fbId.service))
-    case olxId: OlxId => OlxId.jsonFormat.writes(olxId) + ("service", JsString(olxId.service))
-    case gumtreeId: GumtreeId => GumtreeId.jsonFormat.writes(gumtreeId) + ("service", JsString(gumtreeId.service))
+    case fbId: FbId => FbId.jsonFormat.writes(fbId) + (("service", JsString(fbId.service)))
+    case olxId: OlxId => OlxId.jsonFormat.writes(olxId) + (("service", JsString(olxId.service)))
+    case gumtreeId: GumtreeId => GumtreeId.jsonFormat.writes(gumtreeId) + (("service", JsString(gumtreeId.service)))
+    case x => throw new IllegalArgumentException(s"$x is not supported subtype of RecordId")
   }
 
   implicit val topReads: Reads[RecordId] = Reads[RecordId] {
@@ -48,6 +49,8 @@ object RecordId {
       case JsString("FB") => FbId.jsonFormat.reads(jsValue)
       case JsString("OLX") => OlxId.jsonFormat.reads(jsValue)
       case JsString("GUMTREE") => GumtreeId.jsonFormat.reads(jsValue)
+      case x => throw new IllegalArgumentException(s"$x is not supported type of serialized RecordId")
     }
+    case x => throw new IllegalArgumentException(s"$x is not supported type of serialized RecordId")
   }
 }

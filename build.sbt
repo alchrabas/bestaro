@@ -1,18 +1,40 @@
+import com.lihaoyi.workbench.Plugin._
+import UdashBuild._
+import Dependencies._
 
-lazy val root = (project in file("."))
-  .aggregate(backend)
+name := "bestaro"
 
-lazy val commonSettings = Seq(
-  organization := "bestaro",
-  version := "0.1-SNAPSHOT",
-  scalaVersion := "2.11.0",
-  resolvers += "jitpack" at "https://jitpack.io"
+version in ThisBuild := "0.1.0-SNAPSHOT"
+scalaVersion in ThisBuild := "2.12.2"
+organization in ThisBuild := "bestaro"
+crossPaths in ThisBuild := false
+scalacOptions in ThisBuild ++= Seq(
+  "-feature",
+  "-deprecation",
+  "-unchecked",
+  "-language:implicitConversions",
+  "-language:existentials",
+  "-language:dynamics",
+  "-Xfuture",
+  "-Xfatal-warnings",
+  "-Xlint:-unused,_"
 )
 
-lazy val backend = project
+def crossLibs(configuration: Configuration) =
+  libraryDependencies ++= crossDeps.value.map(_ % configuration)
+
+lazy val bestaro = project.in(file("."))
+  .aggregate(frontend_commonJS, frontend_commonJVM, frontend_client, frontend_server, backend)
+  .dependsOn(frontend_server)
   .settings(
-    commonSettings,
-    name := "bestaro-backend",
+    publishArtifact := false,
+    mainClass in Compile := Some("bestaro.Launcher")
+  )
+
+
+lazy val backend = project.in(file("backend"))
+  .settings(
+    name := "backend",
     libraryDependencies ++= Seq(
       "org.jsoup" % "jsoup" % "1.10.3",
       "org.facebook4j" % "facebook4j-core" % "2.4.9",
@@ -26,3 +48,81 @@ lazy val backend = project
       "com.typesafe.play" %% "play-json" % "2.6.3"
     )
   )
+
+
+
+lazy val frontend_common = crossProject.crossType(CrossType.Pure).in(file("frontend_common"))
+  .settings(
+    crossLibs(Provided)
+  )
+
+lazy val frontend_commonJVM = frontend_common.jvm
+lazy val frontend_commonJS = frontend_common.js
+
+lazy val frontend_server = project.in(file("frontend_server"))
+  .dependsOn(frontend_commonJVM)
+  .settings(
+    libraryDependencies ++= backendDeps.value,
+    crossLibs(Compile),
+
+    compile := (compile in Compile).value,
+    (compile in Compile) := (compile in Compile).dependsOn(copyStatics).value,
+    copyStatics := IO.copyDirectory((crossTarget in frontend_client).value / StaticFilesDir, (target in Compile).value / StaticFilesDir),
+    copyStatics := copyStatics.dependsOn(compileStatics in frontend_client).value,
+
+    mappings in(Compile, packageBin) ++= {
+      copyStatics.value
+      ((target in Compile).value / StaticFilesDir).***.get map { file =>
+        file -> file.getAbsolutePath.stripPrefix((target in Compile).value.getAbsolutePath)
+      }
+    },
+
+    watchSources ++= (sourceDirectory in frontend_client).value.***.get
+  )
+
+lazy val frontend_client = project.in(file("frontend_client")).enablePlugins(ScalaJSPlugin)
+  .dependsOn(frontend_commonJS)
+  .settings(
+    libraryDependencies ++= frontendDeps.value,
+    crossLibs(Compile),
+    jsDependencies ++= frontendJSDeps.value,
+    scalaJSUseMainModuleInitializer in Compile := true,
+
+    compile := (compile in Compile).dependsOn(compileStatics).value,
+    compileStatics := {
+      IO.copyDirectory(sourceDirectory.value / "main/assets/fonts", crossTarget.value / StaticFilesDir / WebContent / "assets/fonts")
+      IO.copyDirectory(sourceDirectory.value / "main/assets/images", crossTarget.value / StaticFilesDir / WebContent / "assets/images")
+      val statics = compileStaticsForRelease.value
+      (crossTarget.value / StaticFilesDir).***.get
+    },
+
+    artifactPath in(Compile, fastOptJS) :=
+      (crossTarget in(Compile, fastOptJS)).value / StaticFilesDir / WebContent / "scripts" / "frontend-impl-fast.js",
+    artifactPath in(Compile, fullOptJS) :=
+      (crossTarget in(Compile, fullOptJS)).value / StaticFilesDir / WebContent / "scripts" / "frontend-impl.js",
+    artifactPath in(Compile, packageJSDependencies) :=
+      (crossTarget in(Compile, packageJSDependencies)).value / StaticFilesDir / WebContent / "scripts" / "frontend-deps-fast.js",
+    artifactPath in(Compile, packageMinifiedJSDependencies) :=
+      (crossTarget in(Compile, packageMinifiedJSDependencies)).value / StaticFilesDir / WebContent / "scripts" / "frontend-deps.js"
+  ).settings(workbenchSettings: _*)
+  .settings(
+    bootSnippet := "bestaro.Init().main();",
+    updatedJS := {
+      var files: List[String] = Nil
+      ((crossTarget in Compile).value / StaticFilesDir ** "*.js").get.foreach {
+        (x: File) =>
+          streams.value.log.info("workbench: Checking " + x.getName)
+          FileFunction.cached(streams.value.cacheDirectory / x.getName, FilesInfo.lastModified, FilesInfo.lastModified) {
+            (f: Set[File]) =>
+              val fsPath = f.head.getAbsolutePath.drop(new File("").getAbsolutePath.length)
+              files = "http://localhost:12345" + fsPath :: files
+              f
+          }(Set(x))
+      }
+      files
+    },
+    //// use either refreshBrowsers OR updateBrowsers
+    // refreshBrowsers := (refreshBrowsers triggeredBy (compileStatics in Compile)).value
+    updateBrowsers := (updateBrowsers triggeredBy (compileStatics in Compile)).value
+  )
+
