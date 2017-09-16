@@ -1,5 +1,6 @@
 package bestaro.collectors
 
+import java.io.FileNotFoundException
 import java.nio.file.Path
 import java.time.Instant
 import java.util.concurrent.TimeUnit
@@ -75,7 +76,11 @@ class FacebookCollector(recordConsumer: RawRecord => Unit, isAlreadyStored: RawR
     val id = FbId(post.getId)
     var picturePath: Option[Path] = Option.empty
     if (post.getFullPicture != null) {
-      picturePath = Some(ImageUtil.saveImage(id, 1, post.getFullPicture.openStream()))
+      try {
+        picturePath = Some(ImageUtil.saveImage(id, 1, post.getFullPicture.openStream()))
+      } catch {
+        case FileNotFoundException => println("Unable to save the picture for ID " + id)
+      }
     }
 
     RawRecord(id, LOST, Option(post.getMessage).getOrElse(""), post.getCreatedTime.getTime,
