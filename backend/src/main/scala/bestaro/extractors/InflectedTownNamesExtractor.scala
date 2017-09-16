@@ -2,8 +2,9 @@ package bestaro.extractors
 
 import java.util
 
+import bestaro.common.Voivodeship
 import bestaro.core.processors.Token
-import bestaro.service.{InflectedLocation, PolishTownNamesInflector, Voivodeship}
+import bestaro.service.{InflectedLocation, PolishTownNamesInflector}
 
 case class MatchedInflectedLocation(inflectedLocation: InflectedLocation, initialPos: Int, wordCount: Int)
 

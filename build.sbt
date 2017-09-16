@@ -10,6 +10,7 @@ lazy val commonSettings = Seq(
 )
 
 lazy val backend = project
+  .dependsOn(common)
   .settings(
     commonSettings,
     name := "bestaro-backend",
@@ -28,6 +29,7 @@ lazy val backend = project
   )
 
 lazy val frontend = project
+  .dependsOn(common)
   .settings(
     commonSettings,
     name := "bestaro-frontend",
@@ -35,5 +37,14 @@ lazy val frontend = project
       "org.eclipse.jetty" % "jetty-servlet" % "9.4.6.v20170531",
       "org.eclipse.jetty" % "jetty-server" % "9.4.6.v20170531"
 
+    )
+  )
+
+lazy val common = project
+  .settings(
+    commonSettings,
+    name := "bestaro-common",
+    libraryDependencies ++= Seq(
+      "com.typesafe.play" %% "play-json" % "2.6.3"
     )
   )

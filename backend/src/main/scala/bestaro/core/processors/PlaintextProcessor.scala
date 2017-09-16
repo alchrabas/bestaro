@@ -2,7 +2,7 @@ package bestaro.core.processors
 
 import bestaro.core.{RawRecord, Tokenizer}
 import bestaro.extractors.GoogleLocationExtractor
-import bestaro.service.Voivodeship
+import bestaro.common.Voivodeship
 
 
 object PlaintextProcessor {

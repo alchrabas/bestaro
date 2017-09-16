@@ -3,10 +3,10 @@ package bestaro.collectors
 import java.net.URL
 
 import bestaro.collectors.util.HttpDownloader
-import bestaro.core.ProgressStatus.LOST
-import bestaro.core.{OlxId, RawRecord, RecordId}
+import bestaro.common.{OlxId, RecordId, Voivodeship}
+import bestaro.common.ProgressStatus.LOST
+import bestaro.core.RawRecord
 import bestaro.extractors.PolishDateExtractor
-import bestaro.service.Voivodeship
 import bestaro.util.ImageUtil
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document

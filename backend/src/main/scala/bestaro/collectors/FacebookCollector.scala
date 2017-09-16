@@ -4,9 +4,9 @@ import java.nio.file.Path
 import java.time.Instant
 import java.util.concurrent.TimeUnit
 
-import bestaro.core.ProgressStatus.LOST
-import bestaro.core.{FbId, RawRecord}
-import bestaro.service.Voivodeship
+import bestaro.common.{FbId, Voivodeship}
+import bestaro.common.ProgressStatus.LOST
+import bestaro.core.RawRecord
 import bestaro.util.ImageUtil
 import facebook4j._
 

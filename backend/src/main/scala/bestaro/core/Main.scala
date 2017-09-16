@@ -2,6 +2,7 @@ package bestaro.core
 
 import bestaro.collectors.util.SlowHttpDownloader
 import bestaro.collectors.{FacebookCollector, OlxCollector}
+import bestaro.common.RecordId
 import bestaro.core.processors.PlaintextProcessor
 import bestaro.helpers.TaggedRecordsManager
 import bestaro.helpers.TaggedRecordsManager.TaggedRecord

@@ -1,4 +1,4 @@
-package bestaro.core
+package bestaro.common
 
 import play.api.libs.json._
 

@@ -4,7 +4,7 @@ import java.net.URL
 import java.time.{Instant, LocalDate, Month, ZoneOffset}
 
 import bestaro.collectors.util.HttpDownloader
-import bestaro.core.ProgressStatus.LOST
+import bestaro.common.ProgressStatus.LOST
 import org.jsoup.Jsoup
 import org.scalatest.FunSpec
 import org.scalamock.scalatest.MockFactory

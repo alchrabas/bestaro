@@ -1,8 +1,7 @@
 package bestaro.extractors
 
-import bestaro.core.FullLocation
+import bestaro.common.{FullLocation, Location, Voivodeship}
 import bestaro.core.processors._
-import bestaro.service.Voivodeship
 
 import scala.collection.mutable.ListBuffer
 
