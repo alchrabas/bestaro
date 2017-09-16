@@ -8,7 +8,7 @@ sealed trait RecordId {
   def id: String
 
   override def toString: String = {
-    service + "/" + id
+    service + "-" + id
   }
 }
 
