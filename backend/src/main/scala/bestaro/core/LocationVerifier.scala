@@ -1,9 +1,9 @@
 package bestaro.core
 
+import bestaro.common.util.PolishCharactersAsciizer
 import bestaro.common.{FullLocation, RecordId}
 import bestaro.core.processors.BaseNameProducer
 import bestaro.helpers.TaggedRecordsManager.TaggedRecord
-import bestaro.util.PolishCharactersAsciizer
 
 import scala.collection.mutable.ListBuffer
 

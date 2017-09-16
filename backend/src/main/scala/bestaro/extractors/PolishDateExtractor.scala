@@ -2,7 +2,7 @@ package bestaro.extractors
 
 import java.time.{Instant, LocalDate, ZoneOffset}
 
-import bestaro.util.PolishCharactersAsciizer
+import bestaro.common.util.PolishCharactersAsciizer
 
 import scala.util.Try
 

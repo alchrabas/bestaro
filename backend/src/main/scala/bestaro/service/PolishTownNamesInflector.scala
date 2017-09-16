@@ -2,9 +2,9 @@ package bestaro.service
 
 import java.io._
 
+import bestaro.common.util.FileIO
 import bestaro.common.{Location, LocationType, Voivodeship}
 import bestaro.core.processors.BaseNameProducer
-import bestaro.util.FileIO
 import com.github.tototoshi.csv.{CSVReader, DefaultCSVFormat}
 import play.api.libs.json.{Json, OFormat}
 

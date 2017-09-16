@@ -1,6 +1,8 @@
 package bestaro.common
 
-import play.api.libs.json.{Json, OFormat}
+import java.util.Base64
+
+import play.api.libs.json._
 
 case class RecordDTO(
                       record: Record,
@@ -16,7 +18,21 @@ case class NamedPicture(
                          bytes: Array[Byte]
                        )
 
-object NamedPicture {
-  implicit val namedPictureFormat: OFormat[NamedPicture] = Json.format[NamedPicture]
-}
 
+object NamedPicture {
+  implicit val topWrites: Writes[NamedPicture] = Writes[NamedPicture] {
+    picture =>
+      JsObject(Map(
+        "name" -> JsString(picture.name),
+        "bytes" -> JsString(new String(Base64.getEncoder.encode(picture.bytes)))
+      ))
+  }
+
+  implicit val topReads: Reads[NamedPicture] = Reads[NamedPicture] {
+    case JsObject(dataMap) =>
+      JsSuccess(NamedPicture(
+        dataMap("name").asInstanceOf[JsString].value,
+        Base64.getDecoder.decode(dataMap("bytes").asInstanceOf[JsString].value.getBytes)
+      ))
+  }
+}

@@ -3,8 +3,8 @@ package bestaro.service
 import java.io.File
 import java.util.zip.ZipFile
 
+import bestaro.common.util.FileIO
 import bestaro.core.processors.BaseNameProducer
-import bestaro.util.FileIO
 import morfologik.stemming.WordData
 import morfologik.stemming.polish.PolishStemmer
 import play.api.libs.json.Json

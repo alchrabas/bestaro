@@ -8,8 +8,8 @@ import bestaro.common.RecordId
 
 object ImageUtil {
 
-  def saveImage(id: RecordId, stream: InputStream): Path = {
-    val pathToPicture = Paths.get("pictures", id.toString + ".png")
+  def saveImage(id: RecordId, serialId: Int, stream: InputStream): Path = {
+    val pathToPicture = Paths.get("pictures", id.toString + serialId + ".png")
     val bufferedImage = ImageIO.read(stream)
     ImageIO.write(bufferedImage, "png", pathToPicture.toFile)
 

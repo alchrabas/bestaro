@@ -2,7 +2,7 @@ package bestaro.service
 
 import java.lang.reflect.Type
 
-import bestaro.util.FileIO
+import bestaro.common.util.FileIO
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 

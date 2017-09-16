@@ -1,5 +1,6 @@
 package bestaro.core
 
+import bestaro.DataSupplier
 import bestaro.collectors.util.SlowHttpDownloader
 import bestaro.collectors.{FacebookCollector, OlxCollector}
 import bestaro.common.RecordId
@@ -36,6 +37,11 @@ object Main {
 
         val verifier = new LocationVerifier(taggedRecords)
         println(verifier.verify(processedRecords))
+
+        val dataSupplier = new DataSupplier
+        records
+          .map(_.buildRecord)
+          .foreach(dataSupplier.sendRecord)
     }
   }
 

@@ -15,7 +15,8 @@ import scala.collection.mutable
 
 class FacebookCollector(recordConsumer: RawRecord => Unit, isAlreadyStored: RawRecord => Boolean) {
 
-  private val THREE_MONTHS = TimeUnit.DAYS.toSeconds(3 * 30)
+  private val OLDEST_DATE_TO_COLLECT = TimeUnit.DAYS.toSeconds(6 * 30)
+  private val POSTS_FETCHED_PER_PAGE = 20
 
   def collect(recordConsumer: RawRecord => Unit): Unit = {
     val facebook = new FacebookFactory().getInstance
@@ -46,14 +47,14 @@ class FacebookCollector(recordConsumer: RawRecord => Unit, isAlreadyStored: RawR
   }
 
   private def isWithinTimeBox(postDate: Long): Boolean = {
-    val threeMonthsAgo = Instant.now().minusSeconds(THREE_MONTHS).toEpochMilli
+    val threeMonthsAgo = Instant.now().minusSeconds(OLDEST_DATE_TO_COLLECT).toEpochMilli
     postDate >= threeMonthsAgo
   }
 
   class FacebookEater(facebook: Facebook, groupId: String) {
     private var lastPage: Option[Paging[Post]] = None
-    private val READING = new Reading().limit(10)
-      .fields("message", "link", "id", "permalink_url", "created_time", "attachments")
+    private val READING = new Reading().limit(POSTS_FETCHED_PER_PAGE)
+      .fields("message", "link", "id", "permalink_url", "created_time", "attachments", "full_picture")
 
     def fetch(): ResponseList[Post] = {
       Thread.sleep(1000)
@@ -73,11 +74,11 @@ class FacebookCollector(recordConsumer: RawRecord => Unit, isAlreadyStored: RawR
 
     val id = FbId(post.getId)
     var picturePath: Option[Path] = Option.empty
-    if (post.getPicture != null) {
-      picturePath = Some(ImageUtil.saveImage(id, post.getPicture.openStream()))
+    if (post.getFullPicture != null) {
+      picturePath = Some(ImageUtil.saveImage(id, 1, post.getFullPicture.openStream()))
     }
 
-    RawRecord(id, LOST, post.getMessage, post.getCreatedTime.getTime,
+    RawRecord(id, LOST, Option(post.getMessage).getOrElse(""), post.getCreatedTime.getTime,
       Voivodeship.MALOPOLSKIE, picturePath.map(_.toString).toList,
       Option(post.getPermalinkUrl).map(_.toString).orNull)
   }

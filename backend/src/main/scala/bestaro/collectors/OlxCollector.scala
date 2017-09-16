@@ -75,7 +75,7 @@ class OlxCollector(httpDownloader: HttpDownloader) {
 
     val id = parseId(idString)
     if (pictures.nonEmpty) {
-      requestImageSlowly(id, pictures(0))
+      requestImageSlowly(id, pictures.head, 1)
     }
 
     RawRecord(id, LOST, messageContent,
@@ -95,8 +95,8 @@ class OlxCollector(httpDownloader: HttpDownloader) {
     }
   }
 
-  def requestImageSlowly(id: RecordId, url: String): Unit = {
-    ImageUtil.saveImage(id, httpDownloader.downloadResource(new URL(url)))
+  def requestImageSlowly(id: RecordId, url: String, serialId: Int): Unit = {
+    ImageUtil.saveImage(id, serialId, httpDownloader.downloadResource(new URL(url)))
   }
 
   def requestSlowly(url: String): Document = {

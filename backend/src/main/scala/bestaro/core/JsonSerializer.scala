@@ -1,6 +1,6 @@
 package bestaro.core
 
-import bestaro.util.FileIO
+import bestaro.common.util.FileIO
 import play.api.libs.json.Json
 
 class JsonSerializer {

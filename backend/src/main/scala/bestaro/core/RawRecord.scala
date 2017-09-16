@@ -14,7 +14,17 @@ case class RawRecord(recordId: RecordId,
                      eventDate: Long = 0,
                      title: String = "",
                      fullLocation: FullLocation = FullLocation(None, None, None)
-                    )
+                    ) {
+
+  def buildRecord: Record = {
+    Record(recordId,
+      status, voivodeship, pictures, link, if (eventDate > 0) {
+        eventDate
+      } else {
+        postDate
+      }, fullLocation)
+  }
+}
 
 object RawRecord {
   implicit val rawRecordFormat: OFormat[RawRecord] = Json.format[RawRecord]
