@@ -4,11 +4,12 @@ import play.api.libs.json.{Json, OFormat}
 
 case class Record(
                    recordId: RecordId,
-                   status: AnimalStatus,
+                   status: EventType,
                    voivodeship: Voivodeship,
                    pictures: List[String] = List(),
                    link: String,
-                   date: Long,
+                   eventDate: Long,
+                   publishDate: Long,
                    fullLocation: FullLocation
                  )
 

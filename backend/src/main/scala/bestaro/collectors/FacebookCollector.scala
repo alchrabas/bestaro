@@ -1,12 +1,11 @@
 package bestaro.collectors
 
-import java.io.FileNotFoundException
 import java.nio.file.Path
 import java.time.Instant
+import java.util.Date
 import java.util.concurrent.TimeUnit
 
-import bestaro.common.{FbId, Voivodeship}
-import bestaro.common.ProgressStatus.LOST
+import bestaro.common.{AnimalType, EventType, FbId, Voivodeship}
 import bestaro.core.RawRecord
 import bestaro.util.ImageUtil
 import facebook4j._
@@ -16,7 +15,7 @@ import scala.collection.mutable
 
 class FacebookCollector(recordConsumer: RawRecord => Unit, isAlreadyStored: RawRecord => Boolean) {
 
-  private val OLDEST_DATE_TO_COLLECT = TimeUnit.DAYS.toSeconds(6 * 30)
+  private val OLDEST_DATE_TO_COLLECT = TimeUnit.DAYS.toSeconds(3 * 30)
   private val POSTS_FETCHED_PER_PAGE = 20
 
   def collect(recordConsumer: RawRecord => Unit): Unit = {
@@ -54,7 +53,7 @@ class FacebookCollector(recordConsumer: RawRecord => Unit, isAlreadyStored: RawR
 
   class FacebookEater(facebook: Facebook, groupId: String) {
     private var lastPage: Option[Paging[Post]] = None
-    private val READING = new Reading().limit(POSTS_FETCHED_PER_PAGE)
+    private val READING = new Reading().until(new Date()).limit(POSTS_FETCHED_PER_PAGE)
       .fields("message", "link", "id", "permalink_url", "created_time", "attachments", "full_picture")
 
     def fetch(): ResponseList[Post] = {
@@ -79,11 +78,11 @@ class FacebookCollector(recordConsumer: RawRecord => Unit, isAlreadyStored: RawR
       try {
         picturePath = Some(ImageUtil.saveImage(id, 1, post.getFullPicture.openStream()))
       } catch {
-        case FileNotFoundException => println("Unable to save the picture for ID " + id)
+        case _: Exception => println("Unable to save the picture for ID " + id)
       }
     }
 
-    RawRecord(id, LOST, Option(post.getMessage).getOrElse(""), post.getCreatedTime.getTime,
+    RawRecord(id, EventType.LOST, AnimalType.DOG, Option(post.getMessage).getOrElse(""), post.getCreatedTime.getTime,
       Voivodeship.MALOPOLSKIE, picturePath.map(_.toString).toList,
       Option(post.getPermalinkUrl).map(_.toString).orNull)
   }

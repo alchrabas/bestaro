@@ -3,8 +3,7 @@ package bestaro.collectors
 import java.net.URL
 
 import bestaro.collectors.util.HttpDownloader
-import bestaro.common.{OlxId, RecordId, Voivodeship}
-import bestaro.common.ProgressStatus.LOST
+import bestaro.common._
 import bestaro.core.RawRecord
 import bestaro.extractors.PolishDateExtractor
 import bestaro.util.ImageUtil
@@ -78,7 +77,8 @@ class OlxCollector(httpDownloader: HttpDownloader) {
       requestImageSlowly(id, pictures.head, 1)
     }
 
-    RawRecord(id, LOST, messageContent,
+    RawRecord(id, EventType.LOST, AnimalType.UNKNOWN,
+      messageContent,
       extractedDate.map(_.toEpochMilli).getOrElse(1L),
       Voivodeship.MALOPOLSKIE,
       location = locationString, title = title,

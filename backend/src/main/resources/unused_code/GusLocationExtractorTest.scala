@@ -1,8 +1,7 @@
 package bestaro.core.processors
 
 
-import bestaro.common.{FbId, FullLocation, Location, RecordId}
-import bestaro.common.ProgressStatus.LOST
+import bestaro.common.{FbId, FullLocation, Location, RecordId, EventType}
 import bestaro.core._
 import bestaro.extractors.{GusLocationExtractor, MatchedFullLocation, MatchedLocation}
 import bestaro.helpers.TaggedRecordsManager.TaggedRecord
@@ -13,7 +12,7 @@ class GusLocationExtractorTest extends FunSpec {
 
   describe("Should extract") {
     it("not inflected two-word street name") {
-      val record = RawRecord(FbId("123"), LOST, "Dziś na ulicy Monte Cassino", 1, Voivodeship.MALOPOLSKIE, List())
+      val record = RawRecord(FbId("123"), EventType.LOST, "Dziś na ulicy Monte Cassino", 1, Voivodeship.MALOPOLSKIE, List())
       val taggedRecords: Map[RecordId, TaggedRecord] = Map(FbId("123") ->
         TaggedRecord(FbId("123"), List("Monte Cassino"), List(), List(), "", "")
       )

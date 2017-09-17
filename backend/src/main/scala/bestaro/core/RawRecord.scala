@@ -4,7 +4,8 @@ import bestaro.common._
 import play.api.libs.json.{Json, OFormat}
 
 case class RawRecord(recordId: RecordId,
-                     status: AnimalStatus,
+                     eventType: EventType,
+                     animalType: AnimalType,
                      message: String,
                      postDate: Long,
                      voivodeship: Voivodeship,
@@ -18,11 +19,10 @@ case class RawRecord(recordId: RecordId,
 
   def buildRecord: Record = {
     Record(recordId,
-      status, voivodeship, pictures, link, if (eventDate > 0) {
-        eventDate
-      } else {
-        postDate
-      }, fullLocation)
+      eventType, voivodeship, pictures, link,
+      eventDate,
+      postDate,
+      fullLocation)
   }
 }
 

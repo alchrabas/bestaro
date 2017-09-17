@@ -24,7 +24,8 @@ lazy val backend = project
       "com.github.tototoshi" %% "scala-csv" % "1.3.4",
       "com.google.maps" % "google-maps-services" % "0.2.1",
       "org.slf4j" % "slf4j-nop" % "1.7.25",
-      "com.typesafe.play" %% "play-json" % "2.6.3"
+      "com.typesafe.play" %% "play-json" % "2.6.3",
+      "com.google.guava" % "guava" % "23.0"
     )
   )
 
@@ -35,8 +36,8 @@ lazy val frontend = project
     name := "bestaro-frontend",
     libraryDependencies ++= Seq(
       "org.eclipse.jetty" % "jetty-servlet" % "9.4.6.v20170531",
-      "org.eclipse.jetty" % "jetty-server" % "9.4.6.v20170531"
-
+      "org.eclipse.jetty" % "jetty-server" % "9.4.6.v20170531",
+      "com.google.guava" % "guava" % "23.0"
     )
   )
 
