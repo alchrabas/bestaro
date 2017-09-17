@@ -1,28 +1,27 @@
-package bestaro.backend
+package bestaro.frontend
 
-import java.io.FileOutputStream
+import java.io.{File, FileOutputStream}
 import javax.servlet.http.{HttpServlet, HttpServletRequest, HttpServletResponse}
 
+import bestaro.common.types.{NamedPicture, Record, RecordDTO}
 import bestaro.common.util.FileIO
-import bestaro.common.{NamedPicture, Record, RecordDTO}
+import com.google.common.io.CharStreams
 import org.eclipse.jetty.http.HttpStatus
 import play.api.libs.json.Json
 
 class DataConsumer extends HttpServlet {
 
   override def doPost(req: HttpServletRequest, resp: HttpServletResponse): Unit = {
-    val inputData = new Array[Char](10 * 1000 * 1000)
 
-    val charsRead = req.getReader.read(inputData)
-    if (charsRead == -1 || charsRead == inputData.length) {
+    val json = CharStreams.toString(req.getReader)
+    req.getReader.close()
+    if (json.length == -1) {
       resp.setStatus(HttpStatus.INTERNAL_SERVER_ERROR_500)
       resp.getWriter.println("Invalid input data")
     } else {
-      val json = new String(inputData, 0, charsRead)
-      println(json)
 
       val recordDTO = Json.parse(json).as[RecordDTO]
-      recordDTO.pictures.foreach(savePicture)
+      recordDTO.pictures.foreach(saveNamedPicture)
 
       val record = recordDTO.record
       // will safe it in db or something
@@ -35,9 +34,14 @@ class DataConsumer extends HttpServlet {
     }
   }
 
-  private def savePicture(picture: NamedPicture): Unit = {
-    val fileWriter = new FileOutputStream("pictures/" + picture.name)
-    fileWriter.write(picture.bytes)
+  private def saveNamedPicture(picture: NamedPicture): Unit = {
+    saveImage(picture.bytes, new File("pictures/" + picture.name))
+    saveImage(picture.minifiedBytes, new File("pictures_min/" + picture.name))
+  }
+
+  private def saveImage(bytes: Array[Byte], picturePath: File): Unit = {
+    val fileWriter = new FileOutputStream(picturePath)
+    fileWriter.write(bytes)
     fileWriter.close()
   }
 }
