@@ -1,4 +1,4 @@
-package bestaro.common
+package bestaro.common.types
 
 import play.api.libs.json.{Json, OFormat}
 

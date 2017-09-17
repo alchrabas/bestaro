@@ -5,7 +5,7 @@ import java.time.Instant
 import java.util.Date
 import java.util.concurrent.TimeUnit
 
-import bestaro.common.{AnimalType, EventType, FbId, Voivodeship}
+import bestaro.common.types.{AnimalType, EventType, FbId, Voivodeship}
 import bestaro.core.RawRecord
 import bestaro.util.ImageUtil
 import facebook4j._

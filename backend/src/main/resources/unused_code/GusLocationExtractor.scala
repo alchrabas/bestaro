@@ -1,6 +1,6 @@
 package bestaro.extractors
 
-import bestaro.common.Location
+import bestaro.common.types.Location
 import bestaro.core.processors._
 import bestaro.service.GusDataReader
 

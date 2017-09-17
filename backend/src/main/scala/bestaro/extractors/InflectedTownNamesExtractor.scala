@@ -2,7 +2,7 @@ package bestaro.extractors
 
 import java.util
 
-import bestaro.common.Voivodeship
+import bestaro.common.types.Voivodeship
 import bestaro.core.processors.Token
 import bestaro.service.{InflectedLocation, PolishTownNamesInflector}
 

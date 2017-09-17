@@ -1,7 +1,7 @@
 package bestaro.core
 
 import bestaro.common.util.PolishCharactersAsciizer
-import bestaro.common.{FullLocation, RecordId}
+import bestaro.common.types.{FullLocation, RecordId}
 import bestaro.core.processors.BaseNameProducer
 import bestaro.helpers.TaggedRecordsManager.TaggedRecord
 

@@ -1,10 +1,12 @@
 package bestaro
 
-import java.io.{BufferedReader, InputStreamReader}
+import java.io.{BufferedReader, ByteArrayOutputStream, File, InputStreamReader}
 import java.net.{HttpURLConnection, URL}
 import java.nio.file.{Files, Paths}
+import javax.imageio.ImageIO
 
-import bestaro.common.{NamedPicture, Record, RecordDTO}
+import bestaro.common.types.{NamedPicture, Record, RecordDTO}
+import bestaro.common.util.ImageResizer
 import play.api.libs.json.Json
 
 class DataSupplier {
@@ -12,15 +14,27 @@ class DataSupplier {
 
     val namedPictures = record.pictures
       .map { pictureName =>
-        (pictureName, Files.readAllBytes(Paths.get("pictures/" + pictureName)))
+        (pictureName, imageBytes(pictureName), minifiedImageBytes(pictureName))
       }
-      .map(pictureAndBytes => NamedPicture(pictureAndBytes._1, pictureAndBytes._2))
+      .map(pictureAndBytes => NamedPicture(pictureAndBytes._1, pictureAndBytes._2, pictureAndBytes._3))
 
     val recordDTO = RecordDTO(record, namedPictures)
     val encodedJson = Json.toBytes(Json.toJson(recordDTO))
     println("SENDING: " + recordDTO.record)
 
     uploadBytes(encodedJson)
+  }
+
+  private def imageBytes(pictureName: String): Array[Byte] = {
+    Files.readAllBytes(Paths.get("pictures/" + pictureName))
+  }
+
+  private def minifiedImageBytes(pictureName: String): Array[Byte] = {
+    val bufferedImage = ImageIO.read(new File("pictures/" + pictureName))
+    val resizedImage = ImageResizer.createResizedCopy(bufferedImage, 100, 100, preserveAlpha = true)
+    val byteOutputStream = new ByteArrayOutputStream()
+    ImageIO.write(resizedImage, "png", byteOutputStream)
+    byteOutputStream.toByteArray
   }
 
   private def uploadBytes(encodedJson: Array[Byte]): Unit = {

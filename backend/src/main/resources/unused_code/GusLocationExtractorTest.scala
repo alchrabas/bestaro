@@ -1,7 +1,7 @@
 package bestaro.core.processors
 
 
-import bestaro.common.{FbId, FullLocation, Location, RecordId, EventType}
+import bestaro.common.types._
 import bestaro.core._
 import bestaro.extractors.{GusLocationExtractor, MatchedFullLocation, MatchedLocation}
 import bestaro.helpers.TaggedRecordsManager.TaggedRecord

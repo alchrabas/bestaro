@@ -3,7 +3,7 @@ package bestaro.collectors
 import java.net.URL
 
 import bestaro.collectors.util.HttpDownloader
-import bestaro.common._
+import bestaro.common.types._
 import bestaro.core.RawRecord
 import bestaro.extractors.PolishDateExtractor
 import bestaro.util.ImageUtil

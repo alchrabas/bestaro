@@ -1,4 +1,4 @@
-package bestaro.common
+package bestaro.common.types
 
 import java.util.Base64
 
@@ -15,7 +15,8 @@ object RecordDTO {
 
 case class NamedPicture(
                          name: String,
-                         bytes: Array[Byte]
+                         bytes: Array[Byte],
+                         minifiedBytes: Array[Byte]
                        )
 
 
@@ -24,7 +25,8 @@ object NamedPicture {
     picture =>
       JsObject(Map(
         "name" -> JsString(picture.name),
-        "bytes" -> JsString(new String(Base64.getEncoder.encode(picture.bytes)))
+        "bytes" -> JsString(new String(Base64.getEncoder.encode(picture.bytes))),
+        "minifiedBytes" -> JsString(new String(Base64.getEncoder.encode(picture.minifiedBytes)))
       ))
   }
 
@@ -32,7 +34,8 @@ object NamedPicture {
     case JsObject(dataMap) =>
       JsSuccess(NamedPicture(
         dataMap("name").asInstanceOf[JsString].value,
-        Base64.getDecoder.decode(dataMap("bytes").asInstanceOf[JsString].value.getBytes)
+        Base64.getDecoder.decode(dataMap("bytes").asInstanceOf[JsString].value.getBytes),
+        Base64.getDecoder.decode(dataMap("minifiedBytes").asInstanceOf[JsString].value.getBytes)
       ))
   }
 }

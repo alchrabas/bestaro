@@ -4,7 +4,7 @@ import java.io.InputStream
 import java.nio.file.{Path, Paths}
 import javax.imageio.ImageIO
 
-import bestaro.common.RecordId
+import bestaro.common.types.RecordId
 
 object ImageUtil {
 

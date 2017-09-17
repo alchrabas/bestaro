@@ -2,7 +2,7 @@ package bestaro.helpers
 
 import java.io.File
 
-import bestaro.common.RecordId
+import bestaro.common.types.RecordId
 import bestaro.core._
 import com.github.tototoshi.csv.{CSVReader, CSVWriter}
 import play.api.libs.json.Json

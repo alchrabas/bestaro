@@ -1,6 +1,6 @@
 package bestaro.extractors
 
-import bestaro.common.LocationType
+import bestaro.common.types.LocationType
 import bestaro.core.processors.Token
 
 case class MultiWordName(tokens: List[Token], startIndex: Int,

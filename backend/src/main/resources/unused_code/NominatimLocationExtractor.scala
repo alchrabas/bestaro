@@ -1,6 +1,7 @@
 package unused_code
 
-import bestaro.common.{FullLocation, Location}
+import bestaro.common.FullLocation
+import bestaro.common.types.{FullLocation, Location}
 import bestaro.core.processors.{LocationType, Token}
 import bestaro.extractors._
 import bestaro.service.Voivodeship

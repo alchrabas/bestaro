@@ -1,6 +1,6 @@
 package bestaro.extractors
 
-import bestaro.common._
+import bestaro.common.types._
 import bestaro.core.processors.Token
 import bestaro.service.CachedGoogleApiClient
 import com.google.maps.model.{AddressComponent, AddressComponentType, GeocodingResult}
