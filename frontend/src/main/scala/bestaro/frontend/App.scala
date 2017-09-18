@@ -15,11 +15,10 @@ object App {
 
     val pictureHandler = new ResourceHandler
     pictureHandler.setResourceBase("pictures_min")
-
-    val contextHandler = new ContextHandler
-    contextHandler.setContextPath("/pictures")
-    contextHandler.setHandler(pictureHandler)
-    contextHandler.setAllowNullPathInfo(true)
+    val pictureContextHandler = new ContextHandler
+    pictureContextHandler.setContextPath("/pictures")
+    pictureContextHandler.setHandler(pictureHandler)
+    pictureContextHandler.setAllowNullPathInfo(true)
 
     val dynamicHandler: ServletContextHandler = new ServletContextHandler(server, "/rest")
     dynamicHandler.addServlet(classOf[PetRestServlet], "/")
@@ -27,7 +26,8 @@ object App {
     val dataConsumer: ServletContextHandler = new ServletContextHandler(server, "/upload")
     dataConsumer.addServlet(classOf[DataConsumer], "/")
 
-    server.setHandler(new HandlerList(dynamicHandler, resourceHandler, contextHandler, dataConsumer))
+    server.setHandler(new HandlerList(dynamicHandler, resourceHandler,
+      pictureContextHandler, dataConsumer))
 
     server.start()
   }

@@ -1,30 +1,20 @@
-
 /* Fix to allow <!doctype html>, because otherwise html and body don't occupy whole screen */
 html, body {
     height: 100%;
-}
-
-.leaflet-popup-content {
-    margin: 0;
 }
 
 #mapContainer {
     height: 100%;
 }
 
-.animalPictureInPopup {
-    width: 100px;
-    height: 100px;
+.animal-popup-status-lost {
+    border: 1px solid rgba(255, 0, 0, 0.3);
 }
 
-.animal-popup-status-lost > .leaflet-popup-content-wrapper {
-    background-color: rgba(255, 0, 0, 0.3);
+.animal-popup-status-found {
+    border: 1px solid rgba(0, 255, 0, 0.3);
 }
 
-.animal-popup-status-found > .leaflet-popup-content-wrapper {
-    background-color: rgba(0, 255, 0, 0.3);
-}
-
-.animal-popup-status-seen > .leaflet-popup-content-wrapper {
-    background-color: rgba(0, 0, 255, 0.5);
+.animal-popup-status-seen {
+    border: 1px solid rgba(0, 0, 255, 0.5);
 }
