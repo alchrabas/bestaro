@@ -11,15 +11,17 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
         minZoom: 4
     }).addTo(leafletMap);
 
+const allMarkers = new L.FeatureGroup();
+leafletMap.addLayer(allMarkers);
+
 const statusToClassName = {
     "LOST": "animal-popup-status-lost",
     "FOUND": "animal-popup-status-found",
     "SEEN": "animal-popup-status-seen"
 };
 
-const updateLastMoveTimestamp = () => {
-    lastMoveTimestamp = Date.now();
-};
+const updateLastMoveTimestamp = () => lastMoveTimestamp = Date.now();
+
 
 leafletMap.on("zoomend", updateLastMoveTimestamp);
 leafletMap.on("moveend", updateLastMoveTimestamp);
@@ -38,15 +40,16 @@ const fetchDataFromServer = () => {
 
     console.log("FETCHING DATA FROM SERVER");
     const {_southWest: boundsSW, _northEast: boundsNE} = leafletMap.getBounds();
-    fetch(`/rest?minlat=${boundsSW.lat}&minlon=${boundsSW.lng}&maxlat=${boundsNE.lat}&maxlon=${boundsNE.lng}`)
+    fetch(`/rest/${boundsSW.lat}/${boundsSW.lng}/${boundsNE.lat}/${boundsNE.lng}`)
         .then(response => {
             return response.json();
         }).then(data => {
+        allMarkers.clearLayers();
         data.map(record => {
             const className = statusToClassName[record.status] || "";
 
             const icon = L.icon({
-                iconUrl: `pictures/${record.picture}`,
+                iconUrl: `assets/pictures/${record.picture}`,
 
                 iconSize: [100, 100],
                 iconAnchor: [50, 100],
@@ -55,7 +58,7 @@ const fetchDataFromServer = () => {
                 className: className
             });
 
-            L.marker([record.lat, record.lon], {icon: icon}).addTo(leafletMap);
+            allMarkers.addLayer(L.marker([record.lat, record.lon], {icon: icon}));
         });
     }).catch(() => {
         console.log("Error when trying to fetch data");

@@ -38,7 +38,7 @@ class DataSupplier {
   }
 
   private def uploadBytes(encodedJson: Array[Byte]): Unit = {
-    val yahoo = new URL("http://localhost:8888/upload/")
+    val yahoo = new URL("http://localhost:9000/upload/")
     val connection = yahoo.openConnection().asInstanceOf[HttpURLConnection]
     connection.setDoOutput(true)
     connection.setRequestMethod("POST")

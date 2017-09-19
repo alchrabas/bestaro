@@ -1,4 +1,5 @@
 /* Fix to allow <!doctype html>, because otherwise html and body don't occupy whole screen */
+
 html, body {
     height: 100%;
 }

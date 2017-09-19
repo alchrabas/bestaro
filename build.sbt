@@ -1,4 +1,3 @@
-
 lazy val root = (project in file("."))
   .aggregate(backend, frontend)
 
@@ -31,14 +30,16 @@ lazy val backend = project
 
 lazy val frontend = project
   .dependsOn(common)
+  .enablePlugins(PlayScala)
   .settings(
     commonSettings,
     name := "bestaro-frontend",
     libraryDependencies ++= Seq(
-      "org.eclipse.jetty" % "jetty-servlet" % "9.4.6.v20170531",
-      "org.eclipse.jetty" % "jetty-server" % "9.4.6.v20170531",
-      "com.google.guava" % "guava" % "23.0"
-    )
+      "com.google.guava" % "guava" % "23.0",
+      "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2" % Test,
+      guice
+    ),
+    PlayKeys.devSettings := Seq("play.server.http.port" -> "8888")
   )
 
 lazy val common = project
