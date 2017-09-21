@@ -49,7 +49,7 @@ const fetchDataFromServer = () => {
             const className = statusToClassName[record.status] || "";
 
             const icon = L.icon({
-                iconUrl: `assets/pictures/${record.picture}`,
+                iconUrl: `pictures_min/${record.picture}`,
 
                 iconSize: [100, 100],
                 iconAnchor: [50, 100],

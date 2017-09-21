@@ -12,3 +12,5 @@ GET         /                                            controllers.HomeControl
 GET         /rest/:minlat/:minlon/:maxlat/:maxlon        controllers.RestController.getMarkers(minlat: Double, minlon: Double, maxlat: Double, maxlon: Double)
 GET         /assets/*file                                controllers.Assets.at(path="/public", file)
 POST        /upload/                                     controllers.RecordConsumerController.saveRecord()
+GET         /pictures/:file                              controllers.PicturesController.picture(file)
+GET         /pictures_min/:file                          controllers.PicturesController.minPicture(file)
