@@ -1,8 +1,9 @@
 package bestaro
 
-import java.io.{BufferedReader, ByteArrayOutputStream, File, InputStreamReader}
+import java.io._
 import java.net.{HttpURLConnection, URL}
 import java.nio.file.{Files, Paths}
+import java.util.{Base64, Properties}
 import javax.imageio.ImageIO
 
 import bestaro.common.types.{NamedPicture, Record, RecordDTO}
@@ -10,8 +11,13 @@ import bestaro.common.util.ImageResizer
 import play.api.libs.json.Json
 
 class DataSupplier {
-  def sendRecord(record: Record) {
 
+  private val propertyFileResource = getClass.getClassLoader.getResource("app.properties")
+  private val appPropertiesFIS = new FileInputStream(propertyFileResource.getFile)
+  private val properties = new Properties()
+  properties.load(appPropertiesFIS)
+
+  def sendRecord(record: Record) {
     val namedPictures = record.pictures
       .map { pictureName =>
         (pictureName, imageBytes(pictureName), minifiedImageBytes(pictureName))
@@ -38,12 +44,15 @@ class DataSupplier {
   }
 
   private def uploadBytes(encodedJson: Array[Byte]): Unit = {
-    val yahoo = new URL("http://localhost:9000/upload/")
-    val connection = yahoo.openConnection().asInstanceOf[HttpURLConnection]
+    val connectionToFrontend = new URL("http://localhost:8888/upload/")
+    val connection = connectionToFrontend.openConnection().asInstanceOf[HttpURLConnection]
     connection.setDoOutput(true)
     connection.setRequestMethod("POST")
 
     connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8")
+    val userCredentials = properties.getProperty("frontendAuthCredentials").getBytes
+    val basicAuth = "Basic " + new String(Base64.getEncoder.encode(userCredentials))
+    connection.setRequestProperty("Authorization", basicAuth)
     connection.connect()
     val outputStream = connection.getOutputStream
     outputStream.write(encodedJson)

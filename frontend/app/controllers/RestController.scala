@@ -1,15 +1,15 @@
 package controllers
 
-import java.io.File
 import javax.inject.{Inject, Singleton}
 
 import bestaro.common.types.Record
 import bestaro.common.util.FileIO
 import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.{AbstractController, AnyContent, ControllerComponents, Request}
+import play.api.mvc._
 
 @Singleton
-class RestController @Inject()(cc: ControllerComponents) extends AbstractController(cc) {
+class RestController @Inject()(cc: ControllerComponents
+                              ) extends AbstractController(cc) {
 
   def getMarkers(minlat: Double, minlon: Double, maxlat: Double, maxlon: Double) = Action {
     implicit request: Request[AnyContent] =>

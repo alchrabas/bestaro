@@ -1,16 +1,55 @@
 package controllers
 
 import java.io.{File, FileOutputStream}
+import java.util.Base64
 import javax.inject.Inject
 
 import bestaro.common.types.{NamedPicture, Record, RecordDTO}
 import bestaro.common.util.FileIO
 import play.api.libs.json.Json
-import play.api.mvc.{AbstractController, AnyContent, ControllerComponents, Request}
+import play.api.mvc._
 
-class RecordConsumerController @Inject()(cc: ControllerComponents) extends AbstractController(cc) {
+import scala.concurrent.{ExecutionContext, Future}
 
-  def saveRecord() = Action { implicit request: Request[AnyContent] =>
+
+class AuthenticateAction @Inject()(parser: BodyParsers.Default,
+                                   configuration: play.api.Configuration)
+                                  (implicit ec: ExecutionContext) extends ActionBuilderImpl(parser) {
+
+  private val authUsername = configuration.underlying.getString("bestaro.upload.auth.username")
+  private val authPassword = configuration.underlying.getString("bestaro.upload.auth.password")
+
+  private val UNAUTHORIZED =
+    Results.Unauthorized.withHeaders("WWW-Authenticate" -> "Basic realm=Unauthorized")
+
+  override def invokeBlock[A](request: Request[A], block: (Request[A]) => Future[Result]): Future[Result] = {
+    val authSuccessful = request.headers.get("Authorization") exists { authHeader =>
+      val (user, pass) = decodeBasicAuth(authHeader)
+      user == authUsername && pass == authPassword
+    }
+
+    if (authSuccessful) {
+      block(request)
+    } else {
+      Future(UNAUTHORIZED)
+    }
+  }
+
+  private def decodeBasicAuth(authHeader: String): (String, String) = {
+    val baStr = authHeader.replaceFirst("Basic ", "")
+
+    val decoded = Base64.getDecoder.decode(baStr)
+    val Array(user, password) = new String(decoded).split(":")
+    (user, password)
+  }
+}
+
+class RecordConsumerController @Inject()(cc: ControllerComponents,
+                                         configuration: play.api.Configuration,
+                                         authenticationAction: AuthenticateAction,
+                                        ) extends AbstractController(cc) {
+
+  def saveRecord() = authenticationAction { implicit request: Request[AnyContent] =>
     val recordDTO = request.body.asJson.get.as[RecordDTO]
     recordDTO.pictures.foreach(saveNamedPicture)
 
@@ -24,8 +63,11 @@ class RecordConsumerController @Inject()(cc: ControllerComponents) extends Abstr
   }
 
   private def saveNamedPicture(picture: NamedPicture): Unit = {
-    saveImage(picture.bytes, new File("frontend/public/pictures/" + picture.name))
-    saveImage(picture.minifiedBytes, new File("frontend/public/pictures_min/" + picture.name))
+    val picturesDir = configuration.underlying.getString("bestaro.picturesDir")
+    val minPicturesDir = configuration.underlying.getString("bestaro.minPicturesDir")
+
+    saveImage(picture.bytes, new File(picturesDir + "/" + picture.name))
+    saveImage(picture.minifiedBytes, new File(minPicturesDir + "/" + picture.name))
   }
 
   private def saveImage(bytes: Array[Byte], picturePath: File): Unit = {
