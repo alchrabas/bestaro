@@ -17,6 +17,7 @@ html, body {
     border: 1px solid rgba(0, 255, 0, 0.3);
 }
 
-.animal-popup-status-seen {
-    border: 1px solid rgba(0, 0, 255, 0.5);
+.fullPicturePreview {
+    max-width: 400px;
+    max-height: 400px;
 }

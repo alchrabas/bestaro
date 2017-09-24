@@ -45,7 +45,7 @@ const fetchDataFromServer = () => {
         }).then(data => {
         allMarkers.clearLayers();
         data.map(record => {
-            const className = statusToClassName[record.status] || "";
+            const className = statusToClassName[record.eventType] || "";
 
             const icon = L.icon({
                 iconUrl: `pictures_min/${record.picture}`,
@@ -57,7 +57,12 @@ const fetchDataFromServer = () => {
                 className: className
             });
 
-            allMarkers.addLayer(L.marker([record.lat, record.lon], {icon: icon}));
+            allMarkers.addLayer(L.marker([record.lat, record.lon], {icon: icon}).bindPopup(`
+                eventDate: ${record.eventDate}<br>
+                publishDate: ${record.publishDate}<br>
+                eventType: ${record.eventType}<br>
+                picture: <img class="fullPicturePreview" src="pictures/${record.picture}"/><br>
+            `));
         });
     }).catch(() => {
         console.log("Error when trying to fetch data");

@@ -26,7 +26,7 @@ class RestController @Inject()(cc: ControllerComponents
             "eventDate" -> String.valueOf(v.eventDate),
             "publishDate" -> String.valueOf(v.publishDate),
             "picture" -> v.pictures.head,
-            "status" -> v.status.value,
+            "eventType" -> v.status.value,
             "lat" -> String.valueOf(v.fullLocation.coordinate.get.lat),
             "lon" -> String.valueOf(v.fullLocation.coordinate.get.lon)
           )
