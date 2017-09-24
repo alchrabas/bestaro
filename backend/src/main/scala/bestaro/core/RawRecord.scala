@@ -15,7 +15,8 @@ case class RawRecord(recordId: RecordId,
                      location: String = "",
                      eventDate: Long = 0,
                      title: String = "",
-                     fullLocation: FullLocation = FullLocation(None, None, None)
+                     fullLocation: FullLocation = FullLocation(None, None, None),
+                     secondaryMessage: String = ""
                     ) {
 
   def buildRecord: Record = {

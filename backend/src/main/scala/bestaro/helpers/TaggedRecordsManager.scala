@@ -32,10 +32,10 @@ object TaggedRecordsManager {
       val isKrakow = Option(row("Krakow")).contains("1")
       val date = row("Date")
       val animalType = row("Type")
-      val status = row("Status")
+      val eventType = row("Status")
 
       if ((locs ++ altLocs).nonEmpty || cities.nonEmpty /* && isKrakow */ ) {
-        taggedRecords.append(TaggedRecord(recordId, locs, altLocs, cities, animalType, status))
+        taggedRecords.append(TaggedRecord(recordId, locs, altLocs, cities, animalType, eventType))
       }
     }
 
@@ -43,7 +43,7 @@ object TaggedRecordsManager {
   }
 
   case class TaggedRecord(recordId: RecordId, locs: List[String], altLocs: List[String],
-                          cities: List[String], animalType: String, status: String)
+                          cities: List[String], animalType: String, eventType: String)
 
   private def stringToList(str: String): List[String] = {
     Option(str).filter(_.nonEmpty).toList

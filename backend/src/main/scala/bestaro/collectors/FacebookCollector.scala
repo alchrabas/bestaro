@@ -1,6 +1,6 @@
 package bestaro.collectors
 
-import java.nio.file.Path
+import java.nio.file.{Path, Paths}
 import java.time.Instant
 import java.util.Date
 import java.util.concurrent.TimeUnit
@@ -54,7 +54,8 @@ class FacebookCollector(recordConsumer: RawRecord => Unit, isAlreadyStored: RawR
   class FacebookEater(facebook: Facebook, groupId: String) {
     private var lastPage: Option[Paging[Post]] = None
     private val READING = new Reading().until(new Date()).limit(POSTS_FETCHED_PER_PAGE)
-      .fields("message", "link", "id", "permalink_url", "created_time", "attachments", "full_picture")
+      .fields("message", "link", "id", "permalink_url", "created_time",
+        "attachments", "full_picture", "description")
 
     def fetch(): ResponseList[Post] = {
       Thread.sleep(1000)
@@ -76,14 +77,22 @@ class FacebookCollector(recordConsumer: RawRecord => Unit, isAlreadyStored: RawR
     var picturePath: Option[Path] = Option.empty
     if (post.getFullPicture != null) {
       try {
-        picturePath = Some(ImageUtil.saveImage(id, 1, post.getFullPicture.openStream()))
+        val potentialPicturePath = ImageUtil.pathToPicture(ImageUtil.pictureName(id, 1))
+        if (potentialPicturePath.toFile.exists()) { // avoid fetching image when it's already there
+          picturePath = Some(Paths.get(ImageUtil.pictureName(id, 1)))
+        } else {
+          picturePath = Some(ImageUtil.saveImage(id, 1, post.getFullPicture.openStream()))
+        }
       } catch {
         case _: Exception => println("Unable to save the picture for ID " + id)
       }
     }
 
-    RawRecord(id, EventType.LOST, AnimalType.DOG, Option(post.getMessage).getOrElse(""), post.getCreatedTime.getTime,
+    val message = Option(post.getMessage)
+    val sharedPostMessage = Option(post.getDescription)
+
+    RawRecord(id, EventType.UNKNOWN, AnimalType.UNKNOWN, message.getOrElse(""), post.getCreatedTime.getTime,
       Voivodeship.MALOPOLSKIE, picturePath.map(_.toString).toList,
-      Option(post.getPermalinkUrl).map(_.toString).orNull)
+      Option(post.getPermalinkUrl).map(_.toString).orNull, secondaryMessage = sharedPostMessage.getOrElse(""))
   }
 }

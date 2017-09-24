@@ -2,7 +2,6 @@ package bestaro.core.processors
 
 import bestaro.core.{RawRecord, Tokenizer}
 import bestaro.extractors.GoogleLocationExtractor
-import bestaro.common.Voivodeship
 
 
 object PlaintextProcessor {
@@ -17,22 +16,31 @@ object PlaintextProcessor {
 }
 
 class PlaintextProcessor {
-  //    val locationExtractor = new GusLocationExtractor()
-  //  val locationExtractor = new NominatimLocationExtractor()
   val locationExtractor = new GoogleLocationExtractor()
 
   def process(record: RawRecord): RawRecord = {
-    val inputText = record.message
+    val inputText = getRecordMessage(record)
     val tokenizer = new Tokenizer()
     val tokens = tokenizer.tokenize(inputText)
-
-    val (stemmedTokens, matchedFullLocations) = locationExtractor.extractLocation(tokens, Voivodeship("MAŁOPOLSKIE"))
     println(inputText)
-    //    println(" ====> ")
-    //    println(stemmedTokens.mkString(" "))
-    val bestLocations = stemmedTokens.sortBy(_.placenessScore).reverse.slice(0, 5)
-    println("BEST CANDIDATES: " + bestLocations)
-    println(s"ALL MATCHED STREETS ${matchedFullLocations.size} " + matchedFullLocations.mkString("\n"))
+
+    val recordWithLocation = extractAndUpdateLocation(record, tokens)
+    extractAndUpdateEventType(recordWithLocation, tokens)
+  }
+
+  private def getRecordMessage(record: RawRecord) = {
+    if (record.secondaryMessage.length > 0) {
+      record.secondaryMessage
+    } else {
+      record.message
+    }
+  }
+
+  private def extractAndUpdateLocation(record: RawRecord, tokens: List[String]): RawRecord = {
+    val (stemmedTokens, matchedFullLocations) = locationExtractor.extractLocation(tokens, record.voivodeship)
+    val mostPrimisingLocations = stemmedTokens.sortBy(_.placenessScore).reverse.slice(0, 5)
+    println("BEST CANDIDATES: " + mostPrimisingLocations)
+    println(s"MATCHED ${matchedFullLocations.size} STREETS: " + matchedFullLocations.mkString("\n"))
     if (matchedFullLocations.isEmpty) {
       record
     } else {
@@ -40,4 +48,7 @@ class PlaintextProcessor {
     }
   }
 
+  private def extractAndUpdateEventType(record: RawRecord, tokens: Seq[String]): RawRecord = {
+    record
+  }
 }
