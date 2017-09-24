@@ -1,7 +1,7 @@
 package bestaro.core.processors
 
 import bestaro.core.{RawRecord, Tokenizer}
-import bestaro.extractors.GoogleLocationExtractor
+import bestaro.extractors.{EventTypeExtractor, GoogleLocationExtractor}
 
 
 object PlaintextProcessor {
@@ -17,6 +17,7 @@ object PlaintextProcessor {
 
 class PlaintextProcessor {
   val locationExtractor = new GoogleLocationExtractor()
+  val eventTypeExtractor = new EventTypeExtractor()
 
   def process(record: RawRecord): RawRecord = {
     val inputText = getRecordMessage(record)
@@ -49,6 +50,6 @@ class PlaintextProcessor {
   }
 
   private def extractAndUpdateEventType(record: RawRecord, tokens: Seq[String]): RawRecord = {
-    record
+    eventTypeExtractor.classify(record)
   }
 }

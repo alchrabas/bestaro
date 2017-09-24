@@ -24,7 +24,8 @@ lazy val backend = project
       "com.google.maps" % "google-maps-services" % "0.2.1",
       "org.slf4j" % "slf4j-nop" % "1.7.25",
       "com.typesafe.play" %% "play-json" % "2.6.3",
-      "com.google.guava" % "guava" % "23.0"
+      "com.google.guava" % "guava" % "23.0",
+      "cc.mallet" % "mallet" % "2.0.8"
     )
   )
 
