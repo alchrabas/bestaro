@@ -14,6 +14,11 @@ object EventType {
 
   object UNKNOWN extends EventType("UKNOWN")
 
+  def byName(name: String): EventType = {
+    val typesByName = List(LOST, FOUND, SEEN, UNKNOWN).map(et => et.value -> et).toMap
+    typesByName(name)
+  }
+
   implicit val eventTypeFormat: OFormat[EventType] = Json.format[EventType]
 }
 
