@@ -16,8 +16,7 @@ leafletMap.addLayer(allMarkers);
 
 const statusToClassName = {
     "LOST": "animal-popup-status-lost",
-    "FOUND": "animal-popup-status-found",
-    "SEEN": "animal-popup-status-seen"
+    "FOUND": "animal-popup-status-found"
 };
 
 const updateLastMoveTimestamp = () => lastMoveTimestamp = Date.now();
