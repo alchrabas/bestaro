@@ -9,11 +9,19 @@ import bestaro.common.types.RecordId
 object ImageUtil {
 
   def saveImage(id: RecordId, serialId: Int, stream: InputStream): Path = {
-    val pictureName = id.toString + "_" + serialId + ".png"
-    val pathToPicture = Paths.get("pictures", pictureName)
+    val _pictureName = pictureName(id, serialId)
+    val _pathToPicture = pathToPicture(_pictureName)
     val bufferedImage = ImageIO.read(stream)
-    ImageIO.write(bufferedImage, "png", pathToPicture.toFile)
+    ImageIO.write(bufferedImage, "png", _pathToPicture.toFile)
 
-    Paths.get(pictureName)
+    Paths.get(_pictureName)
+  }
+
+  def pathToPicture(pictureName: String): Path = {
+    Paths.get("pictures", pictureName)
+  }
+
+  def pictureName(id: RecordId, serialId: Int): String = {
+    id.toString + "_" + serialId + ".png"
   }
 }
