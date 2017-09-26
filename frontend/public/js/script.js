@@ -34,6 +34,16 @@ setInterval(() => {
     }
 }, 1000);
 
+const formatDate = (timestamp) => {
+    if (+timestamp === 0) {
+        return "-";
+    }
+
+    const date = new Date(Number.parseInt(timestamp));
+    return ("0" + date.getUTCDate()).slice(-2) +
+        "-" + ("0" + (date.getUTCMonth() + 1)).slice(-2) +
+        "-" + date.getUTCFullYear();
+};
 
 const fetchDataFromServer = () => {
 
@@ -58,15 +68,17 @@ const fetchDataFromServer = () => {
             });
 
             allMarkers.addLayer(L.marker([record.lat, record.lon], {icon: icon}).bindPopup(`
-                eventDate: ${record.eventDate}<br>
-                publishDate: ${record.publishDate}<br>
+                eventDate: ${formatDate(record.eventDate)}<br>
+                publishDate: ${formatDate(record.publishDate)}<br>
                 eventType: ${record.eventType}<br>
                 picture: <img class="fullPicturePreview" src="pictures/${record.picture}"/><br>
+                link: <a href="${record.link}">LINK</a><br>
             `));
         });
     }).catch(() => {
         console.log("Error when trying to fetch data");
     });
 };
+
 
 setTimeout(fetchDataFromServer, 1000);

@@ -28,7 +28,8 @@ class RestController @Inject()(cc: ControllerComponents
             "picture" -> v.pictures.head,
             "eventType" -> v.status.value,
             "lat" -> String.valueOf(v.fullLocation.coordinate.get.lat),
-            "lon" -> String.valueOf(v.fullLocation.coordinate.get.lon)
+            "lon" -> String.valueOf(v.fullLocation.coordinate.get.lon),
+            "link" -> v.link
           )
       }
 
