@@ -44,7 +44,7 @@ class DataSupplier {
   }
 
   private def uploadBytes(encodedJson: Array[Byte]): Unit = {
-    val connectionToFrontend = new URL("http://localhost:8888/upload/")
+    val connectionToFrontend = new URL(properties.getProperty("frontendURL"))
     val connection = connectionToFrontend.openConnection().asInstanceOf[HttpURLConnection]
     connection.setDoOutput(true)
     connection.setRequestMethod("POST")
