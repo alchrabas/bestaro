@@ -30,11 +30,7 @@ class PlaintextProcessor {
   }
 
   private def getRecordMessage(record: RawRecord) = {
-    if (record.secondaryMessage.length > 0) {
-      record.secondaryMessage
-    } else {
-      record.message
-    }
+    record.message + "\n" + record.secondaryMessage
   }
 
   private def extractAndUpdateLocation(record: RawRecord, tokens: List[String]): RawRecord = {
