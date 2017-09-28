@@ -5,6 +5,11 @@ html, body {
     margin: 0;
 }
 
+/* Fix to make popup fit the contents */
+.leaflet-popup-content {
+    width:auto !important;
+}
+
 #mapContainer {
     height: 100%;
 }
