@@ -15,13 +15,13 @@ object TaggedRecordsManager {
     readTaggedRecordsFromCsv()
   }
 
-  def readTaggedRecordsFromCsv(): List[TaggedRecord] = {
+  private def readTaggedRecordsFromCsv(): Seq[TaggedRecord] = {
     val reader = CSVReader.open("records-for-tagging.csv")
     val listOfRows = reader.allWithHeaders()
 
     val taggedRecords = ListBuffer[TaggedRecord]()
 
-    for ((row, index) <- listOfRows.view.zipWithIndex if index < 480) {
+    for ((row, index) <- listOfRows.view.zipWithIndex) {
       val recordId = Json.parse(row("ID")).as[RecordId]
       val locs =
         stringToList(row("Location-1")) ::: stringToList(row("Location-2")) :::
@@ -34,12 +34,21 @@ object TaggedRecordsManager {
       val animalType = row("Type")
       val eventType = row("Status")
 
-      if ((locs ++ altLocs).nonEmpty || cities.nonEmpty /* && isKrakow */ ) {
-        taggedRecords.append(TaggedRecord(recordId, locs, altLocs, cities, animalType, eventType))
-      }
+      taggedRecords.append(TaggedRecord(recordId, locs, altLocs, cities, animalType, eventType))
     }
 
     taggedRecords.toList
+  }
+
+  def allLocationRecordsFromCsv(): Seq[TaggedRecord] = {
+    readTaggedRecordsFromCsv()
+      .filter(r => r.locs.nonEmpty || r.altLocs.nonEmpty || r.cities.nonEmpty)
+  }
+
+  def allEventTypeRecordsFromCsv(): Seq[TaggedRecord] = {
+    readTaggedRecordsFromCsv()
+      .slice(0, 618)
+      .filter(_.eventType.nonEmpty)
   }
 
   case class TaggedRecord(recordId: RecordId, locs: List[String], altLocs: List[String],

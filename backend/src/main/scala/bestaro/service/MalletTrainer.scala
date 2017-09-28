@@ -2,12 +2,14 @@ package bestaro.service
 
 import java.io.{File, FileOutputStream, ObjectOutputStream}
 
+import bestaro.common.util.MathUtil
 import bestaro.core.processors.BaseNameProducer
 import bestaro.core.{JsonSerializer, Tokenizer}
 import bestaro.extractors.EventTypeExtractor
 import bestaro.helpers.TaggedRecordsManager
-import cc.mallet.classify.Classifier
+import cc.mallet.classify.{Classifier, ClassifierTrainer, Trial}
 import cc.mallet.types.{Instance, InstanceList}
+import cc.mallet.util.Randoms
 
 import scala.collection.JavaConverters._
 
@@ -29,6 +31,27 @@ class MalletTrainer {
 
     val classifierPath = EventTypeExtractor.SERIALIZED_CLASSIFIER_PATH
     saveClassifier(trainedClassifier, new File(classifierPath))
+
+    printTrainingResults(trainer, trainData)
+  }
+
+  private def printTrainingResults(trainer: ClassifierTrainer[Classifier], trainData: InstanceList): Unit = {
+    val trainingResults = (0 to 100).map { _ =>
+      testCrossValidatedData(trainData, trainer)
+    }
+
+    println("Avg: " + MathUtil.avg(trainingResults))
+    println("Std: " + MathUtil.stdDev(trainingResults))
+  }
+
+  def testCrossValidatedData(instances: InstanceList, trainer: ClassifierTrainer[Classifier]): Double = {
+    val TRAINING = 0
+    val TESTING = 1
+    val instanceLists = instances.split(new Randoms, Array[Double](0.9, 0.1, 0.0))
+    val classifier = trainer.train(instanceLists(TRAINING))
+
+    val trial = new Trial(classifier, instanceLists(TESTING))
+    trial.getAccuracy
   }
 
   private def saveClassifier(classifier: Classifier, serializedFile: File): Unit = {
@@ -40,7 +63,7 @@ class MalletTrainer {
   private def loadTrainData(extractor: EventTypeExtractor): InstanceList = {
     val jsonSerializer = new JsonSerializer
     val records = jsonSerializer.readRecordsFromFile
-    val tagsById = TaggedRecordsManager.readTaggedRecordsFromCsv().slice(0, 498)
+    val tagsById = TaggedRecordsManager.allEventTypeRecordsFromCsv()
       .map(record => record.recordId -> record).toMap
 
     val instancesFromCsvIterator = records
