@@ -38,6 +38,7 @@ lazy val frontend = project
     libraryDependencies ++= Seq(
       "com.google.guava" % "guava" % "23.0",
       "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2" % Test,
+      "org.webjars" % "leaflet" % "1.2.0",
       guice
     ),
     PlayKeys.devSettings := Seq("play.server.http.port" -> "8888")

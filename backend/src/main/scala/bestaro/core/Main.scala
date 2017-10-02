@@ -32,7 +32,7 @@ object Main {
         val records = jsonSerializer.readRecordsFromFile
         val taggedRecords = getTaggedRecords
         val processor = new PlaintextProcessor
-//        val recordsWithTags = records.filter(r => taggedRecords.contains(r.recordId))
+        //        val recordsWithTags = records.filter(r => taggedRecords.contains(r.recordId))
         val processedRecords = records.map(processor.process)
 
         val verifier = new LocationVerifier(taggedRecords)
@@ -46,6 +46,6 @@ object Main {
   }
 
   private def getTaggedRecords: Map[RecordId, TaggedRecord] = {
-    TaggedRecordsManager.readTaggedRecordsFromCsv().map(tr => tr.recordId -> tr).toMap
+    TaggedRecordsManager.allEventTypeRecordsFromCsv().map(tr => tr.recordId -> tr).toMap
   }
 }
