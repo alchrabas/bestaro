@@ -4,15 +4,30 @@
     <head>
         <meta charset="UTF-8"/>
         <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+        <meta name="referrer" content="no-referrer" />
         <title>A Leaflet map!</title>
         <link rel="stylesheet" href="@routes.Assets.at("css/style.css")"/>
         <link rel="stylesheet" href="@routes.Assets.at("lib/leaflet/leaflet.css")"/>
         <script type="text/javascript" src="@routes.Assets.at("lib/leaflet/leaflet.js")"></script>
     </head>
     <body>
-
-        <div id="mapContainer"></div>
-
+        <div class="box">
+            <div class="row top-bar header">
+                Date from <input name="date-from" id="date-from" type="date"/>
+                to <input name="date-to" id="date-to" type="date"/>
+                | Event type:
+                <select name="event-type" id="event-type">
+                    <option value="ANY">ANY</option>
+                    <option value="LOST">LOST</option>
+                    <option value="FOUND">FOUND</option>
+                </select>
+                <button id="filter-button">Filter</button>
+            </div>
+            <div class="row content">
+                <div class="side-bar">
+                </div><div id="mapContainer"></div>
+            </div>
+        </div>
         <script type="text/javascript" src="@routes.Assets.at("js/script.js")"></script>
     </body>
 </html>

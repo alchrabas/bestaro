@@ -5,13 +5,31 @@ html, body {
     margin: 0;
 }
 
-/* Fix to make popup fit the contents */
-.leaflet-popup-content {
-    width:auto !important;
+.box {
+    display: flex;
+    flex-flow: column;
+    height: 100%;
+    width:100%;
+}
+
+.box .row.header {
+    flex: 0 1 auto;
+}
+
+.box .row.content {
+    flex: 1 1 auto;
+}
+
+.content {
+    display: flex;
+}
+
+.side-bar {
+    flex: 0 0 20%;
 }
 
 #mapContainer {
-    height: 100%;
+    flex: 1 5 auto;
 }
 
 .animal-popup-status-lost {
@@ -23,6 +41,6 @@ html, body {
 }
 
 .fullPicturePreview {
-    max-width: 400px;
-    max-height: 400px;
+    max-width: 100%;
+    height: auto;
 }
