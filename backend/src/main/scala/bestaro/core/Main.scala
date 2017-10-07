@@ -30,13 +30,14 @@ object Main {
         olx.collect(jsonSerializer.saveInJson)
       case PROCESS =>
         val records = jsonSerializer.readRecordsFromFile
-        val taggedRecords = getTaggedRecords
         val processor = new PlaintextProcessor
         //        val recordsWithTags = records.filter(r => taggedRecords.contains(r.recordId))
         val processedRecords = records.map(processor.process)
 
-        val verifier = new LocationVerifier(taggedRecords)
-        println(verifier.verify(processedRecords))
+        val locationVerifier = new LocationVerifier(getLocationTaggedRecords)
+        println(locationVerifier.verify(processedRecords).detailedSummary)
+        val eventTypeVerifier = new EventTypeVerifier(getEventTaggedRecords)
+        println(eventTypeVerifier.verify(processedRecords).briefSummary)
 
         val dataSupplier = new DataSupplier
         processedRecords
@@ -45,7 +46,11 @@ object Main {
     }
   }
 
-  private def getTaggedRecords: Map[RecordId, TaggedRecord] = {
+  private def getLocationTaggedRecords: Map[RecordId, TaggedRecord] = {
+    TaggedRecordsManager.allLocationRecordsFromCsv().map(tr => tr.recordId -> tr).toMap
+  }
+
+  private def getEventTaggedRecords: Map[RecordId, TaggedRecord] = {
     TaggedRecordsManager.allEventTypeRecordsFromCsv().map(tr => tr.recordId -> tr).toMap
   }
 }

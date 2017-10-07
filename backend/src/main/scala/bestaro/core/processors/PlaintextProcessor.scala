@@ -35,8 +35,8 @@ class PlaintextProcessor {
 
   private def extractAndUpdateLocation(record: RawRecord, tokens: List[String]): RawRecord = {
     val (stemmedTokens, matchedFullLocations) = locationExtractor.extractLocation(tokens, record.voivodeship)
-    val mostPrimisingLocations = stemmedTokens.sortBy(_.placenessScore).reverse.slice(0, 5)
-    println("BEST CANDIDATES: " + mostPrimisingLocations)
+    val mostPromisingLocations = stemmedTokens.sortBy(_.placenessScore).reverse.slice(0, 5)
+    println("BEST CANDIDATES: " + mostPromisingLocations)
     println(s"MATCHED ${matchedFullLocations.size} STREETS: " + matchedFullLocations.mkString("\n"))
     if (matchedFullLocations.isEmpty) {
       record

@@ -47,7 +47,7 @@ object TaggedRecordsManager {
 
   def allEventTypeRecordsFromCsv(): Seq[TaggedRecord] = {
     readTaggedRecordsFromCsv()
-      .slice(0, 618)
+      .slice(0, 821)
       .filter(_.eventType.nonEmpty)
   }
 
