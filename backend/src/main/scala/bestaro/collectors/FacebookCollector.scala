@@ -20,6 +20,7 @@ class FacebookCollector(recordConsumer: RawRecord => Unit, isAlreadyStored: RawR
 
   def collect(recordConsumer: RawRecord => Unit): Unit = {
     val facebook = new FacebookFactory().getInstance
+    var allFoundPosts = 0
 
     val foundGroups = facebook.search().searchGroups("ZaginioneKrakow")
     val foundGroup = foundGroups.get(0)
@@ -29,6 +30,7 @@ class FacebookCollector(recordConsumer: RawRecord => Unit, isAlreadyStored: RawR
     while (continueFetching) {
       val result = eater.fetch()
       println(s"Found ${result.size()} fb posts")
+      allFoundPosts += result.size()
 
       val records = result
         .asScala
@@ -37,6 +39,7 @@ class FacebookCollector(recordConsumer: RawRecord => Unit, isAlreadyStored: RawR
       continueFetching = thereIsAtLeastOneRecordToSave(records)
       records.foreach(recordConsumer)
     }
+    println(s"Collected $allFoundPosts from FB")
   }
 
   private def thereIsAtLeastOneRecordToSave(records: mutable.Buffer[RawRecord]) = {
