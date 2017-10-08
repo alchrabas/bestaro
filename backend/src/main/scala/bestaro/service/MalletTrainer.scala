@@ -3,8 +3,7 @@ package bestaro.service
 import java.io.{File, FileOutputStream, ObjectOutputStream}
 
 import bestaro.common.util.MathUtil
-import bestaro.core.processors.BaseNameProducer
-import bestaro.core.{JsonSerializer, Tokenizer}
+import bestaro.core.JsonSerializer
 import bestaro.extractors.EventTypeExtractor
 import bestaro.helpers.TaggedRecordsManager
 import cc.mallet.classify.{Classifier, ClassifierTrainer, Trial}
@@ -71,19 +70,14 @@ class MalletTrainer {
       .map(record => (record, tagsById(record.recordId).eventType))
       .filter(recordAndTag => recordAndTag._2 != "" && recordAndTag._1.message != "")
       .map(recordAndTag => (recordAndTag._1, seenToFound(recordAndTag._2)))
-      .map(recordAndTag => new Instance(stemmize(recordAndTag._1.message), recordAndTag._2, recordAndTag._1.recordId.toString, null))
+      .map(recordAndTag => new Instance(extractor.stemmizeRecordMessage(recordAndTag._1),
+        recordAndTag._2, recordAndTag._1.recordId.toString, null))
     println(s"${instancesFromCsvIterator.size} are to be used")
 
     val instances = new InstanceList(extractor.createPipeline())
 
     instances.addThruPipe(instancesFromCsvIterator.toIterator.asJava)
     instances
-  }
-
-  private def stemmize(text: String): String = {
-    val tokenizer = new Tokenizer()
-    val baseNameProducer = new BaseNameProducer
-    tokenizer.tokenize(text).map(baseNameProducer.getBestBaseName).mkString(" ")
   }
 
   private def seenToFound(eventType: String): String = {

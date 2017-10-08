@@ -1,5 +1,6 @@
 package bestaro.extractors
 
+import java.io.{FileInputStream, ObjectInputStream}
 import java.util
 import java.util.logging.Level
 import java.util.regex.Pattern
@@ -11,8 +12,6 @@ import cc.mallet.classify.{Classifier, ClassifierTrainer, MaxEntTrainer}
 import cc.mallet.pipe._
 import cc.mallet.types.Instance
 import cc.mallet.util.{MalletLogger, MalletProgressMessageLogger}
-import java.io.FileInputStream
-import java.io.ObjectInputStream
 
 object EventTypeExtractor {
   val SERIALIZED_CLASSIFIER_PATH = "eventTypeClassifier.bin"
@@ -30,11 +29,12 @@ class EventTypeExtractor {
       classifier = Some(deserializeClassifier())
     }
 
-    val instance = pipe.instanceFrom(new Instance(stemmize(record.message), null, record.recordId.toString, null))
+    val instance = classifier.get.getInstancePipe
+      .instanceFrom(new Instance(stemmizeMessage(record.message), null, record.recordId.toString, null))
+
     val classificationResult = classifier.get.classify(instance)
     println(classificationResult.getLabeling.getBestLabel + ": " +
-      "%.3f".format(classificationResult.getLabeling.getBestValue) +
-      " | " + stemmize(record.message))
+      "%.3f".format(classificationResult.getLabeling.getBestValue))
 
     record.copy(eventType = EventType.byName(
       classificationResult.getLabeling.getBestLabel.toString))
@@ -47,7 +47,11 @@ class EventTypeExtractor {
     _classifier
   }
 
-  private def stemmize(text: String): String = {
+  def stemmizeRecordMessage(record: RawRecord): String = {
+    stemmizeMessage(record.message + "\n" + record.secondaryMessage)
+  }
+
+  def stemmizeMessage(text: String): String = {
     val tokenizer = new Tokenizer()
     val baseNameProducer = new BaseNameProducer
     tokenizer.tokenize(text).map(baseNameProducer.getBestBaseName).mkString(" ")
