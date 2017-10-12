@@ -1,6 +1,5 @@
 package bestaro.core
 
-import bestaro.common._
 import bestaro.common.types._
 import play.api.libs.json.{Json, OFormat}
 
@@ -15,7 +14,7 @@ case class RawRecord(recordId: RecordId,
                      location: String = "",
                      eventDate: Long = 0,
                      title: String = "",
-                     fullLocation: FullLocation = FullLocation(None, None, None),
+                     fullLocation: FullLocation = FullLocation(None, None, None, None),
                      secondaryMessage: String = ""
                     ) {
 

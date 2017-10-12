@@ -26,7 +26,7 @@ object PolishTownNamesInflector {
   }
 }
 
-case class InflectedLocation(stripped: String, location: Location)
+case class InflectedLocation(stripped: String, location: Location, voivodeship: Voivodeship)
 
 class PolishTownNamesInflector {
 
@@ -60,8 +60,8 @@ class PolishTownNamesInflector {
     val voivodeshipId = Integer.parseInt(csvEntry("WOJ"))
     val kind = csvEntry("NAZWA_DOD")
 
-    InflectedLocation(originalName, Location(originalName, originalName, locationTypeByKindColumn(csvEntry),
-      Some(VOIVODESHIP_BY_ID(voivodeshipId))))
+    InflectedLocation(originalName, Location(originalName, originalName, locationTypeByKindColumn(csvEntry)),
+      VOIVODESHIP_BY_ID(voivodeshipId))
   }
 
   private val NAME_COLUMN = "Nazwa miejscowości "
@@ -85,9 +85,8 @@ class PolishTownNamesInflector {
       row =>
         val stripped = baseNameProducer.strippedForStemming(row(NAME_COLUMN))
         InflectedLocation(stripped,
-          Location(stripped, row(NAME_COLUMN), locationTypeByKindColumn(row),
-            Some(Voivodeship(row(VOIVODESHIP_COLUMN).toUpperCase))
-          )
+          Location(stripped, row(NAME_COLUMN), locationTypeByKindColumn(row)),
+          Voivodeship(row(VOIVODESHIP_COLUMN).toUpperCase)
         )
     }
 
@@ -101,15 +100,14 @@ class PolishTownNamesInflector {
             Location(strippedDistrictName,
               row(NAME_COLUMN),
               LocationType.DISTRICT,
-              Some(Voivodeship(row(VOIVODESHIP_COLUMN).toUpperCase)),
               Some(
                 Location(townParentName,
                   baseNameProducer.strippedForStemming(townParentName),
-                  LocationType.CITY,
-                  Some(Voivodeship(row(VOIVODESHIP_COLUMN).toUpperCase))
+                  LocationType.CITY
                 )
               )
-            )
+            ),
+            Voivodeship(row(VOIVODESHIP_COLUMN).toUpperCase)
           )
       }
 

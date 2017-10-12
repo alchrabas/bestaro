@@ -127,18 +127,17 @@ class GoogleLocationExtractor extends AbstractLocationExtractor {
       .map(primaryPart => Location(
         baseNameProducer.strippedForStemming(primaryPart),
         primaryPart,
-        locationType,
-        matchedVoivodeship))
+        locationType))
     val secondaryLocation = getMostSpecificLocation(firstResult, SECONDARY_LOCATION_TYPES)
       .map(secondaryPart => Location(
         baseNameProducer.strippedForStemming(secondaryPart),
         secondaryPart,
-        locationType,
-        matchedVoivodeship))
+        locationType))
 
     val coords = firstResult.geometry.location
     FullLocation(
       primaryLocation, secondaryLocation,
+      matchedVoivodeship,
       Some(Coordinate(coords.lat, coords.lng))
     )
   }
