@@ -6,6 +6,8 @@ import bestaro.common.types.Voivodeship
 import bestaro.core.processors.Token
 import bestaro.service.{InflectedLocation, PolishTownNamesInflector}
 
+import scala.collection.JavaConverters._
+
 case class MatchedInflectedLocation(inflectedLocation: InflectedLocation, initialPos: Int, wordCount: Int)
 
 class InflectedTownNamesExtractor {
@@ -28,14 +30,14 @@ class InflectedTownNamesExtractor {
     newMap
   }
 
-  def findLocationNamesFromDatabase(tokens: List[Token], voivodeship: Voivodeship): Seq[MatchedInflectedLocation] = {
-
+  def findLocationNamesFromDatabase(tokens: List[Token],
+                                    voivodeshipRestriction: Option[Voivodeship]
+                                   ): Seq[MatchedInflectedLocation] = {
     val potentialMatches = tokens
       .zipWithIndex
       .flatMap { case (token, position) =>
         val firstWord = token.stripped.split(" ")(0)
-        Option(townEntryByVoivodeshipAndFirstWord.get(voivodeship).get(firstWord))
-          .toSeq.flatten
+        townsForSpecifiedVoivodeshipAndFirstWord(voivodeshipRestriction, firstWord)
           .map(inflectedLocaton => MatchedInflectedLocation(inflectedLocaton, position,
             inflectedLocaton.stripped.split(" ").length))
       }
@@ -50,6 +52,18 @@ class InflectedTownNamesExtractor {
           tokensToUse.zip(townNameTokens).forall {
             case (token, townNamePart) => token.stripped == townNamePart
           }
+    }
+  }
+
+  private def townsForSpecifiedVoivodeshipAndFirstWord(
+                                                        voivodeshipRestriction: Option[Voivodeship],
+                                                        firstWord: String
+                                                      ): Seq[InflectedLocation] = {
+    if (voivodeshipRestriction.isEmpty) { // all voivodeships will do
+      townEntryByVoivodeshipAndFirstWord.values().asScala
+        .flatMap(a => a.getOrDefault(firstWord, Seq())).toSeq
+    } else {
+      townEntryByVoivodeshipAndFirstWord.get(voivodeshipRestriction.get).getOrDefault(firstWord, Seq())
     }
   }
 }

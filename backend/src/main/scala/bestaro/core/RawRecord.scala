@@ -8,7 +8,6 @@ case class RawRecord(recordId: RecordId,
                      animalType: AnimalType,
                      message: String,
                      postDate: Long,
-                     voivodeship: Voivodeship,
                      pictures: List[String] = List(),
                      link: String = "",
                      location: String = "",
@@ -20,7 +19,7 @@ case class RawRecord(recordId: RecordId,
 
   def buildRecord: Record = {
     Record(recordId,
-      eventType, voivodeship, pictures, link,
+      eventType, pictures, link,
       eventDate,
       postDate,
       fullLocation)

@@ -21,7 +21,8 @@ class GoogleLocationExtractor extends AbstractLocationExtractor {
     }
   }
 
-  override protected def specificExtract(stemmedTokens: List[Token],
+  override protected def specificExtract(alreadyKnownLocation: FullLocation,
+                                         stemmedTokens: List[Token],
                                          foundLocationNames: Seq[MatchedInflectedLocation]):
   (ListBuffer[Token], ListBuffer[MatchedFullLocation]) = {
     val mutableTokens = stemmedTokens.to[ListBuffer]
@@ -30,7 +31,7 @@ class GoogleLocationExtractor extends AbstractLocationExtractor {
     val multiWordNames = multiWordLocationNameExtractor.mostSuitableMultiWordNames(stemmedTokens, foundLocationNames)
     println(multiWordNames.map(_.stripped).mkString(";; "))
 
-    val bestResults = getBestResultForProposedNames(multiWordNames)
+    val bestResults = getBestResultForProposedNames(multiWordNames, alreadyKnownLocation.secondary)
       .map { case (name, results) =>
         MatchedFullLocation(fullLocationFromGeocodingResults(results, foundLocationNames, multiWordNames),
           name.startIndex, name.wordCount)
@@ -39,7 +40,8 @@ class GoogleLocationExtractor extends AbstractLocationExtractor {
     (mutableTokens, bestResults)
   }
 
-  private def getBestResultForProposedNames(multiWordNames: Seq[MultiWordName]
+  private def getBestResultForProposedNames(multiWordNames: Seq[MultiWordName],
+                                            broadLocation: Option[Location]
                                            ): Option[(MultiWordName, Seq[GeocodingResult])] = {
     val (foundCities, remainderOfLocations) = multiWordNames.partition(_.ofLocType(LocationType.CITY))
 

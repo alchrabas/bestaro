@@ -5,7 +5,6 @@ import play.api.libs.json.{Json, OFormat}
 case class Record(
                    recordId: RecordId,
                    status: EventType,
-                   voivodeship: Voivodeship,
                    pictures: List[String] = List(),
                    link: String,
                    eventDate: Long,

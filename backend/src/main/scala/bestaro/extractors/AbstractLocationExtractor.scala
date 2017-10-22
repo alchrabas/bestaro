@@ -1,6 +1,7 @@
 package bestaro.extractors
 
-import bestaro.common.types.{FullLocation, Location, Voivodeship}
+import bestaro.common.types.{FullLocation, Location}
+import bestaro.core.RawRecord
 import bestaro.core.processors._
 
 import scala.collection.mutable.ListBuffer
@@ -21,7 +22,7 @@ abstract class AbstractLocationExtractor {
 
   protected val townNamesExtractor = new InflectedTownNamesExtractor
 
-  def extractLocation(tokens: List[String], voivodeship: Voivodeship): (List[Token], List[MatchedFullLocation]) = {
+  def extractLocation(tokens: List[String], record: RawRecord): (List[Token], List[MatchedFullLocation]) = {
 
     println("########################")
     var stemmedTokens = tokens.map { tokenText =>
@@ -44,7 +45,7 @@ abstract class AbstractLocationExtractor {
     if (stemmedTokens.nonEmpty) {
       stemmedTokens = updateTokenEvaluationUsingContext(stemmedTokens)
     }
-    val foundLocationNames = townNamesExtractor.findLocationNamesFromDatabase(stemmedTokens, voivodeship)
+    val foundLocationNames = townNamesExtractor.findLocationNamesFromDatabase(stemmedTokens, record.fullLocation.voivodeship)
     if (stemmedTokens.nonEmpty) {
       println(">>> " + foundLocationNames)
       stemmedTokens = stemmedTokens.zipWithIndex.map { case (token, position) =>
@@ -58,7 +59,7 @@ abstract class AbstractLocationExtractor {
       }
     }
 
-    val (mutableTokens, matchedStreets) = specificExtract(stemmedTokens, foundLocationNames)
+    val (mutableTokens, matchedStreets) = specificExtract(record.fullLocation, stemmedTokens, foundLocationNames)
     (mutableTokens.toList, matchedStreets.toList)
   }
 
@@ -82,7 +83,7 @@ abstract class AbstractLocationExtractor {
       })
   }
 
-  protected def specificExtract(stemmedTokens: List[Token],
+  protected def specificExtract(alreadyKnownLocation: FullLocation, stemmedTokens: List[Token],
                                 foundLocationNames: Seq[MatchedInflectedLocation]
                                ): (ListBuffer[Token], ListBuffer[MatchedFullLocation])
 

@@ -5,7 +5,7 @@ import java.time.Instant
 import java.util.Date
 import java.util.concurrent.TimeUnit
 
-import bestaro.common.types.{AnimalType, EventType, FbId, Voivodeship}
+import bestaro.common.types._
 import bestaro.core.RawRecord
 import bestaro.util.ImageUtil
 import facebook4j._
@@ -95,7 +95,8 @@ class FacebookCollector(recordConsumer: RawRecord => Unit, isAlreadyStored: RawR
     val sharedPostMessage = Option(post.getDescription)
 
     RawRecord(id, EventType.UNKNOWN, AnimalType.UNKNOWN, message.getOrElse(""), post.getCreatedTime.getTime,
-      Voivodeship.MALOPOLSKIE, picturePath.map(_.toString).toList,
-      Option(post.getPermalinkUrl).map(_.toString).orNull, secondaryMessage = sharedPostMessage.getOrElse(""))
+      picturePath.map(_.toString).toList,
+      Option(post.getPermalinkUrl).map(_.toString).orNull, secondaryMessage = sharedPostMessage.getOrElse(""),
+      fullLocation = FullLocation(None, None, Some(Voivodeship.MALOPOLSKIE), None))
   }
 }

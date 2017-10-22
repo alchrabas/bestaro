@@ -80,11 +80,11 @@ class OlxCollector(httpDownloader: HttpDownloader) {
     RawRecord(id, EventType.LOST, AnimalType.UNKNOWN,
       messageContent,
       extractedDate.map(_.toEpochMilli).getOrElse(1L),
-      Voivodeship.MALOPOLSKIE,
       location = locationString, title = title,
       pictures = pictures,
       eventDate = extractedEventDate.map(_.toEpochMilli).getOrElse(2L),
-      link = url
+      link = url,
+      fullLocation = FullLocation(None, None, Some(Voivodeship.MALOPOLSKIE), None)
     )
   }
 
