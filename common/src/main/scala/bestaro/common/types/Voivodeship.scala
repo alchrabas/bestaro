@@ -27,4 +27,8 @@ object Voivodeship {
   implicit val voivodeshipFormat: OFormat[Voivodeship] = Json.format[Voivodeship]
 }
 
-case class Voivodeship(name: String)
+case class Voivodeship(name: String) {
+  def searchString: String = {
+    "województwo " + name.toLowerCase()
+  }
+}

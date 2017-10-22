@@ -31,7 +31,7 @@ class GoogleLocationExtractor extends AbstractLocationExtractor {
     val multiWordNames = multiWordLocationNameExtractor.mostSuitableMultiWordNames(stemmedTokens, foundLocationNames)
     println(multiWordNames.map(_.stripped).mkString(";; "))
 
-    val bestResults = getBestResultForProposedNames(multiWordNames, alreadyKnownLocation.secondary)
+    val bestResults = getBestResultForProposedNames(multiWordNames, alreadyKnownLocation)
       .map { case (name, results) =>
         MatchedFullLocation(fullLocationFromGeocodingResults(results, foundLocationNames, multiWordNames),
           name.startIndex, name.wordCount)
@@ -41,13 +41,27 @@ class GoogleLocationExtractor extends AbstractLocationExtractor {
   }
 
   private def getBestResultForProposedNames(multiWordNames: Seq[MultiWordName],
-                                            broadLocation: Option[Location]
+                                            alreadyKnownLocation: FullLocation
                                            ): Option[(MultiWordName, Seq[GeocodingResult])] = {
+
     val (foundCities, remainderOfLocations) = multiWordNames.partition(_.ofLocType(LocationType.CITY))
+
+    if (alreadyKnownLocation.secondary.isDefined) {
+      for (street <- remainderOfLocations) {
+        val result = getGeocodingResultForLocationName(street,
+          alreadyKnownLocation.secondary.map(_.stripped),
+          alreadyKnownLocation.voivodeship)
+        if (result._2.nonEmpty) {
+          return Some(result)
+        }
+      }
+    }
 
     for (street <- remainderOfLocations) { // TODO create two classes for MWN to avoid Option fields
       for (city <- foundCities) {
-        val result = getGeocodingResultForLocationName(street, Some(city))
+        val result = getGeocodingResultForLocationName(street,
+          Some(city.stripped),
+          alreadyKnownLocation.voivodeship)
         if (result._2.nonEmpty) {
           return Some(result)
         }
@@ -55,7 +69,9 @@ class GoogleLocationExtractor extends AbstractLocationExtractor {
     }
 
     for (name <- multiWordNames) {
-      val result = getGeocodingResultForLocationName(name)
+      val result = getGeocodingResultForLocationName(name,
+        None,
+        alreadyKnownLocation.voivodeship)
       if (result._2.nonEmpty) {
         return Some(result)
       }
@@ -64,10 +80,11 @@ class GoogleLocationExtractor extends AbstractLocationExtractor {
   }
 
   private def getGeocodingResultForLocationName(multiWordName: MultiWordName,
-                                                additionalName: Option[MultiWordName] = None) = {
+                                                broadLocation: Option[String] = None,
+                                                voivodeship: Option[Voivodeship] = None) = {
     val nameToSearchFor = replaceAbbreviatedNouns(multiWordName).stripped +
-      additionalName.map(", " + _.stripped).getOrElse("") +
-      ", województwo małopolskie"
+      broadLocation.map(", " + _).getOrElse("") +
+      voivodeship.map(", " + _.searchString).getOrElse("")
     (multiWordName, geocodingClient.search(nameToSearchFor))
   }
 
