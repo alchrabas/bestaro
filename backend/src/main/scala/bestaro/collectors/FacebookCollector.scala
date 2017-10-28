@@ -13,18 +13,29 @@ import facebook4j._
 import scala.collection.JavaConverters._
 import scala.collection.mutable
 
+case class FacebookGroup(name: String, id: String,
+                         voivodeshipRestriction: Option[Voivodeship])
+
 class FacebookCollector(recordConsumer: RawRecord => Unit, isAlreadyStored: RawRecord => Boolean) {
 
   private val OLDEST_DATE_TO_COLLECT = TimeUnit.DAYS.toSeconds(3 * 30)
-  private val POSTS_FETCHED_PER_PAGE = 20
+  private val POSTS_FETCHED_PER_PAGE = 30
+
+  private val GROUPS_TO_SEARCH = Seq(
+    FacebookGroup("ZaginioneKrakow", "396743770370604", Some(Voivodeship.MALOPOLSKIE)),
+    //    FacebookGroup("ZaginioneWroclaw", "396743770370604", Some(Voivodeship.DOLNOSLASKIE)),
+    FacebookGroup("ZaginioneWarszawa", "211708982280762", Some(Voivodeship.MAZOWIECKIE)),
+  )
 
   def collect(recordConsumer: RawRecord => Unit): Unit = {
     val facebook = new FacebookFactory().getInstance
-    var allFoundPosts = 0
 
-    val foundGroups = facebook.search().searchGroups("ZaginioneKrakow")
-    val foundGroup = foundGroups.get(0)
-    val eater = new FacebookEater(facebook, foundGroup.getId)
+    GROUPS_TO_SEARCH.foreach(searchInGroup(_, facebook))
+  }
+
+  private def searchInGroup(group: FacebookGroup, facebook: Facebook) {
+    var allFoundPosts = 0
+    val eater = new FacebookEater(facebook, group.id)
 
     var continueFetching = true
     while (continueFetching) {
@@ -34,12 +45,12 @@ class FacebookCollector(recordConsumer: RawRecord => Unit, isAlreadyStored: RawR
 
       val records = result
         .asScala
-        .map(postToRecord)
+        .map(postToRecord(_, group))
 
       continueFetching = thereIsAtLeastOneRecordToSave(records)
       records.foreach(recordConsumer)
     }
-    println(s"Collected $allFoundPosts from FB")
+    println(s"Collected $allFoundPosts from group ${group.name}")
   }
 
   private def thereIsAtLeastOneRecordToSave(records: mutable.Buffer[RawRecord]) = {
@@ -56,7 +67,7 @@ class FacebookCollector(recordConsumer: RawRecord => Unit, isAlreadyStored: RawR
 
   class FacebookEater(facebook: Facebook, groupId: String) {
     private var lastPage: Option[Paging[Post]] = None
-    private val READING = new Reading().until(new Date()).limit(POSTS_FETCHED_PER_PAGE)
+    private val READING = new Reading().until("2017-10-16").limit(POSTS_FETCHED_PER_PAGE)
       .fields("message", "link", "id", "permalink_url", "created_time",
         "attachments", "full_picture", "description")
 
@@ -73,7 +84,7 @@ class FacebookCollector(recordConsumer: RawRecord => Unit, isAlreadyStored: RawR
     }
   }
 
-  def postToRecord(post: Post): RawRecord = {
+  def postToRecord(post: Post, group: FacebookGroup): RawRecord = {
     println(s"[link: ${post.getPermalinkUrl}, ${post.getCreatedTime}] ${post.getMessage}")
 
     val id = FbId(post.getId)
@@ -95,8 +106,9 @@ class FacebookCollector(recordConsumer: RawRecord => Unit, isAlreadyStored: RawR
     val sharedPostMessage = Option(post.getDescription)
 
     RawRecord(id, EventType.UNKNOWN, AnimalType.UNKNOWN, message.getOrElse(""), post.getCreatedTime.getTime,
+      "FB-" + group.id,
       picturePath.map(_.toString).toList,
       Option(post.getPermalinkUrl).map(_.toString).orNull, secondaryMessage = sharedPostMessage.getOrElse(""),
-      fullLocation = FullLocation(None, None, Some(Voivodeship.MALOPOLSKIE), None))
+      fullLocation = FullLocation(None, None, group.voivodeshipRestriction, None))
   }
 }

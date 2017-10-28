@@ -1,6 +1,6 @@
 package bestaro.extractors
 
-import bestaro.common.types.{FullLocation, Location}
+import bestaro.common.types.{FullLocation, Location, Voivodeship}
 import bestaro.core.RawRecord
 import bestaro.core.processors._
 
@@ -35,7 +35,7 @@ abstract class AbstractLocationExtractor {
         evaluateMostAccurateBaseName(tokenText)
       }
     }.map(token => {
-      if (onIgnoreList(token)) {
+      if (onIgnoreList(token, record.fullLocation.voivodeship)) {
         token.withAlteredPlacenessScore(NAME_ON_IGNORE_LIST_SCORE)
       } else {
         token
@@ -164,8 +164,14 @@ abstract class AbstractLocationExtractor {
     )
   }
 
-  private def onIgnoreList(token: Token): Boolean = {
-    Set("rybna", "rybną", "rybnej").contains(token.stripped) // for example names/streets of animal shelters in the area
+  private def onIgnoreList(token: Token, voivodeship: Option[Voivodeship]): Boolean = {
+    val ignoreList = voivodeship.map {
+      case Voivodeship.MALOPOLSKIE => Set("rybna", "rybną", "rybnej")
+      case Voivodeship.MAZOWIECKIE => Set("paluch", "palucha", "paluchu")
+      case _ => Set[String]()
+    }.getOrElse(Set())
+
+    ignoreList.contains(token.stripped) // for example names/streets of animal shelters in the area
   }
 
   private def isCapitalized(original: String): Boolean = {

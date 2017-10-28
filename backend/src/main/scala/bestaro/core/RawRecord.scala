@@ -8,13 +8,14 @@ case class RawRecord(recordId: RecordId,
                      animalType: AnimalType,
                      message: String,
                      postDate: Long,
+                     dataSource: String,
                      pictures: List[String] = List(),
                      link: String = "",
                      location: String = "",
                      eventDate: Long = 0,
                      title: String = "",
                      fullLocation: FullLocation = FullLocation(None, None, None, None),
-                     secondaryMessage: String = ""
+                     secondaryMessage: String = "",
                     ) {
 
   def buildRecord: Record = {
