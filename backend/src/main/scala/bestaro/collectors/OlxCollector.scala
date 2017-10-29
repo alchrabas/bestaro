@@ -21,14 +21,14 @@ class OlxCollector(httpDownloader: HttpDownloader) {
   }
 
   def collectLostPets(recordConsumer: (RawRecord) => Unit): Unit = {
-    collectPetsFromListOnUrl(recordConsumer, 1, "https://www.olx.pl/zwierzeta/zaginione-i-znalezione/krakow/?search%5Bfilter_enum_lostfound%5D%5B0%5D=lost")
+    collectPetsFromListOnUrl(recordConsumer, 1, EventType.LOST, "https://www.olx.pl/zwierzeta/zaginione-i-znalezione/krakow/?search%5Bfilter_enum_lostfound%5D%5B0%5D=lost")
   }
 
   def collectFoundPets(recordConsumer: (RawRecord) => Unit): Unit = {
-    collectPetsFromListOnUrl(recordConsumer, 1, "https://www.olx.pl/zwierzeta/zaginione-i-znalezione/krakow/?search%5Bfilter_enum_lostfound%5D%5B0%5D=found")
+    collectPetsFromListOnUrl(recordConsumer, 1, EventType.FOUND, "https://www.olx.pl/zwierzeta/zaginione-i-znalezione/krakow/?search%5Bfilter_enum_lostfound%5D%5B0%5D=found")
   }
 
-  def collectPetsFromListOnUrl(recordConsumer: RawRecord => Unit, page: Int, url: String): Unit = {
+  def collectPetsFromListOnUrl(recordConsumer: RawRecord => Unit, page: Int, eventType: EventType, url: String): Unit = {
     val doc = requestSlowly(url)
     val offerTables = doc.select("#offers_table").first().children()
 
@@ -39,15 +39,16 @@ class OlxCollector(httpDownloader: HttpDownloader) {
       .map(allTables.get)
       .map(_.select("a").first().attr("href"))
       .map(requestSlowly)
-      .map(collectAdvertisementDetails)
+      .map(collectAdvertisementDetails(_, eventType))
       .foreach(recordConsumer)
 
-    enterAnotherPage(recordConsumer, page, url, doc)
+    enterAnotherPage(recordConsumer, page, eventType, url, doc)
   }
 
-  def enterAnotherPage(recordConsumer: (RawRecord) => Unit, page: Int, url: String, doc: Document): Unit = {
+  def enterAnotherPage(recordConsumer: (RawRecord) => Unit, page: Int,
+                       eventType: EventType, url: String, doc: Document): Unit = {
     if (nextPageExists(page, url, doc)) {
-      collectPetsFromListOnUrl(recordConsumer, page + 1, url)
+      collectPetsFromListOnUrl(recordConsumer, page + 1, eventType, url)
     }
   }
 
@@ -58,7 +59,7 @@ class OlxCollector(httpDownloader: HttpDownloader) {
     nextPageLinkExists
   }
 
-  def collectAdvertisementDetails(adDocument: Document): RawRecord = {
+  def collectAdvertisementDetails(adDocument: Document, eventType: EventType): RawRecord = {
     val locationString = adDocument.select(".show-map-link > strong").text()
     val messageContent = adDocument.select("#textContent").text()
     val title = adDocument.select("title").text()
@@ -84,8 +85,7 @@ class OlxCollector(httpDownloader: HttpDownloader) {
       location = locationString, title = title,
       pictures = pictures,
       eventDate = extractedEventDate.map(_.toEpochMilli).getOrElse(2L),
-      link = url,
-      fullLocation = FullLocation(None, None, Some(Voivodeship.MALOPOLSKIE), None) // TODO!!!
+      link = url
     )
   }
 

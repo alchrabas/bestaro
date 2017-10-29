@@ -20,7 +20,7 @@ class OlxCollectorTest extends FunSpec with MockFactory {
       val collector = new OlxCollector(httpDownloaderMock)
       val doc = Jsoup.parse(getClass.getResourceAsStream("/olxSamplePage.html"), "UTF-8",
         "https://www.olx.pl/oferta/bura-pregowana-starsza-kotka-CID103-ID40upd.html#9537ecc7fe")
-      val record = collector.collectAdvertisementDetails(doc)
+      val record = collector.collectAdvertisementDetails(doc, EventType.UNKNOWN)
 
       assert(record.eventType == EventType.LOST)
       assert(record.title == "Bura, pręgowana, starsza KOTKA ! Kraków Nowa Huta • OLX.pl")
