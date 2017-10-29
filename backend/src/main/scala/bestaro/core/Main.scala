@@ -4,7 +4,7 @@ import bestaro.DataSupplier
 import bestaro.collectors.util.SlowHttpDownloader
 import bestaro.collectors.{FacebookCollector, OlxCollector}
 import bestaro.common.types.RecordId
-import bestaro.core.processors.PlaintextProcessor
+import bestaro.core.processors.{LocationStringProcessor, PlaintextProcessor}
 import bestaro.helpers.TaggedRecordsManager
 import bestaro.helpers.TaggedRecordsManager.TaggedRecord
 
@@ -30,9 +30,13 @@ object Main {
         olx.collect(jsonSerializer.saveInJson)
       case PROCESS =>
         val records = jsonSerializer.readRecordsFromFile
-        val processor = new PlaintextProcessor
-        //        val recordsWithTags = records.filter(r => taggedRecords.contains(r.recordId))
-        val processedRecords = records.map(processor.process)
+
+        val locationStringProcessor = new LocationStringProcessor
+        val plaintextProcessor = new PlaintextProcessor
+//                val recordsWithTags = records.filter(r => taggedRecords.contains(r.recordId))
+        val processedRecords = records
+          .map(locationStringProcessor.process)
+          .map(plaintextProcessor.process)
 
         val locationVerifier = new LocationVerifier(getLocationTaggedRecords)
         println(locationVerifier.verify(processedRecords).detailedSummary)

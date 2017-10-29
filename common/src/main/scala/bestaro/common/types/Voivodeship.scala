@@ -1,5 +1,6 @@
 package bestaro.common.types
 
+import bestaro.common.util.PolishCharactersAsciizer
 import play.api.libs.json.{Json, OFormat}
 
 object Voivodeship {
@@ -31,4 +32,40 @@ case class Voivodeship(name: String) {
   def searchString: String = {
     "województwo " + name.toLowerCase()
   }
+}
+
+object VoivodeshipNameVariants {
+
+  private val asciizer = new PolishCharactersAsciizer
+
+  private def appendVoivodeshipPrefixAndAsciizerForm(name: String): Seq[String] = {
+    Seq(
+      name,
+      asciizer.convertToAscii(name),
+      "województwo " + name,
+      "wojewodztwo " + asciizer.convertToAscii(name)
+    )
+  }
+
+  /**
+    * All lowercase variants of names of Polish voivodeships
+    */
+  val VARIANTS: Map[Voivodeship, Seq[String]] = Map(
+    Voivodeship.MALOPOLSKIE -> Seq("małopolskie", "małopolska"),
+    Voivodeship.LUBUSKIE -> Seq("lubuskie"),
+    Voivodeship.KUJAWSKO_POMORSKIE -> Seq("kujawsko-pomorskie"),
+    Voivodeship.POMORSKIE -> Seq("pomorskie", "pomorze"),
+    Voivodeship.SWIETOKRZYSKIE -> Seq("świętokrzyskie"),
+    Voivodeship.SLASKIE -> Seq("śląskie", "śląsk"),
+    Voivodeship.OPOLSKIE -> Seq("opolskie"),
+    Voivodeship.LODZKIE -> Seq("łódzkie"),
+    Voivodeship.ZACHODNIOPOMORSKIE -> Seq("zachodniopomorskie"),
+    Voivodeship.LUBELSKIE -> Seq("lubelskie"),
+    Voivodeship.MAZOWIECKIE -> Seq("mazowieckie", "mazowsze"),
+    Voivodeship.PODLASKIE -> Seq("podlaskie", "podlasie"),
+    Voivodeship.DOLNOSLASKIE -> Seq("dolnośląskie", "dolny śląsk"),
+    Voivodeship.PODKARPACKIE -> Seq("podkarpackie", "podkarpacie"),
+    Voivodeship.WIELKOPOLSKIE -> Seq("wielkopolskie", "wielkopolska"),
+    Voivodeship.WARMINSKO_MAZURSKIE -> Seq("warmińsko-mazurskie")
+  ).mapValues(_.flatMap(appendVoivodeshipPrefixAndAsciizerForm))
 }

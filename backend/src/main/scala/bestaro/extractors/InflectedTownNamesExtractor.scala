@@ -30,13 +30,13 @@ class InflectedTownNamesExtractor {
     newMap
   }
 
-  def findLocationNamesFromDatabase(tokens: List[Token],
+  def findLocationNamesFromDatabase(tokens: List[String],
                                     voivodeshipRestriction: Option[Voivodeship]
                                    ): Seq[MatchedInflectedLocation] = {
     val potentialMatches = tokens
       .zipWithIndex
       .flatMap { case (token, position) =>
-        val firstWord = token.stripped.split(" ")(0)
+        val firstWord = token.split(" ")(0)
         townsForSpecifiedVoivodeshipAndFirstWord(voivodeshipRestriction, firstWord)
           .map(inflectedLocaton => MatchedInflectedLocation(inflectedLocaton, position,
             inflectedLocaton.stripped.split(" ").length))
@@ -50,7 +50,7 @@ class InflectedTownNamesExtractor {
         )
         (townEntryMatch.initialPos + townNameTokens.length <= tokens.length) &&
           tokensToUse.zip(townNameTokens).forall {
-            case (token, townNamePart) => token.stripped == townNamePart
+            case (token, townNamePart) => token == townNamePart
           }
     }
   }
