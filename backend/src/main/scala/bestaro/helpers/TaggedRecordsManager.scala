@@ -3,7 +3,7 @@ package bestaro.helpers
 import java.io.File
 
 import bestaro.common.types.RecordId
-import bestaro.core._
+import bestaro.database.DatabaseWrapper
 import com.github.tototoshi.csv.{CSVReader, CSVWriter}
 import play.api.libs.json.Json
 
@@ -47,7 +47,7 @@ object TaggedRecordsManager {
 
   def allEventTypeRecordsFromCsv(): Seq[TaggedRecord] = {
     readTaggedRecordsFromCsv()
-      .slice(0, 821)
+      .slice(0, 893)
       .filter(_.eventType.nonEmpty)
   }
 
@@ -63,8 +63,8 @@ object TaggedRecordsManager {
       throw new Exception("Do not overwrite this csv file")
     }
     val writer = CSVWriter.open("records-for-tagging.csv")
-    val jsonSerializer = new JsonSerializer
-    for (record <- jsonSerializer.readRecordsFromFile) {
+
+    for (record <- DatabaseWrapper.allRawRecords) {
       writer.writeRow(List(Json.stringify(Json.toJson(record.recordId)), record.message))
     }
     writer.close()

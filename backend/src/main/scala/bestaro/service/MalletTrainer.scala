@@ -3,7 +3,7 @@ package bestaro.service
 import java.io.{File, FileOutputStream, ObjectOutputStream}
 
 import bestaro.common.util.MathUtil
-import bestaro.core.JsonSerializer
+import bestaro.database.DatabaseWrapper
 import bestaro.extractors.EventTypeExtractor
 import bestaro.helpers.TaggedRecordsManager
 import cc.mallet.classify.{Classifier, ClassifierTrainer, Trial}
@@ -60,8 +60,7 @@ class MalletTrainer {
   }
 
   private def loadTrainData(extractor: EventTypeExtractor): InstanceList = {
-    val jsonSerializer = new JsonSerializer
-    val records = jsonSerializer.readRecordsFromFile
+    val records = DatabaseWrapper.allRawRecords
     val tagsById = TaggedRecordsManager.allEventTypeRecordsFromCsv()
       .map(record => record.recordId -> record).toMap
 

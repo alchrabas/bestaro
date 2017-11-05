@@ -12,11 +12,6 @@ import play.api.libs.json.Json
 
 class DataSupplier {
 
-  private val propertyFileResource = getClass.getClassLoader.getResource("app.properties")
-  private val appPropertiesFIS = new FileInputStream(propertyFileResource.getFile)
-  private val properties = new Properties()
-  properties.load(appPropertiesFIS)
-
   def sendRecord(record: Record) {
     val namedPictures = record.pictures
       .map { pictureName =>
@@ -44,13 +39,13 @@ class DataSupplier {
   }
 
   private def uploadBytes(encodedJson: Array[Byte]): Unit = {
-    val connectionToFrontend = new URL(properties.getProperty("frontendURL"))
+    val connectionToFrontend = new URL(AppConfig.getProperty("frontendURL"))
     val connection = connectionToFrontend.openConnection().asInstanceOf[HttpURLConnection]
     connection.setDoOutput(true)
     connection.setRequestMethod("POST")
 
     connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8")
-    val userCredentials = properties.getProperty("frontendAuthCredentials").getBytes
+    val userCredentials = AppConfig.getProperty("frontendAuthCredentials").getBytes
     val basicAuth = "Basic " + new String(Base64.getEncoder.encode(userCredentials))
     connection.setRequestProperty("Authorization", basicAuth)
     connection.connect()

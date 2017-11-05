@@ -8,7 +8,7 @@ sealed trait RecordId {
   def id: String
 
   override def toString: String = {
-    service + "-" + id
+    service + RecordId.DELIMITER + id
   }
 }
 
@@ -37,6 +37,8 @@ object GumtreeId {
 }
 
 object RecordId {
+  private val DELIMITER = "-"
+
   implicit val topWrites: Writes[RecordId] = Writes[RecordId] {
     case fbId: FbId => FbId.jsonFormat.writes(fbId) + (("service", JsString(fbId.service)))
     case olxId: OlxId => OlxId.jsonFormat.writes(olxId) + (("service", JsString(olxId.service)))
@@ -52,5 +54,14 @@ object RecordId {
       case x => throw new IllegalArgumentException(s"$x is not supported type of serialized RecordId")
     }
     case x => throw new IllegalArgumentException(s"$x is not supported type of serialized RecordId")
+  }
+
+  def fromString(str: String): RecordId = {
+    str.split(DELIMITER) match {
+      case Array("FB", id: String) => FbId(id)
+      case Array("OLX", id: String) => OlxId(id)
+      case Array("GUMTREE", id: String) => GumtreeId(id)
+      case Array(service: String, _) => throw new IllegalArgumentException(s"invalid type of service: $service")
+    }
   }
 }

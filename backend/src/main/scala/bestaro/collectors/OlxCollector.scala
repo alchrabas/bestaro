@@ -13,22 +13,22 @@ import org.jsoup.nodes.Document
 import scala.collection.JavaConverters._
 import scala.language.postfixOps
 
-class OlxCollector(httpDownloader: HttpDownloader) {
+class OlxCollector(recordConsumer: RawRecord => Unit, httpDownloader: HttpDownloader) {
 
-  def collect(recordConsumer: RawRecord => Unit): Unit = {
-    collectLostPets(recordConsumer)
-    collectFoundPets(recordConsumer)
+  def collect(): Unit = {
+    collectLostPets()
+    collectFoundPets()
   }
 
-  def collectLostPets(recordConsumer: (RawRecord) => Unit): Unit = {
-    collectPetsFromListOnUrl(recordConsumer, 1, EventType.LOST, "https://www.olx.pl/zwierzeta/zaginione-i-znalezione/krakow/?search%5Bfilter_enum_lostfound%5D%5B0%5D=lost")
+  def collectLostPets(): Unit = {
+    collectPetsFromListOnUrl(1, EventType.LOST, "https://www.olx.pl/zwierzeta/zaginione-i-znalezione/krakow/?search%5Bfilter_enum_lostfound%5D%5B0%5D=lost")
   }
 
-  def collectFoundPets(recordConsumer: (RawRecord) => Unit): Unit = {
-    collectPetsFromListOnUrl(recordConsumer, 1, EventType.FOUND, "https://www.olx.pl/zwierzeta/zaginione-i-znalezione/krakow/?search%5Bfilter_enum_lostfound%5D%5B0%5D=found")
+  def collectFoundPets(): Unit = {
+    collectPetsFromListOnUrl(1, EventType.FOUND, "https://www.olx.pl/zwierzeta/zaginione-i-znalezione/krakow/?search%5Bfilter_enum_lostfound%5D%5B0%5D=found")
   }
 
-  def collectPetsFromListOnUrl(recordConsumer: RawRecord => Unit, page: Int, eventType: EventType, url: String): Unit = {
+  def collectPetsFromListOnUrl(page: Int, eventType: EventType, url: String): Unit = {
     val doc = requestSlowly(url)
     val offerTables = doc.select("#offers_table").first().children()
 
@@ -42,13 +42,13 @@ class OlxCollector(httpDownloader: HttpDownloader) {
       .map(collectAdvertisementDetails(_, eventType))
       .foreach(recordConsumer)
 
-    enterAnotherPage(recordConsumer, page, eventType, url, doc)
+    enterAnotherPage(page, eventType, url, doc)
   }
 
-  def enterAnotherPage(recordConsumer: (RawRecord) => Unit, page: Int,
+  def enterAnotherPage(page: Int,
                        eventType: EventType, url: String, doc: Document): Unit = {
     if (nextPageExists(page, url, doc)) {
-      collectPetsFromListOnUrl(recordConsumer, page + 1, eventType, url)
+      collectPetsFromListOnUrl(page + 1, eventType, url)
     }
   }
 

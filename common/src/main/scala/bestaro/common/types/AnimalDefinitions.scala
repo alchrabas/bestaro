@@ -38,5 +38,10 @@ object AnimalType {
 
   object UNKNOWN extends AnimalType("UKNOWN")
 
+  def byName(name: String): AnimalType = {
+    val typesByName = List(CAT, DOG, PARROT, TORTOISE, OTHER, UNKNOWN).map(et => et.value -> et).toMap
+    typesByName(name)
+  }
+
   implicit val animalTypeFormat: OFormat[AnimalType] = Json.format[AnimalType]
 }

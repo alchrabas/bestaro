@@ -20,7 +20,8 @@ case class RawRecord(recordId: RecordId,
 
   def buildRecord: Record = {
     Record(recordId,
-      eventType, pictures, link,
+      eventType, animalType,
+      pictures, link,
       eventDate,
       postDate,
       fullLocation)

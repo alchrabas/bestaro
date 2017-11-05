@@ -27,7 +27,7 @@ class FacebookCollector(recordConsumer: RawRecord => Unit, isAlreadyStored: RawR
     FacebookGroup("ZaginioneWarszawa", "211708982280762", Some(Voivodeship.MAZOWIECKIE)),
   )
 
-  def collect(recordConsumer: RawRecord => Unit): Unit = {
+  def collect(): Unit = {
     val facebook = new FacebookFactory().getInstance
 
     GROUPS_TO_SEARCH.foreach(searchInGroup(_, facebook))
@@ -67,7 +67,7 @@ class FacebookCollector(recordConsumer: RawRecord => Unit, isAlreadyStored: RawR
 
   class FacebookEater(facebook: Facebook, groupId: String) {
     private var lastPage: Option[Paging[Post]] = None
-    private val READING = new Reading().until("2017-10-16").limit(POSTS_FETCHED_PER_PAGE)
+    private val READING = new Reading().limit(POSTS_FETCHED_PER_PAGE)
       .fields("message", "link", "id", "permalink_url", "created_time",
         "attachments", "full_picture", "description")
 
@@ -108,7 +108,8 @@ class FacebookCollector(recordConsumer: RawRecord => Unit, isAlreadyStored: RawR
     RawRecord(id, EventType.UNKNOWN, AnimalType.UNKNOWN, message.getOrElse(""), post.getCreatedTime.getTime,
       "FB-" + group.id,
       picturePath.map(_.toString).toList,
-      Option(post.getPermalinkUrl).map(_.toString).orNull, secondaryMessage = sharedPostMessage.getOrElse(""),
+      Option(post.getPermalinkUrl).map(_.toString).orNull,
+      secondaryMessage = sharedPostMessage.getOrElse(""),
       fullLocation = FullLocation(None, None, group.voivodeshipRestriction, None))
   }
 }
