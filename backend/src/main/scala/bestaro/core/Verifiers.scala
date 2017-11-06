@@ -100,7 +100,7 @@ class EventTypeVerifier(recordTags: Map[RecordId, TaggedRecord]) {
     processed.foreach { rawRecord =>
       val recordTag = recordTags.get(rawRecord.recordId)
       recordTag.map(_.eventType).map(seenToFound).foreach { expectedType =>
-        val correct = expectedType == rawRecord.eventType.value
+        val correct = expectedType == rawRecord.eventType.entryName
         resultPairs.append(EventTypeResultPair(rawRecord, expectedType, correct))
       }
     }

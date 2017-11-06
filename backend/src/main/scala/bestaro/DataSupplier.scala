@@ -3,7 +3,7 @@ package bestaro
 import java.io._
 import java.net.{HttpURLConnection, URL}
 import java.nio.file.{Files, Paths}
-import java.util.{Base64, Properties}
+import java.util.Base64
 import javax.imageio.ImageIO
 
 import bestaro.common.types.{NamedPicture, Record, RecordDTO}

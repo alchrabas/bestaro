@@ -27,7 +27,9 @@ lazy val backend = project
       "com.google.guava" % "guava" % "23.0",
       "cc.mallet" % "mallet" % "2.0.8",
       "com.typesafe.slick" %% "slick" % "3.2.1",
-      "org.xerial" % "sqlite-jdbc" % "3.20.1"
+      "org.xerial" % "sqlite-jdbc" % "3.20.1",
+      "com.beachape" %% "enumeratum" % "1.5.12",
+      "com.beachape" %% "enumeratum-play-json" % "1.5.12-2.6.0-M7"
     )
   )
 
@@ -42,6 +44,7 @@ lazy val frontend = project
       "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2" % Test,
       "org.webjars" % "leaflet" % "1.2.0",
       "com.beachape" %% "enumeratum" % "1.5.12",
+      "com.beachape" %% "enumeratum-play-json" % "1.5.12-2.6.0-M7",
       guice
     ),
     PlayKeys.devSettings := Seq("play.server.http.port" -> "8888")
@@ -53,6 +56,7 @@ lazy val common = project
     name := "bestaro-common",
     libraryDependencies ++= Seq(
       "com.typesafe.play" %% "play-json" % "2.6.3",
-      "com.beachape" %% "enumeratum" % "1.5.12"
+      "com.beachape" %% "enumeratum" % "1.5.12",
+      "com.beachape" %% "enumeratum-play-json" % "1.5.12-2.6.0-M7"
     )
   )

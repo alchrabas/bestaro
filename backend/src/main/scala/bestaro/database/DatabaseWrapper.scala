@@ -145,13 +145,13 @@ object DatabaseWrapper {
   )
 
   private implicit val eventTypeColumn: JdbcType[EventType] with BaseTypedType[EventType] = MappedColumnType.base[EventType, String](
-    _.value.toString,
-    EventType.byName
+    _.entryName,
+    EventType.withName
   )
 
   private implicit val animalTypeColumn: JdbcType[AnimalType] with BaseTypedType[AnimalType] = MappedColumnType.base[AnimalType, String](
-    _.value.toString,
-    AnimalType.byName
+    _.entryName,
+    AnimalType.withName
   )
 
   private implicit val picturesList: JdbcType[List[String]] with BaseTypedType[List[String]] = MappedColumnType.base[List[String], String](

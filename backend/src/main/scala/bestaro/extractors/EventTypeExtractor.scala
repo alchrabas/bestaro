@@ -36,7 +36,7 @@ class EventTypeExtractor {
     println(classificationResult.getLabeling.getBestLabel + ": " +
       "%.3f".format(classificationResult.getLabeling.getBestValue))
 
-    record.copy(eventType = EventType.byName(
+    record.copy(eventType = EventType.withName(
       classificationResult.getLabeling.getBestLabel.toString))
   }
 

@@ -31,7 +31,7 @@ class RestController @Inject()(cc: ControllerComponents
         (record.postDate >= strToDate(filterCriteria.dateFrom) &&
           record.postDate <= strToDate(filterCriteria.dateTo))
         ) &&
-        (filterCriteria.eventType == "ANY" || filterCriteria.eventType == record.eventType.value)
+        (filterCriteria.eventType == "ANY" || filterCriteria.eventType == record.eventType.entryName)
     }
   }
 
@@ -47,7 +47,7 @@ class RestController @Inject()(cc: ControllerComponents
             "eventDate" -> String.valueOf(v.eventDate),
             "publishDate" -> String.valueOf(v.postDate),
             "picture" -> v.pictures.head,
-            "eventType" -> v.eventType.value,
+            "eventType" -> v.eventType.entryName,
             "lat" -> String.valueOf(v.fullLocation.coordinate.get.lat),
             "lon" -> String.valueOf(v.fullLocation.coordinate.get.lon),
             "link" -> v.link

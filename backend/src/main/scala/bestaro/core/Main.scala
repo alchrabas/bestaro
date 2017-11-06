@@ -1,6 +1,6 @@
 package bestaro.core
 
-import bestaro.DataSupplier
+import bestaro.{AppConfig, DataSupplier}
 import bestaro.collectors.util.SlowHttpDownloader
 import bestaro.collectors.{FacebookCollector, OlxCollector}
 import bestaro.common.types.RecordId
@@ -38,8 +38,11 @@ object Main {
 
         import scala.concurrent.ExecutionContext.Implicits.global
 
+        val forceProcessing = AppConfig.getProperty("forceProcessing") == "true"
+
         val (allFutures, processedRecords) = records.toIterator
-          .filterNot(rawRecord => DatabaseWrapper.processedLaterThanCollected(rawRecord.recordId))
+          .filter(rawRecord => forceProcessing ||
+            !DatabaseWrapper.processedLaterThanCollected(rawRecord.recordId))
           .map(locationStringProcessor.process)
           .map(plaintextProcessor.process)
           .map { processedRecord =>
@@ -55,13 +58,13 @@ object Main {
         Await.result(Future.sequence(allFutures), Duration.Inf)
 
         val dataSupplier = new DataSupplier
-              processedRecords
-                .map(_.buildRecord)
-                .filterNot(record => DatabaseWrapper.sentLaterThanProcessed(record.recordId))
-                .foreach { record =>
-                  dataSupplier.sendRecord(record)
-                  DatabaseWrapper.markRecordAsSent(record)
-                }
+        processedRecords
+          .map(_.buildRecord)
+          .filterNot(record => DatabaseWrapper.sentLaterThanProcessed(record.recordId))
+          .foreach { record =>
+            dataSupplier.sendRecord(record)
+            DatabaseWrapper.markRecordAsSent(record)
+          }
     }
   }
 

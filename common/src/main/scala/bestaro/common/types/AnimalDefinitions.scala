@@ -1,47 +1,46 @@
 package bestaro.common.types
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json._
+import enumeratum._
 
-sealed case class EventType(value: String)
+import scala.collection.immutable
 
-object EventType {
+sealed trait EventType extends EnumEntry
 
-  object LOST extends EventType("LOST")
+object EventType extends Enum[EventType] with PlayJsonEnum[EventType] {
 
-  object FOUND extends EventType("FOUND")
+  val values: immutable.IndexedSeq[EventType] = findValues
 
-  object SEEN extends EventType("SEEN")
+  case object LOST extends EventType
 
-  object UNKNOWN extends EventType("UKNOWN")
+  case object FOUND extends EventType
 
-  def byName(name: String): EventType = {
-    val typesByName = List(LOST, FOUND, SEEN, UNKNOWN).map(et => et.value -> et).toMap
-    typesByName(name)
-  }
+  case object SEEN extends EventType
 
-  implicit val eventTypeFormat: OFormat[EventType] = Json.format[EventType]
+  case object UNKNOWN extends EventType
+
+  implicit val eventTypeWrites: Writes[EventType] = Json.writes[EventType]
+  implicit val eventTypeReads: Reads[EventType] = Json.reads[EventType]
 }
 
-sealed case class AnimalType(value: String)
+sealed trait AnimalType extends EnumEntry
 
-object AnimalType {
+object AnimalType extends Enum[AnimalType] with PlayJsonEnum[AnimalType] {
 
-  object CAT extends AnimalType("CAT")
+  val values: immutable.IndexedSeq[AnimalType] = findValues
 
-  object DOG extends AnimalType("DOG")
+  case object CAT extends AnimalType
 
-  object PARROT extends AnimalType("PARROT")
+  case object DOG extends AnimalType
 
-  object TORTOISE extends AnimalType("TORTOISE")
+  case object PARROT extends AnimalType
 
-  object OTHER extends AnimalType("OTHER")
+  case object TORTOISE extends AnimalType
 
-  object UNKNOWN extends AnimalType("UKNOWN")
+  case object OTHER extends AnimalType
 
-  def byName(name: String): AnimalType = {
-    val typesByName = List(CAT, DOG, PARROT, TORTOISE, OTHER, UNKNOWN).map(et => et.value -> et).toMap
-    typesByName(name)
-  }
+  case object UNKNOWN extends AnimalType
 
-  implicit val animalTypeFormat: OFormat[AnimalType] = Json.format[AnimalType]
+  implicit val animalTypeWrites: Writes[AnimalType] = Json.writes[AnimalType]
+  implicit val animalTypeReads: Reads[AnimalType] = Json.reads[AnimalType]
 }
