@@ -3,8 +3,9 @@ package bestaro.core.processors
 import bestaro.common.types.{FullLocation, Location, Voivodeship, VoivodeshipNameVariants}
 import bestaro.core.{RawRecord, Tokenizer}
 import bestaro.extractors.InflectedTownNamesExtractor
+import bestaro.locator.LocatorDatabase
 
-class LocationStringProcessor {
+class LocationStringProcessor(locatorDatabase: LocatorDatabase) {
 
   def process(record: RawRecord): RawRecord = {
 
@@ -37,10 +38,11 @@ class LocationStringProcessor {
   }
 
   private def extractSecondaryLocation(locationPart: String,
-                                       voivodeshipRestriction: Option[Voivodeship]): Option[Location] = {
+                                       voivodeshipRestriction: Option[Voivodeship],
+                                       memoryCache: Boolean = true): Option[Location] = {
     val tokenizer = new Tokenizer
     val locationTokens = tokenizer.tokenize(locationPart)
-    val inflectedTownNamesExtractor = new InflectedTownNamesExtractor
+    val inflectedTownNamesExtractor = new InflectedTownNamesExtractor(locatorDatabase, memoryCache)
     inflectedTownNamesExtractor.findLocationNamesFromDatabase(locationTokens, voivodeshipRestriction)
       .map(_.inflectedLocation.location).headOption
   }

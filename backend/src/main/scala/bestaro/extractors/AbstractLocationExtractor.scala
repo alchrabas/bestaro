@@ -3,6 +3,7 @@ package bestaro.extractors
 import bestaro.common.types.{FullLocation, Location, Voivodeship}
 import bestaro.core.RawRecord
 import bestaro.core.processors._
+import bestaro.locator.LocatorDatabase
 
 import scala.collection.mutable.ListBuffer
 
@@ -10,7 +11,7 @@ case class MatchedLocation(location: Location, position: Int, wordCount: Int)
 
 case class MatchedFullLocation(fullLocation: FullLocation, position: Int, wordCount: Int)
 
-abstract class AbstractLocationExtractor {
+abstract class AbstractLocationExtractor(locatorDatabase: LocatorDatabase, memoryCache: Boolean) {
 
   private val NOUN_PRECEDING_NAME_SCORE = 11
   private val CAPITALIZED_WORD_SCORE = 5
@@ -20,7 +21,7 @@ abstract class AbstractLocationExtractor {
 
   protected val baseNameProducer = new BaseNameProducer
 
-  protected val townNamesExtractor = new InflectedTownNamesExtractor
+  protected val townNamesExtractor = new InflectedTownNamesExtractor(locatorDatabase, memoryCache)
 
   def extractLocation(tokens: List[String], record: RawRecord): (List[Token], List[MatchedFullLocation]) = {
 

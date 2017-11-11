@@ -1,7 +1,9 @@
 package bestaro.core.processors
 
+import bestaro.AppConfig
 import bestaro.core.{RawRecord, Tokenizer}
 import bestaro.extractors.{EventTypeExtractor, GoogleLocationExtractor}
+import bestaro.locator.LocatorDatabase
 
 
 object PlaintextProcessor {
@@ -15,8 +17,9 @@ object PlaintextProcessor {
   private val EMPTY_TOKEN = Token("", "", "", List(), List(), 0, flags = Set(Flag.EMPTY_TOKEN))
 }
 
-class PlaintextProcessor {
-  val locationExtractor = new GoogleLocationExtractor()
+class PlaintextProcessor(locatorDatabase: LocatorDatabase) {
+  private val bestaroLocatorMemoryCache = AppConfig.getProperty("bestaroLocatorMemoryCache") == "true"
+  val locationExtractor = new GoogleLocationExtractor(locatorDatabase, bestaroLocatorMemoryCache)
   val eventTypeExtractor = new EventTypeExtractor()
 
   def process(record: RawRecord): RawRecord = {

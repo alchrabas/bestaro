@@ -8,6 +8,7 @@ import bestaro.core.processors.{LocationStringProcessor, PlaintextProcessor}
 import bestaro.database.DatabaseWrapper
 import bestaro.helpers.TaggedRecordsManager
 import bestaro.helpers.TaggedRecordsManager.TaggedRecord
+import bestaro.locator.LocatorDatabase
 
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration.Duration
@@ -18,7 +19,7 @@ object Main {
   val OLX = "OLX"
   val PROCESS = "PROCESS"
 
-  val OPTION = PROCESS
+  val OPTION = FB
 
   def main(args: Array[String]): Unit = {
 
@@ -32,8 +33,9 @@ object Main {
       case PROCESS =>
         val records = DatabaseWrapper.allRawRecords
 
-        val locationStringProcessor = new LocationStringProcessor
-        val plaintextProcessor = new PlaintextProcessor
+        val locatorDatabase = new LocatorDatabase(AppConfig.getProperty("locatorDatabasePath"))
+        val locationStringProcessor = new LocationStringProcessor(locatorDatabase)
+        val plaintextProcessor = new PlaintextProcessor(locatorDatabase)
         //                val recordsWithTags = records.filter(r => taggedRecords.contains(r.recordId))
 
         import scala.concurrent.ExecutionContext.Implicits.global

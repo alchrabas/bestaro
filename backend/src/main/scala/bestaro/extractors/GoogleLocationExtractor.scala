@@ -2,14 +2,15 @@ package bestaro.extractors
 
 import bestaro.common.types._
 import bestaro.core.processors.Token
+import bestaro.locator.LocatorDatabase
 import bestaro.service.CachedGoogleApiClient
 import com.google.maps.model.{AddressComponent, AddressComponentType, GeocodingResult}
 
 import scala.collection.mutable.ListBuffer
 
-class GoogleLocationExtractor extends AbstractLocationExtractor {
+class GoogleLocationExtractor(locatorDatabase: LocatorDatabase, memoryCache: Boolean = true) extends AbstractLocationExtractor(locatorDatabase, memoryCache) {
 
-  private val geocodingClient = new CachedGoogleApiClient(countingLogger())
+  private val geocodingClient = new CachedGoogleApiClient(locatorDatabase, countingLogger())
 
   private def countingLogger() = {
     var requests = 0

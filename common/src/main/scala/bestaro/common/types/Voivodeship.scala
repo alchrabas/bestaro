@@ -38,7 +38,7 @@ object VoivodeshipNameVariants {
 
   private val asciizer = new PolishCharactersAsciizer
 
-  private def appendVoivodeshipPrefixAndAsciizerForm(name: String): Seq[String] = {
+  private def appendVoivodeshipPrefixAndAsciizedForm(name: String): Seq[String] = {
     Seq(
       name,
       asciizer.convertToAscii(name),
@@ -67,5 +67,5 @@ object VoivodeshipNameVariants {
     Voivodeship.PODKARPACKIE -> Seq("podkarpackie", "podkarpacie"),
     Voivodeship.WIELKOPOLSKIE -> Seq("wielkopolskie", "wielkopolska"),
     Voivodeship.WARMINSKO_MAZURSKIE -> Seq("warmińsko-mazurskie")
-  ).mapValues(_.flatMap(appendVoivodeshipPrefixAndAsciizerForm))
+  ).mapValues(_.flatMap(appendVoivodeshipPrefixAndAsciizedForm))
 }

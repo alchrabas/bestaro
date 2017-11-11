@@ -3,6 +3,7 @@ package bestaro.backend.core.processors
 import bestaro.common.types._
 import bestaro.core.RawRecord
 import bestaro.core.processors.LocationStringProcessor
+import bestaro.locator.LocatorDatabase
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.FunSpec
 
@@ -10,7 +11,7 @@ class LocationStringProcessorTest extends FunSpec with MockFactory {
 
   describe("Location String Processor") {
 
-    val locStringProcessor = new LocationStringProcessor
+    val locStringProcessor = new LocationStringProcessor(new LocatorDatabase("testDb.sqlite"))
 
     it("should extract voivodeship info from location string") {
       val updatedRecord = locStringProcessor.process(someRecord("QAZWER, małopolska"))
