@@ -70,7 +70,7 @@ class PolishInflectedTownNamesGenerator {
         val stripped = baseNameProducer.strippedForStemming(row(NAME_COLUMN))
         InflectedLocation(stripped,
           Location(stripped, row(NAME_COLUMN), locationTypeByKindColumn(row)),
-          Voivodeship(row(VOIVODESHIP_COLUMN).toUpperCase)
+          Voivodeship.withName(row(VOIVODESHIP_COLUMN).toUpperCase)
         )
     }
 
@@ -91,7 +91,7 @@ class PolishInflectedTownNamesGenerator {
                 )
               )
             ),
-            Voivodeship(row(VOIVODESHIP_COLUMN).toUpperCase)
+            Voivodeship.withName(row(VOIVODESHIP_COLUMN).toUpperCase)
           )
       }
 

@@ -140,7 +140,7 @@ class GoogleLocationExtractor(locatorDatabase: LocatorDatabase, memoryCache: Boo
     val voivodeshipName = firstResult.addressComponents
       .find(_.types.contains(AddressComponentType.ADMINISTRATIVE_AREA_LEVEL_1))
       .map(_.shortName).getOrElse("UKNOWN").toLowerCase.replaceAll("województwo ", "")
-    val matchedVoivodeship = Voivodeship.values.find(_.name.equalsIgnoreCase(voivodeshipName))
+    val matchedVoivodeship = Voivodeship.values.find(_.entryName.equalsIgnoreCase(voivodeshipName))
 
     val locationType = firstFoundType(firstResult.addressComponents)
     val primaryLocation = getMostSpecificLocation(firstResult, PRIMARY_LOCATION_TYPES)

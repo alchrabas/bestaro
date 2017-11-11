@@ -1,37 +1,52 @@
 package bestaro.common.types
 
 import bestaro.common.util.PolishCharactersAsciizer
-import play.api.libs.json.{Json, OFormat}
+import enumeratum.{Enum, EnumEntry, PlayJsonEnum}
 
-object Voivodeship {
-  val MALOPOLSKIE = Voivodeship("MAŁOPOLSKIE")
-  val LUBUSKIE = Voivodeship("LUBUSKIE")
-  val KUJAWSKO_POMORSKIE = Voivodeship("KUJAWSKO-POMORSKIE")
-  val POMORSKIE = Voivodeship("POMORSKIE")
-  val SWIETOKRZYSKIE = Voivodeship("ŚWIĘTOKRZYSKIE")
-  val SLASKIE = Voivodeship("ŚLĄSKIE")
-  val OPOLSKIE = Voivodeship("OPOLSKIE")
-  val LODZKIE = Voivodeship("ŁÓDZKIE")
-  val ZACHODNIOPOMORSKIE = Voivodeship("ZACHODNIOPOMORSKIE")
-  val LUBELSKIE = Voivodeship("LUBELSKIE")
-  val MAZOWIECKIE = Voivodeship("MAZOWIECKIE")
-  val PODLASKIE = Voivodeship("PODLASKIE")
-  val DOLNOSLASKIE = Voivodeship("DOLNOŚLĄSKIE")
-  val PODKARPACKIE = Voivodeship("PODKARPACKIE")
-  val WIELKOPOLSKIE = Voivodeship("WIELKOPOLSKIE")
-  val WARMINSKO_MAZURSKIE = Voivodeship("WARMIŃSKO-MAZURSKIE")
+import scala.collection.immutable
 
-  val values = List(MALOPOLSKIE, LUBUSKIE, KUJAWSKO_POMORSKIE, POMORSKIE,
-    SWIETOKRZYSKIE, SLASKIE, OPOLSKIE, LODZKIE, ZACHODNIOPOMORSKIE, LUBELSKIE,
-    MAZOWIECKIE, PODLASKIE, DOLNOSLASKIE, PODKARPACKIE, WIELKOPOLSKIE, WARMINSKO_MAZURSKIE)
-
-  implicit val voivodeshipFormat: OFormat[Voivodeship] = Json.format[Voivodeship]
+sealed abstract class Voivodeship(override val entryName: String) extends EnumEntry {
+  def searchString: String = {
+    "województwo " + entryName.toLowerCase()
+  }
 }
 
-case class Voivodeship(name: String) {
-  def searchString: String = {
-    "województwo " + name.toLowerCase()
-  }
+object Voivodeship extends Enum[Voivodeship] with PlayJsonEnum[Voivodeship] {
+
+  val values: immutable.IndexedSeq[Voivodeship] = findValues
+
+  case object MALOPOLSKIE extends Voivodeship("MAŁOPOLSKIE")
+
+  case object LUBUSKIE extends Voivodeship("LUBUSKIE")
+
+  case object KUJAWSKO_POMORSKIE extends Voivodeship("KUJAWSKO-POMORSKIE")
+
+  case object POMORSKIE extends Voivodeship("POMORSKIE")
+
+  case object SWIETOKRZYSKIE extends Voivodeship("ŚWIĘTOKRZYSKIE")
+
+  case object SLASKIE extends Voivodeship("ŚLĄSKIE")
+
+  case object OPOLSKIE extends Voivodeship("OPOLSKIE")
+
+  case object LODZKIE extends Voivodeship("ŁÓDZKIE")
+
+  case object ZACHODNIOPOMORSKIE extends Voivodeship("ZACHODNIOPOMORSKIE")
+
+  case object LUBELSKIE extends Voivodeship("LUBELSKIE")
+
+  case object MAZOWIECKIE extends Voivodeship("MAZOWIECKIE")
+
+  case object PODLASKIE extends Voivodeship("PODLASKIE")
+
+  case object DOLNOSLASKIE extends Voivodeship("DOLNOŚLĄSKIE")
+
+  case object PODKARPACKIE extends Voivodeship("PODKARPACKIE")
+
+  case object WIELKOPOLSKIE extends Voivodeship("WIELKOPOLSKIE")
+
+  case object WARMINSKO_MAZURSKIE extends Voivodeship("WARMIŃSKO-MAZURSKIE")
+
 }
 
 object VoivodeshipNameVariants {
@@ -50,7 +65,7 @@ object VoivodeshipNameVariants {
   /**
     * All lowercase variants of names of Polish voivodeships
     */
-  val VARIANTS: Map[Voivodeship, Seq[String]] = Map(
+  val VARIANTS: Map[Voivodeship with Product with Serializable, Seq[String]] = Map(
     Voivodeship.MALOPOLSKIE -> Seq("małopolskie", "małopolska"),
     Voivodeship.LUBUSKIE -> Seq("lubuskie"),
     Voivodeship.KUJAWSKO_POMORSKIE -> Seq("kujawsko-pomorskie"),
