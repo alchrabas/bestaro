@@ -23,6 +23,8 @@ class FacebookCollector(recordConsumer: RawRecord => Unit, isAlreadyStored: RawR
 
   private val GROUPS_TO_SEARCH = Seq(
     FacebookGroup("ZaginioneKrakow", "396743770370604", Some(Voivodeship.MALOPOLSKIE)),
+    FacebookGroup("ZaginioneNowyTarg", "635559053174109", Some(Voivodeship.MALOPOLSKIE)),
+    FacebookGroup("ZaginioneMalopolska", "1064279656952087", Some(Voivodeship.MALOPOLSKIE)),
     //    FacebookGroup("ZaginioneWroclaw", "396743770370604", Some(Voivodeship.DOLNOSLASKIE)),
     FacebookGroup("ZaginioneWarszawa", "211708982280762", Some(Voivodeship.MAZOWIECKIE)),
   )
