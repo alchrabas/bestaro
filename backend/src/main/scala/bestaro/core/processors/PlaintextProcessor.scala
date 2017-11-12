@@ -2,20 +2,10 @@ package bestaro.core.processors
 
 import bestaro.AppConfig
 import bestaro.core.{RawRecord, Tokenizer}
-import bestaro.extractors.{EventTypeExtractor, GoogleLocationExtractor}
+import bestaro.extractors.EventTypeExtractor
 import bestaro.locator.LocatorDatabase
+import bestaro.locator.extractors.GoogleLocationExtractor
 
-
-object PlaintextProcessor {
-
-  implicit class TokenListOps(private val tokens: List[Token]) extends AnyVal {
-    def slidingPrefixedByEmptyTokens(size: Int): Iterator[List[Token]] = {
-      (List.fill(size - 1)(EMPTY_TOKEN) ++ tokens).sliding(size)
-    }
-  }
-
-  private val EMPTY_TOKEN = Token("", "", "", List(), List(), 0, flags = Set(Flag.EMPTY_TOKEN))
-}
 
 class PlaintextProcessor(locatorDatabase: LocatorDatabase) {
   private val bestaroLocatorMemoryCache = AppConfig.getProperty("bestaroLocatorMemoryCache") == "true"
@@ -37,7 +27,7 @@ class PlaintextProcessor(locatorDatabase: LocatorDatabase) {
   }
 
   private def extractAndUpdateLocation(record: RawRecord, tokens: List[String]): RawRecord = {
-    val (stemmedTokens, matchedFullLocations) = locationExtractor.extractLocation(tokens, record)
+    val (stemmedTokens, matchedFullLocations) = locationExtractor.extractLocation(tokens, record.fullLocation)
     val mostPromisingLocations = stemmedTokens.sortBy(_.placenessScore).reverse.slice(0, 5)
     println("BEST CANDIDATES: " + mostPromisingLocations)
     println(s"MATCHED ${matchedFullLocations.size} STREETS: " + matchedFullLocations.mkString("\n"))

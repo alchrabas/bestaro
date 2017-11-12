@@ -1,4 +1,4 @@
-package bestaro
+package bestaro.locator
 
 import morfologik.stemming.WordData
 import morfologik.stemming.polish.PolishStemmer

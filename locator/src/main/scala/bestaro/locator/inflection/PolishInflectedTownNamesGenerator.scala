@@ -1,8 +1,8 @@
-package bestaro.service
+package bestaro.locator.inflection
 
-import bestaro.common.types.{Location, LocationType, Voivodeship}
-import bestaro.core.processors.BaseNameProducer
-import bestaro.locator.inflection.PolishAspellInflectionAnalyzer
+import bestaro.locator.types
+import bestaro.locator.types.{Location, LocationType, Voivodeship}
+import bestaro.locator.util.BaseNameProducer
 import com.github.tototoshi.csv.{CSVReader, DefaultCSVFormat}
 
 object PolishInflectedTownNamesGenerator {
@@ -20,8 +20,6 @@ object PolishInflectedTownNamesGenerator {
 case class InflectedLocation(stripped: String, location: Location, voivodeship: Voivodeship)
 
 class PolishInflectedTownNamesGenerator {
-
-  import PolishInflectedTownNamesGenerator._
 
   val URZEDOWY_WYKAZ_NAZW_CSV = "gus/urzedowy_wykaz_nazw_miejscowosci_2015.csv"
 
@@ -50,7 +48,7 @@ class PolishInflectedTownNamesGenerator {
     val voivodeshipId = Integer.parseInt(csvEntry("WOJ"))
     val kind = csvEntry("NAZWA_DOD")
 
-    InflectedLocation(originalName, Location(originalName, originalName, locationTypeByKindColumn(csvEntry)),
+    InflectedLocation(originalName, types.Location(originalName, originalName, locationTypeByKindColumn(csvEntry)),
       VOIVODESHIP_BY_ID(voivodeshipId))
   }
 
@@ -69,7 +67,7 @@ class PolishInflectedTownNamesGenerator {
       row =>
         val stripped = baseNameProducer.strippedForStemming(row(NAME_COLUMN))
         InflectedLocation(stripped,
-          Location(stripped, row(NAME_COLUMN), locationTypeByKindColumn(row)),
+          types.Location(stripped, row(NAME_COLUMN), locationTypeByKindColumn(row)),
           Voivodeship.withName(row(VOIVODESHIP_COLUMN).toUpperCase)
         )
     }

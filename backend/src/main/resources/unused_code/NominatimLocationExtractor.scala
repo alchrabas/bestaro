@@ -1,9 +1,11 @@
 package unused_code
 
 import bestaro.common.FullLocation
-import bestaro.common.types.{FullLocation, Location}
-import bestaro.core.processors.{LocationType, Token}
+import bestaro.common.types.Location
+import bestaro.core.processors.LocationType
 import bestaro.extractors._
+import bestaro.locator.extractors.{AbstractLocationExtractor, MatchedFullLocation, MatchedInflectedLocation, MultiWordLocationNameExtractor}
+import bestaro.locator.types.{Location, Token}
 import bestaro.service.Voivodeship
 import org.apache.http.impl.client.DefaultHttpClient
 

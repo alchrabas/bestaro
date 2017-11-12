@@ -1,9 +1,8 @@
-package bestaro.extractors
+package bestaro.locator.extractors
 
-import bestaro.common.types.{FullLocation, Location, Voivodeship}
-import bestaro.core.RawRecord
-import bestaro.core.processors._
-import bestaro.locator.LocatorDatabase
+import bestaro.locator.{LocatorDatabase, types}
+import bestaro.locator.types._
+import bestaro.locator.util.BaseNameProducer
 
 import scala.collection.mutable.ListBuffer
 
@@ -11,7 +10,20 @@ case class MatchedLocation(location: Location, position: Int, wordCount: Int)
 
 case class MatchedFullLocation(fullLocation: FullLocation, position: Int, wordCount: Int)
 
+object AbstractLocationExtractor {
+
+  implicit class TokenListOps(private val tokens: List[Token]) extends AnyVal {
+    def slidingPrefixedByEmptyTokens(size: Int): Iterator[List[Token]] = {
+      (List.fill(size - 1)(EMPTY_TOKEN) ++ tokens).sliding(size)
+    }
+  }
+
+  private val EMPTY_TOKEN = Token("", "", "", List(), List(), 0, flags = Set(Flag.EMPTY_TOKEN))
+}
+
 abstract class AbstractLocationExtractor(locatorDatabase: LocatorDatabase, memoryCache: Boolean) {
+
+  import AbstractLocationExtractor._
 
   private val NOUN_PRECEDING_NAME_SCORE = 11
   private val CAPITALIZED_WORD_SCORE = 5
@@ -23,7 +35,7 @@ abstract class AbstractLocationExtractor(locatorDatabase: LocatorDatabase, memor
 
   protected val townNamesExtractor = new InflectedTownNamesExtractor(locatorDatabase, memoryCache)
 
-  def extractLocation(tokens: List[String], record: RawRecord): (List[Token], List[MatchedFullLocation]) = {
+  def extractLocation(tokens: List[String], alreadyKnownLocation: FullLocation): (List[Token], List[MatchedFullLocation]) = {
 
     println("########################")
     var stemmedTokens = tokens.map { tokenText =>
@@ -36,7 +48,7 @@ abstract class AbstractLocationExtractor(locatorDatabase: LocatorDatabase, memor
         evaluateMostAccurateBaseName(tokenText)
       }
     }.map(token => {
-      if (onIgnoreList(token, record.fullLocation.voivodeship)) {
+      if (onIgnoreList(token, alreadyKnownLocation.voivodeship)) {
         token.withAlteredPlacenessScore(NAME_ON_IGNORE_LIST_SCORE)
       } else {
         token
@@ -47,7 +59,7 @@ abstract class AbstractLocationExtractor(locatorDatabase: LocatorDatabase, memor
       stemmedTokens = updateTokenEvaluationUsingContext(stemmedTokens)
     }
     val foundLocationNames = townNamesExtractor.findLocationNamesFromDatabase(stemmedTokens.map(_.stripped),
-      record.fullLocation.voivodeship)
+      alreadyKnownLocation.voivodeship)
     if (stemmedTokens.nonEmpty) {
       println(">>> " + foundLocationNames)
       stemmedTokens = stemmedTokens.zipWithIndex.map { case (token, position) =>
@@ -61,13 +73,13 @@ abstract class AbstractLocationExtractor(locatorDatabase: LocatorDatabase, memor
       }
     }
 
-    val (mutableTokens, matchedStreets) = specificExtract(record.fullLocation, stemmedTokens, foundLocationNames)
+    val (mutableTokens, matchedStreets) = specificExtract(alreadyKnownLocation, stemmedTokens, foundLocationNames)
     (mutableTokens.toList, matchedStreets.toList)
   }
 
   private def newNounToken(tokenText: String, strippedTokenText: String, stemmedTokenText: String) = {
     val gender = getGenderOfNounPrecedingName(strippedTokenText, stemmedTokenText)
-    Token(tokenText,
+    types.Token(tokenText,
       strippedTokenText,
       stemmedTokenText,
       List(PartOfSpeech.NOUN),
@@ -91,7 +103,6 @@ abstract class AbstractLocationExtractor(locatorDatabase: LocatorDatabase, memor
 
 
   private def updateTokenEvaluationUsingContext(tokens: List[Token]): List[Token] = {
-    import PlaintextProcessor._
     tokens.slidingPrefixedByEmptyTokens(2).map { case List(nameTrait, toReturn) =>
       if (isNounThatSuggestsName(nameTrait)) {
         toReturn.withAlteredPlacenessScore(PRECEDED_BY_NOUN_THAT_SUGGESTS_LOCATION_SCORE)

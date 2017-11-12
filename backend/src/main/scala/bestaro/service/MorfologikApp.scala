@@ -1,6 +1,6 @@
 package bestaro.service
 
-import bestaro.util.InflectionUtil
+import bestaro.locator.util.InflectionUtil
 import morfologik.stemming.polish.PolishStemmer
 
 import scala.collection.JavaConverters._

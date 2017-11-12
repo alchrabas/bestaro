@@ -1,14 +1,14 @@
-package bestaro.extractors
+package bestaro.locator.extractors
 
 import java.util
 
-import bestaro.common.types.Voivodeship
 import bestaro.locator.LocatorDatabase
-import bestaro.service.{InflectedLocation, PolishInflectedTownNamesGenerator}
+import bestaro.locator.inflection.{InflectedLocation, PolishInflectedTownNamesGenerator}
+import bestaro.locator.types.Voivodeship
 
+import scala.collection.JavaConverters._
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
-import scala.collection.JavaConverters._
 
 case class MatchedInflectedLocation(inflectedLocation: InflectedLocation, initialPos: Int, wordCount: Int)
 

@@ -1,9 +1,10 @@
 package bestaro.core.processors
 
-import bestaro.common.types.{FullLocation, Location, Voivodeship, VoivodeshipNameVariants}
+
 import bestaro.core.{RawRecord, Tokenizer}
-import bestaro.extractors.InflectedTownNamesExtractor
 import bestaro.locator.LocatorDatabase
+import bestaro.locator.extractors.InflectedTownNamesExtractor
+import bestaro.locator.types.{FullLocation, Location, Voivodeship, VoivodeshipNameVariants}
 
 class LocationStringProcessor(locatorDatabase: LocatorDatabase) {
 

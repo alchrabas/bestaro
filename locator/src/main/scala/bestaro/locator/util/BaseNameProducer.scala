@@ -1,11 +1,11 @@
-package bestaro.core.processors
+package bestaro.locator.util
 
-import bestaro.util.InflectionUtil
+import bestaro.locator.types
+import bestaro.locator.types.{Gender, PartOfSpeech, Token}
 import morfologik.stemming.polish.PolishStemmer
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
-
 
 class BaseNameProducer {
 
@@ -34,7 +34,7 @@ class BaseNameProducer {
       Some(
         matchedStems
           .asScala
-          .map(tagInfo => Token(original,
+          .map(tagInfo => types.Token(original,
             strippedOriginal,
             tagInfo.getStem.toString,
             InflectionUtil.getPartsOfSpeech(tagInfo),

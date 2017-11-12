@@ -5,6 +5,7 @@ import java.util.Date
 import bestaro.AppConfig
 import bestaro.common.types._
 import bestaro.core.RawRecord
+import bestaro.locator.types.FullLocation
 import org.sqlite.SQLiteConfig
 import play.api.libs.json.Json
 import slick.ast.BaseTypedType

@@ -4,6 +4,7 @@ import bestaro.common.types._
 import bestaro.core.RawRecord
 import bestaro.core.processors.LocationStringProcessor
 import bestaro.locator.LocatorDatabase
+import bestaro.locator.types.{FullLocation, Location, LocationType, Voivodeship}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.FunSpec
 

@@ -1,6 +1,6 @@
 package bestaro.locator.inflection
 
-import bestaro.core.processors.BaseNameProducer
+import bestaro.locator.util.BaseNameProducer
 import morfologik.stemming.WordData
 import morfologik.stemming.polish.PolishStemmer
 

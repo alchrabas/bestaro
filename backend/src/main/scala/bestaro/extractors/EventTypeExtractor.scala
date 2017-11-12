@@ -6,8 +6,8 @@ import java.util.logging.Level
 import java.util.regex.Pattern
 
 import bestaro.common.types.EventType
-import bestaro.core.processors.BaseNameProducer
 import bestaro.core.{RawRecord, Tokenizer}
+import bestaro.locator.util.BaseNameProducer
 import cc.mallet.classify.{Classifier, ClassifierTrainer, MaxEntTrainer}
 import cc.mallet.pipe._
 import cc.mallet.types.Instance

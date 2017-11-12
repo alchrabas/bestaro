@@ -2,8 +2,8 @@ package bestaro.locator
 
 import java.lang.reflect.Type
 
-import bestaro.common.types.{Location, Voivodeship}
-import bestaro.service.InflectedLocation
+import bestaro.locator.inflection.InflectedLocation
+import bestaro.locator.types.{Location, Voivodeship}
 import com.google.gson._
 import com.google.gson.reflect.TypeToken
 import com.google.maps.model.GeocodingResult
@@ -15,9 +15,8 @@ import slick.jdbc.SQLiteProfile.api._
 import slick.jdbc.SQLiteProfile.backend.DatabaseDef
 import slick.jdbc.meta.MTable
 
-import scala.concurrent.{Await, Future}
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
+import scala.concurrent.{Await, Future}
 
 
 class LocatorDatabase(databaseFilePath: String) {

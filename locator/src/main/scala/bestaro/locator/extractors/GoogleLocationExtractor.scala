@@ -1,9 +1,7 @@
-package bestaro.extractors
+package bestaro.locator.extractors
 
-import bestaro.common.types._
-import bestaro.core.processors.Token
 import bestaro.locator.LocatorDatabase
-import bestaro.service.CachedGoogleApiClient
+import bestaro.locator.types.{Token, _}
 import com.google.maps.model.{AddressComponent, AddressComponentType, GeocodingResult}
 
 import scala.collection.mutable.ListBuffer

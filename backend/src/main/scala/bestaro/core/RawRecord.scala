@@ -1,6 +1,7 @@
 package bestaro.core
 
 import bestaro.common.types._
+import bestaro.locator.types.FullLocation
 import play.api.libs.json.{Json, OFormat}
 
 case class RawRecord(recordId: RecordId,

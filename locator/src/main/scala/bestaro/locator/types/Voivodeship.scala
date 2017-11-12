@@ -1,6 +1,6 @@
-package bestaro.common.types
+package bestaro.locator.types
 
-import bestaro.common.util.PolishCharactersAsciizer
+import bestaro.locator.util.PolishCharactersAsciizer
 import enumeratum.{Enum, EnumEntry, PlayJsonEnum}
 
 import scala.collection.immutable

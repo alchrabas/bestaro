@@ -1,5 +1,6 @@
 package bestaro.common.types
 
+import bestaro.locator.types.FullLocation
 import play.api.libs.json.{Json, OFormat}
 
 case class Record(

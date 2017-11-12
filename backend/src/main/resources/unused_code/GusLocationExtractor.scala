@@ -1,7 +1,8 @@
 package bestaro.extractors
 
-import bestaro.common.types.Location
 import bestaro.core.processors._
+import bestaro.locator.extractors.{AbstractLocationExtractor, MatchedFullLocation, MatchedInflectedLocation, MatchedLocation}
+import bestaro.locator.types.{Location, Token}
 import bestaro.service.GusDataReader
 
 import scala.collection.mutable.ListBuffer

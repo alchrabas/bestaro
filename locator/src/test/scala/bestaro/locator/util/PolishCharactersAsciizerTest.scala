@@ -1,6 +1,5 @@
-package bestaro.util
+package bestaro.locator.util
 
-import bestaro.common.util.PolishCharactersAsciizer
 import org.scalatest.FunSpec
 
 class PolishCharactersAsciizerTest extends FunSpec {

@@ -1,7 +1,6 @@
-package bestaro.extractors
+package bestaro.locator.extractors
 
-import bestaro.common.types.LocationType
-import bestaro.core.processors.Token
+import bestaro.locator.types.{LocationType, Token}
 
 case class MultiWordName(tokens: List[Token], startIndex: Int,
                          locType: Option[LocationType] = None) {

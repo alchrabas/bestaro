@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit
 
 import bestaro.common.types._
 import bestaro.core.RawRecord
+import bestaro.locator.types.{FullLocation, Voivodeship}
 import bestaro.util.ImageUtil
 import facebook4j._
 

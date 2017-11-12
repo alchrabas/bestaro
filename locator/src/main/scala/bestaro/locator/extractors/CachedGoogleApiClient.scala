@@ -1,4 +1,4 @@
-package bestaro.service
+package bestaro.locator.extractors
 
 import java.io.FileInputStream
 import java.util.{Date, Properties}

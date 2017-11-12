@@ -1,6 +1,4 @@
-package bestaro.core.processors
-
-import play.api.libs.json.{Json, OFormat}
+package bestaro.locator.types
 
 case class PartOfSpeech(name: String)
 

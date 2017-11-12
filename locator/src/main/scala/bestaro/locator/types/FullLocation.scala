@@ -1,4 +1,4 @@
-package bestaro.common.types
+package bestaro.locator.types
 
 import play.api.libs.json.{Json, OFormat}
 

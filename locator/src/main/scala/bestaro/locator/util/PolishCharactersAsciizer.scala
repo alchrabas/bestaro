@@ -1,4 +1,4 @@
-package bestaro.common.util
+package bestaro.locator.util
 
 class PolishCharactersAsciizer {
   def convertToAscii(input: String): String = {

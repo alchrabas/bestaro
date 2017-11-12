@@ -1,6 +1,6 @@
-package bestaro.util
+package bestaro.locator.util
 
-import bestaro.core.processors.{Flag, Gender, PartOfSpeech}
+import bestaro.locator.types.{Flag, Gender, PartOfSpeech}
 import morfologik.stemming.WordData
 import morfologik.stemming.polish.PolishStemmer
 import org.scalamock.scalatest.MockFactory
