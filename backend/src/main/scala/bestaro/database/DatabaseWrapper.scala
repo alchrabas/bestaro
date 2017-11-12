@@ -112,6 +112,18 @@ object DatabaseWrapper {
     ), Duration.Inf)
   }
 
+  def allNotSentProcessedRecords: Seq[Record] = {
+    Await.result(db.run( // todo make async
+      processedRecords.filter(
+        _.recordId in {
+          recordsMetadata
+            .filter(row => row.sentTimestamp <= row.processedTimestamp)
+            .map(_.recordId)
+        })
+        .result
+    ), Duration.Inf)
+  }
+
   def markRecordAsSent(record: Record): Unit = {
     db.run(
       recordsMetadata

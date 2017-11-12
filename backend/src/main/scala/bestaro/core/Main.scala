@@ -18,8 +18,9 @@ object Main {
   val FB = "FB"
   val OLX = "OLX"
   val PROCESS = "PROCESS"
+  val SEND = "SEND"
 
-  val OPTION = FB
+  val OPTION = SEND
 
   def main(args: Array[String]): Unit = {
 
@@ -58,10 +59,9 @@ object Main {
         println(eventTypeVerifier.verify(processedRecords).briefSummary)
 
         Await.result(Future.sequence(allFutures), Duration.Inf)
-
+      case SEND =>
         val dataSupplier = new DataSupplier
-        processedRecords
-          .map(_.buildRecord)
+        DatabaseWrapper.allNotSentProcessedRecords
           .filterNot(record => DatabaseWrapper.sentLaterThanProcessed(record.recordId))
           .foreach { record =>
             dataSupplier.sendRecord(record)
