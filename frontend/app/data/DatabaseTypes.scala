@@ -1,4 +1,5 @@
 package data
+
 import javax.inject.Inject
 
 import bestaro.common.types.{AnimalType, EventType, Record, RecordId}
@@ -20,8 +21,24 @@ class DatabaseTypes @Inject()(
                                implicit executionContext: ExecutionContext
                              ) extends HasDatabaseConfigProvider[JdbcProfile] {
 
+  private val geometryFactory = new GeometryFactory()
+
   def saveRecord(record: Record): Future[Int] = {
-    db.run(records += record)
+    db.run(records.insertOrUpdate(record))
+  }
+
+  def allRecordsInRange(minLat: Double, minLon: Double, maxLat: Double, maxLon: Double): Future[Seq[Record]] = {
+    val poly = geometryFactory.createPolygon(
+      Array(
+        new Coordinate(minLat, minLon),
+        new Coordinate(maxLat, minLon),
+        new Coordinate(maxLat, maxLon),
+        new Coordinate(minLat, maxLon),
+        new Coordinate(minLat, minLon)
+      ))
+    db.run(records
+      .filter(_.coordinates.within(poly))
+      .result)
   }
 
   private implicit val recordIdColumn: JdbcType[RecordId] with BaseTypedType[RecordId] = MappedColumnType.base[RecordId, String](
@@ -80,8 +97,6 @@ class DatabaseTypes @Inject()(
     private def toModel(a: recordColumns): Record = {
       Record(a._1, a._2, a._3, a._4, a._5, a._6, a._7, a._8)
     }
-
-    private val geometryFactory = new GeometryFactory()
 
     private def fromModel(r: Record): Option[recordColumns] = {
       val coords = r.fullLocation.coordinate

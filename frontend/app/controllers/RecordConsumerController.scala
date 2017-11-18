@@ -5,8 +5,7 @@ import java.util.Base64
 import javax.inject.Inject
 
 import bestaro.common.types.{NamedPicture, Record, RecordDTO}
-import bestaro.common.util.FileIO
-import play.api.libs.json.Json
+import data.DatabaseTypes
 import play.api.mvc._
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -47,19 +46,18 @@ class AuthenticateAction @Inject()(parser: BodyParsers.Default,
 class RecordConsumerController @Inject()(cc: ControllerComponents,
                                          configuration: play.api.Configuration,
                                          authenticationAction: AuthenticateAction,
+                                         protected val database: DatabaseTypes
+                                        )(
+                                          implicit executionContext: ExecutionContext
                                         ) extends AbstractController(cc) {
 
-  def saveRecord() = authenticationAction { implicit request: Request[AnyContent] =>
+  def saveRecord() = authenticationAction.async { implicit request: Request[AnyContent] =>
     val recordDTO = request.body.asJson.get.as[RecordDTO]
     recordDTO.pictures.foreach(saveNamedPicture)
 
     val record = recordDTO.record
-    // will safe it in db or something
-    val jsonDataMap = Json.parse(FileIO.readFile("frontend/allData.json", "{}")).as[Map[String, Record]]
-    val newJsonData = jsonDataMap.updated(record.recordId.toString, record)
-    FileIO.saveFile("frontend/allData.json", Json.stringify(Json.toJson(newJsonData)))
-
-    Ok("Thanks")
+    database.saveRecord(record)
+      .map(_ => Ok("Thanks"))
   }
 
   private def saveNamedPicture(picture: NamedPicture): Unit = {
