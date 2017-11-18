@@ -2,7 +2,6 @@ package bestaro.collectors
 
 import java.nio.file.{Path, Paths}
 import java.time.Instant
-import java.util.Date
 import java.util.concurrent.TimeUnit
 
 import bestaro.common.types._

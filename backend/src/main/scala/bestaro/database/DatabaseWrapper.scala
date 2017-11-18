@@ -52,9 +52,10 @@ object DatabaseWrapper {
     db.run(
       processedRecords
         .filter(_.recordId === recordToSave.recordId)
+        .join(recordsMetadata).on(_.recordId === _.recordId)
         .result.headOption
-    ).map { recordFromDb =>
-      if (recordFromDb.isEmpty || recordFromDb.get != recordToSave) {
+    ).map { recordAndMetadata =>
+      if (recordAndMetadata.isEmpty || recordAndMetadata.get._1 != recordToSave || neverProcessed(recordAndMetadata)) {
         db.run(
           DBIO.seq(
             recordsMetadata
@@ -68,6 +69,10 @@ object DatabaseWrapper {
         Future.successful(Unit)
       }
     }
+  }
+
+  private def neverProcessed(recordMetadata: Option[(Record, RecordMetadata)]): Boolean = {
+    recordMetadata.get._2.processedTimestamp == 0
   }
 
   def saveRawRecord(rawRecord: RawRecord): Future[Seq[Int]] = {
@@ -176,12 +181,6 @@ object DatabaseWrapper {
     fullLocation => Json.stringify(Json.toJson(fullLocation)),
     Json.parse(_).as[FullLocation]
   )
-
-  type RawRecordsType = (
-    RecordId, EventType, AnimalType,
-      String, Long, String, List[String], String, String, Long,
-      String, FullLocation, String
-    )
 
   class RawRecords(tag: Tag) extends Table[RawRecord](tag, "raw_records") {
 
