@@ -65,6 +65,12 @@ lazy val frontend = project
       "org.webjars" % "leaflet" % "1.2.0",
       "com.beachape" %% "enumeratum" % "1.5.12",
       "com.beachape" %% "enumeratum-play-json" % "1.5.12-2.6.0-M7",
+      "com.typesafe.slick" %% "slick" % "3.2.1",
+      "com.typesafe.play" %% "play-slick" % "3.0.1",
+      "com.typesafe.play" %% "play-slick-evolutions" % "3.0.1",
+      "org.postgresql" % "postgresql" % "42.1.4",
+      "com.github.tminglei" %% "slick-pg" % "0.15.4",
+      "com.github.tminglei" %% "slick-pg_jts" % "0.15.4",
       guice
     ),
     PlayKeys.devSettings := Seq("play.server.http.port" -> "8888")
