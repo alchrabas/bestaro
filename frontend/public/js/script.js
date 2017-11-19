@@ -1,10 +1,18 @@
 // center of Krakow
-const centerOfKrakow = [50.063408, 19.943933];
-const leafletMap = L.map('mapContainer').setView(centerOfKrakow, 15);
+const centerOfKrakow = new google.maps.LatLng(50.063408, 19.943933);
 
 let dateFrom = null;
 let dateTo = null;
 let eventType = null;
+
+let visibleMarkers = [];
+
+const googleMap = new google.maps.Map(document.getElementById('mapContainer'), {
+    zoom: 12,
+    center: centerOfKrakow,
+    gestureHandling: 'greedy'
+});
+
 
 const updateFilterValues = () => {
     dateFrom = document.getElementById("date-from").value;
@@ -14,16 +22,6 @@ const updateFilterValues = () => {
 
 let lastMoveTimestamp = Date.now();
 
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-    {
-        attribution: '<a href="www.openstreetmap.org/copyright ">Terms</a> &copy; OpenStreetMap contributors',
-        maxZoom: 17,
-        minZoom: 4
-    }).addTo(leafletMap);
-
-const allMarkers = new L.FeatureGroup();
-leafletMap.addLayer(allMarkers);
-
 const statusToClassName = {
     "LOST": "animal-popup-status-lost",
     "FOUND": "animal-popup-status-found"
@@ -31,10 +29,7 @@ const statusToClassName = {
 
 const updateLastMoveTimestamp = () => lastMoveTimestamp = Date.now();
 
-
-leafletMap.on("zoomend", updateLastMoveTimestamp);
-leafletMap.on("moveend", updateLastMoveTimestamp);
-leafletMap.on("load", updateLastMoveTimestamp);
+googleMap.addListener("bounds_changed", updateLastMoveTimestamp);
 
 setInterval(() => {
     const currentTimestamp = Date.now();
@@ -55,8 +50,8 @@ const formatDate = (timestamp) => {
         "-" + date.getUTCFullYear();
 };
 
-const onClickMarker = (event) => {
-    const record = event.target.options.record;
+function onClickMarker() {
+    const record = this.record;
     document.getElementsByClassName("side-bar")[0].innerHTML = `
     eventDate: ${formatDate(record.eventDate)}<br>
     publishDate: ${formatDate(record.publishDate)}<br>
@@ -64,37 +59,35 @@ const onClickMarker = (event) => {
     picture:<br><img class="fullPicturePreview" src="pictures/${record.picture}"/><br>
     link: <a href="${record.link}">LINK</a><br>
     `;
-};
+}
 
 const fetchDataFromServer = () => {
-
     console.log("FETCHING DATA FROM SERVER");
-    const {_southWest: boundsSW, _northEast: boundsNE} = leafletMap.getBounds();
-    fetch(`/rest/${boundsSW.lat}/${boundsSW.lng}/${boundsNE.lat}/${boundsNE.lng}/${dateFrom}/${dateTo}/${eventType}`)
+    const boundsNE = googleMap.getBounds().getNorthEast();
+    const boundsSW = googleMap.getBounds().getSouthWest();
+    fetch(`/rest/${boundsSW.lat()}/${boundsSW.lng()}/${boundsNE.lat()}/${boundsNE.lng()}/${dateFrom}/${dateTo}/${eventType}`)
         .then(response => {
             return response.json();
         }).then(data => {
-        allMarkers.clearLayers();
+        visibleMarkers.forEach(a => a.setMap(null));
+        visibleMarkers = [];
+
         data.map(record => {
             const className = statusToClassName[record.eventType] || "";
 
-            const icon = L.icon({
-                iconUrl: `pictures_min/${record.picture}`,
-
-                iconSize: [100, 100],
-                iconAnchor: [50, 100],
-                popupAnchor: [0, -100],
-
-                className: className
+            const imageSrc = `pictures_min/${record.picture}`;
+            const animalMarker = new RichMarker({
+                position: new google.maps.LatLng(parseFloat(record.lat), parseFloat(record.lon)),
+                flat: true,
+                map: googleMap,
+                record: record,
+                content: `<img src="${imageSrc}" class='animal-marker ${className}'/>`
             });
-
-            allMarkers.addLayer(L.marker([record.lat, record.lon], {
-                icon: icon,
-                record: record
-            }).on('click', onClickMarker));
+            visibleMarkers.push(animalMarker);
+            google.maps.event.addListener(animalMarker, 'click', onClickMarker);
         });
-    }).catch(() => {
-        console.log("Error when trying to fetch data");
+    }).catch(e => {
+        console.log("Error when trying to fetch data", e);
     });
 };
 
@@ -103,17 +96,18 @@ const twoDigitNumber = number => {
         return "0" + number;
     }
     return number;
-}
-
-const nowDateString = () => {
-    const currentDate = new Date();
-    return currentDate.getUTCFullYear() + "-" +
-    twoDigitNumber(currentDate.getMonth() + 1) +
-    "-" + twoDigitNumber(currentDate.getUTCDate());
 };
 
-document.getElementById("date-from").value = "2017-09-01";
-document.getElementById("date-to").value = nowDateString();
+const dateToString = (date) =>
+    date.getUTCFullYear() + "-" +
+    twoDigitNumber(date.getMonth() + 1) +
+    "-" + twoDigitNumber(date.getUTCDate());
+
+const weekAgoDate = new Date();
+weekAgoDate.setDate(weekAgoDate.getDate() - 7);
+
+document.getElementById("date-from").value = dateToString(weekAgoDate);
+document.getElementById("date-to").value = dateToString(new Date());
 
 document.getElementById("filter-button").onclick = event => {
     updateFilterValues();

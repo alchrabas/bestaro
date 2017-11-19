@@ -1,3 +1,4 @@
+@this(configuration: play.api.Configuration)
 @()
 <!doctype html>
 <html lang="en">
@@ -7,8 +8,6 @@
         <meta name="referrer" content="no-referrer" />
         <title>A Leaflet map!</title>
         <link rel="stylesheet" href="@routes.Assets.at("css/style.css")"/>
-        <link rel="stylesheet" href="@routes.Assets.at("lib/leaflet/leaflet.css")"/>
-        <script type="text/javascript" src="@routes.Assets.at("lib/leaflet/leaflet.js")"></script>
     </head>
     <body>
         <div class="box">
@@ -27,7 +26,9 @@
                 <div class="side-bar">
                 </div><div id="mapContainer"></div>
             </div>
+            <script src="https://maps.googleapis.com/maps/api/js?key=@configuration.underlying.getString("bestaro.googleMapsApi")"></script>
+            <script type="text/javascript" src="@routes.Assets.at("js/richmarker.min.js")"></script>
+            <script type="text/javascript" src="@routes.Assets.at("js/script.js")"></script>
         </div>
-        <script type="text/javascript" src="@routes.Assets.at("js/script.js")"></script>
     </body>
 </html>
