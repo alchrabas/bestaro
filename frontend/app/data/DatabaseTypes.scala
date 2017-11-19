@@ -5,12 +5,12 @@ import javax.inject.Inject
 import bestaro.common.types.{AnimalType, EventType, Record, RecordId}
 import bestaro.locator.types.FullLocation
 import com.vividsolutions.jts.geom.{Coordinate, GeometryFactory, Point}
+import data.ExtendedPostgresProfile.api._
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import play.api.libs.json.Json
 import slick.ast.BaseTypedType
-import slick.jdbc.{JdbcProfile, JdbcType}
-import data.ExtendedPostgresProfile.api._
 import slick.jdbc.meta.MTable
+import slick.jdbc.{JdbcProfile, JdbcType}
 
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, ExecutionContext, Future}
@@ -110,13 +110,27 @@ class DatabaseTypes @Inject()(
 
   createSchemaIfNotExists()
 
+  /**
+    * Function used to perform additional table initialization.
+    * It produces queries that need to be executed for a specific table when it's created.
+    */
+  private def initializeTable(table: TableQuery[_]): DBIO[Int] = table.baseTableRow match {
+    case _: Records =>
+      sqlu"CREATE INDEX record_coordinates ON records USING GIST (coordinates);"
+    case _ => DBIO.successful(0)
+  }
+
   private def createSchemaIfNotExists(): Unit = {
     val toCreate = List(records)
     val existingTables = db.run(MTable.getTables)
     val createSchemaAction = existingTables.flatMap(v => {
       val names = v.map(mTable => mTable.name.name)
       val createIfNotExist = toCreate.filter(table =>
-        !names.contains(table.baseTableRow.tableName)).map(_.schema.create)
+        !names.contains(table.baseTableRow.tableName))
+        .flatMap(table => List(
+          table.schema.create,
+          initializeTable(table)
+        ))
       db.run(DBIO.sequence(createIfNotExist))
     })
     Await.result(createSchemaAction, Duration.Inf)
