@@ -71,6 +71,7 @@ lazy val frontend = project
       "org.postgresql" % "postgresql" % "42.1.4",
       "com.github.tminglei" %% "slick-pg" % "0.15.4",
       "com.github.tminglei" %% "slick-pg_jts" % "0.15.4",
+      "com.github.tminglei" %% "slick-pg_play-json" % "0.15.4",
       guice
     ),
     PlayKeys.devSettings := Seq("play.server.http.port" -> "8888")

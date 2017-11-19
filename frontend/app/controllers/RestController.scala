@@ -3,14 +3,14 @@ package controllers
 import java.text.SimpleDateFormat
 import javax.inject.{Inject, Singleton}
 
-import bestaro.common.types.Record
+import bestaro.common.types.{EventType, Record}
 import data.DatabaseTypes
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-case class FilterCriteria(dateFrom: String, dateTo: String, eventType: String)
+case class FilterCriteria(dateFrom: Long, dateTo: Long, eventType: Option[EventType])
 
 @Singleton
 class RestController @Inject()(cc: ControllerComponents,
@@ -25,7 +25,7 @@ class RestController @Inject()(cc: ControllerComponents,
                  dateFrom: String, dateTo: String, eventType: String) = Action.async {
     implicit request: Request[AnyContent] =>
       getJsonWithMarkers(minlat, minlon, maxlat, maxlon,
-        FilterCriteria(dateFrom, dateTo, eventType))
+        FilterCriteria(strToDate(dateFrom), strToDate(dateTo), EventType.withNameOption(eventType)))
         .map(Ok(_))
   }
 
@@ -35,23 +35,11 @@ class RestController @Inject()(cc: ControllerComponents,
     simpleDateFormat.parse(dateString).getTime
   }
 
-  private def applyFilters(filterCriteria: FilterCriteria): (Record) => Boolean = {
-    record => {
-      ((record.eventDate >= strToDate(filterCriteria.dateFrom) &&
-        record.eventDate <= strToDate(filterCriteria.dateTo)) ||
-        (record.postDate >= strToDate(filterCriteria.dateFrom) &&
-          record.postDate <= strToDate(filterCriteria.dateTo))
-        ) &&
-        (filterCriteria.eventType == "ANY" || filterCriteria.eventType == record.eventType.entryName)
-    }
-  }
-
   private def getJsonWithMarkers(minLat: Double, minLon: Double, maxLat: Double, maxLon: Double,
                                  filterCriteria: FilterCriteria): Future[JsValue] = {
     database
-      .allRecordsInRange(minLat, minLon, maxLat, maxLon)
+      .allRecordsInRange(minLat, minLon, maxLat, maxLon, filterCriteria)
       .map(_.filter(_.pictures.nonEmpty))
-      .map(_.filter(applyFilters(filterCriteria)))
       .map(_.slice(0, PICTURES_IN_VIEWPORT_LIMIT))
       .map(_.map(recordToMarker))
       .map { markers =>

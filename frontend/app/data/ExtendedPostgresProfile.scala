@@ -10,6 +10,7 @@ trait ExtendedPostgresProfile extends ExPostgresProfile
   with PgRangeSupport
   with PgHStoreSupport
   with PgSearchSupport
+  with PgPlayJsonSupport
   with PgPostGISSupport
   with PgNetSupport
   with PgLTreeSupport {
@@ -28,6 +29,7 @@ trait ExtendedPostgresProfile extends ExPostgresProfile
     with RangeImplicits
     with HStoreImplicits
     with SearchImplicits
+    with PlayJsonImplicits
     with PostGISImplicits
     with SearchAssistants {
     implicit val strListTypeMapper: DriverJdbcType[List[String]] = new SimpleArrayJdbcType[String]("text").to(_.toList)

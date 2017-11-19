@@ -5,9 +5,10 @@ import javax.inject.Inject
 import bestaro.common.types.{AnimalType, EventType, Record, RecordId}
 import bestaro.locator.types.FullLocation
 import com.vividsolutions.jts.geom.{Coordinate, GeometryFactory, Point}
+import controllers.FilterCriteria
 import data.ExtendedPostgresProfile.api._
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
-import play.api.libs.json.Json
+import play.api.libs.json.{JsValue, Json}
 import slick.ast.BaseTypedType
 import slick.jdbc.meta.MTable
 import slick.jdbc.{JdbcProfile, JdbcType}
@@ -27,7 +28,8 @@ class DatabaseTypes @Inject()(
     db.run(records.insertOrUpdate(record))
   }
 
-  def allRecordsInRange(minLat: Double, minLon: Double, maxLat: Double, maxLon: Double): Future[Seq[Record]] = {
+  def allRecordsInRange(minLat: Double, minLon: Double, maxLat: Double, maxLon: Double,
+                        filterCriteria: FilterCriteria): Future[Seq[Record]] = {
     val poly = geometryFactory.createPolygon(
       Array(
         new Coordinate(minLat, minLon),
@@ -36,8 +38,14 @@ class DatabaseTypes @Inject()(
         new Coordinate(minLat, maxLon),
         new Coordinate(minLat, minLon)
       ))
+
     db.run(records
       .filter(_.coordinates.within(poly))
+      .filter(_.pictures.arrayLength > 0)
+      .filter(r =>
+        (r.eventDate >= filterCriteria.dateFrom && r.eventDate <= filterCriteria.dateTo) ||
+          (r.postDate >= filterCriteria.dateFrom && r.postDate <= filterCriteria.dateTo))
+      .filter(_.eventType === filterCriteria.eventType || filterCriteria.eventType.isEmpty)
       .result)
   }
 
@@ -56,18 +64,13 @@ class DatabaseTypes @Inject()(
     AnimalType.withName
   )
 
-  private implicit val picturesList: JdbcType[List[String]] with BaseTypedType[List[String]] = MappedColumnType.base[List[String], String](
-    pictures => Json.stringify(Json.toJson(pictures)),
-    Json.parse(_).as[List[String]]
-  )
-
   private implicit val fullLocationColumn: JdbcType[FullLocation] with BaseTypedType[FullLocation] = MappedColumnType.base[FullLocation, String](
     fullLocation => Json.stringify(Json.toJson(fullLocation)),
     Json.parse(_).as[FullLocation]
   )
 
   private type recordColumns = (RecordId, EventType, AnimalType,
-    List[String], String, Long, Long, FullLocation, Option[Point])
+    JsValue, String, Long, Long, FullLocation, Option[Point])
 
   class Records(tag: Tag) extends Table[Record](tag, "records") {
 
@@ -77,7 +80,7 @@ class DatabaseTypes @Inject()(
 
     def animalType = column[AnimalType]("animal_type")
 
-    def pictures = column[List[String]]("pictures")
+    def pictures = column[JsValue]("pictures")
 
     def link = column[String]("link")
 
@@ -89,19 +92,23 @@ class DatabaseTypes @Inject()(
 
     def coordinates = column[Option[Point]]("coordinates")
 
+    def postDateIndex = index("post_date_idx", Tuple1(postDate))
+
+    def eventDateIndex = index("event_date_idx", Tuple1(eventDate))
+
     def * = (
       recordId, eventType, animalType, pictures, link,
       postDate, eventDate, fullLocation, coordinates
     ) <> (toModel, fromModel)
 
     private def toModel(a: recordColumns): Record = {
-      Record(a._1, a._2, a._3, a._4, a._5, a._6, a._7, a._8)
+      Record(a._1, a._2, a._3, a._4.as[List[String]], a._5, a._6, a._7, a._8)
     }
 
     private def fromModel(r: Record): Option[recordColumns] = {
       val coords = r.fullLocation.coordinate
         .map(a => geometryFactory.createPoint(new Coordinate(a.lat, a.lon)))
-      Some((r.recordId, r.eventType, r.animalType, r.pictures,
+      Some((r.recordId, r.eventType, r.animalType, Json.toJson(r.pictures),
         r.link, r.postDate, r.eventDate, r.fullLocation, coords))
     }
   }
