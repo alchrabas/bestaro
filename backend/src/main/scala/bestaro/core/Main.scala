@@ -62,7 +62,6 @@ object Main {
       case SEND =>
         val dataSupplier = new DataSupplier
         DatabaseWrapper.allNotSentProcessedRecords
-          .filterNot(record => DatabaseWrapper.sentLaterThanProcessed(record.recordId))
           .foreach { record =>
             dataSupplier.sendRecord(record)
             DatabaseWrapper.markRecordAsSent(record)

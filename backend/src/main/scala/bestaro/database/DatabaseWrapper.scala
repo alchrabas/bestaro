@@ -118,6 +118,12 @@ object DatabaseWrapper {
     ), Duration.Inf)
   }
 
+  def allProcessedRecords: Seq[Record] = {
+    Await.result(db.run( // todo make async
+      processedRecords.result
+    ), Duration.Inf)
+  }
+
   def allNotSentProcessedRecords: Seq[Record] = {
     Await.result(db.run( // todo make async
       processedRecords.filter(
@@ -137,14 +143,6 @@ object DatabaseWrapper {
         .map(_.sentTimestamp)
         .update(new Date().getTime)
     )
-  }
-
-  def sentLaterThanProcessed(recordId: RecordId): Boolean = { // todo make it async
-    Await.result(db.run(
-      recordsMetadata.filter(_.recordId === recordId)
-        .filter(row => row.sentTimestamp >= row.processedTimestamp)
-        .exists.result
-    ), Duration.Inf)
   }
 
   def processedLaterThanCollected(recordId: RecordId): Boolean = {
