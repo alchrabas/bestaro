@@ -1,4 +1,5 @@
 package data
+
 import com.github.tminglei.slickpg._
 import play.api.libs.json.{JsValue, Json}
 import slick.basic.Capability
@@ -17,8 +18,9 @@ trait ExtendedPostgresProfile extends ExPostgresProfile
   def pgjson = "jsonb" // jsonb support is in postgres 9.4.0 onward; for 9.3.x use "json"
 
   // Add back `capabilities.insertOrUpdate` to enable native `upsert` support; for postgres 9.5+
+  /* UNCOMMENT ON PG 9.5+
   override protected def computeCapabilities: Set[Capability] =
-    super.computeCapabilities + JdbcCapabilities.insertOrUpdate
+      super.computeCapabilities + JdbcCapabilities.insertOrUpdate*/
 
   override val api: MyAPI.type = MyAPI
 

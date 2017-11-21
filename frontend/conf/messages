@@ -1,1 +1,19 @@
-# https://www.playframework.com/documentation/latest/ScalaI18N
+app.title=Mapa zaginionych i znalezionych zwierząt
+date_from.label=Data między 
+date_to.label=a 
+event_type.label=Rodzaj: 
+event_type.any=dowolny
+event_type.lost=zaginione
+event_type.found=znalezione
+filter_button=Filtruj
+welcome_text=<h3>Witaj na Mapie Zwierząt</h3>\
+<p class="welcome-text">Jest to serwis zbierający w jednym miejscu dane z ogłoszeń dotyczących zaginionych i znalezionych zwierząt z całej Polski.<br>\
+Pobieranie i interpretacja danych wykonywana jest automatycznie, dlatego też czas pomiędzy utworzeniem oryginalnego\
+ogłoszenia a pojawieniem się na tej mapie jest krótki, jednak może nie gwarantować stuprocentowej poprawności danych.<br>\
+W większości przypadków miejsce i szczegóły ogłoszenia uzyskiwane są poprzez analizę i ekstrakcję treści ogłoszenia.<br>\
+Jest to na razie wersja eksperymentalna, co oznacza, że zostało co nieco do poprawy i nie nadaje się do powszechnego użytku.</p>
+details.event_date=Data zdarzenia: 
+details.post_date=Data umieszczenia: 
+details.event_type=Typ zdarzenia: 
+details.picture=Zdjęcie: 
+details.link=Przejdź do ogłoszenia

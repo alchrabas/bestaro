@@ -14,3 +14,4 @@ GET         /assets/*file                                                       
 POST        /upload/                                                                  controllers.RecordConsumerController.saveRecord()
 GET         /pictures/:file                                                           controllers.PicturesController.picture(file)
 GET         /pictures_min/:file                                                       controllers.PicturesController.minPicture(file)
+GET         /messages/                                                                controllers.HomeController.messages()

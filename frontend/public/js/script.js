@@ -13,7 +13,6 @@ const googleMap = new google.maps.Map(document.getElementById('mapContainer'), {
     gestureHandling: 'greedy'
 });
 
-
 const updateFilterValues = () => {
     dateFrom = document.getElementById("date-from").value;
     dateTo = document.getElementById("date-to").value;
@@ -23,8 +22,8 @@ const updateFilterValues = () => {
 let lastMoveTimestamp = Date.now();
 
 const statusToClassName = {
-    "LOST": "animal-popup-status-lost",
-    "FOUND": "animal-popup-status-found"
+    "LOST": "animal-marker-status-lost",
+    "FOUND": "animal-marker-status-found"
 };
 
 const updateLastMoveTimestamp = () => lastMoveTimestamp = Date.now();
@@ -53,11 +52,11 @@ const formatDate = (timestamp) => {
 function onClickMarker() {
     const record = this.record;
     document.getElementsByClassName("side-bar")[0].innerHTML = `
-    eventDate: ${formatDate(record.eventDate)}<br>
-    publishDate: ${formatDate(record.publishDate)}<br>
-    eventType: ${record.eventType}<br>
-    picture:<br><img class="fullPicturePreview" src="pictures/${record.picture}"/><br>
-    link: <a href="${record.link}">LINK</a><br>
+    ${Messages("details.event_date")}${formatDate(record.eventDate)}<br>
+    ${Messages("details.post_date")}${formatDate(record.publishDate)}<br>
+    ${Messages("details.event_type")}${record.eventType}<br>
+    ${Messages("details.picture")}<br><img class="fullPicturePreview" src="pictures/${record.picture}"/><br>
+    <a href="${record.link}">${Messages("details.link")}</a><br>
     `;
 }
 
@@ -81,7 +80,7 @@ const fetchDataFromServer = () => {
                 flat: true,
                 map: googleMap,
                 record: record,
-                content: `<img src="${imageSrc}" class='animal-marker ${className}'/>`
+                content: `<img src="${imageSrc}" class="animal-marker ${className}"/>`
             });
             visibleMarkers.push(animalMarker);
             google.maps.event.addListener(animalMarker, 'click', onClickMarker);
@@ -115,4 +114,5 @@ document.getElementById("filter-button").onclick = event => {
 };
 
 updateFilterValues();
+document.querySelector(".side-bar").innerHTML = `<div class="welcome-text">${Messages("welcome_text")}</div>`;
 setTimeout(fetchDataFromServer, 1000);

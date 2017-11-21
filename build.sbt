@@ -68,6 +68,7 @@ lazy val frontend = project
       "com.typesafe.slick" %% "slick" % "3.2.1",
       "com.typesafe.play" %% "play-slick" % "3.0.1",
       "com.typesafe.play" %% "play-slick-evolutions" % "3.0.1",
+      "org.julienrf" %% "play-jsmessages" % "3.0.0",
       "org.postgresql" % "postgresql" % "42.1.4",
       "com.github.tminglei" %% "slick-pg" % "0.15.4",
       "com.github.tminglei" %% "slick-pg_jts" % "0.15.4",

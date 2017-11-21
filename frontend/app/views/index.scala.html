@@ -1,30 +1,33 @@
 @this(configuration: play.api.Configuration)
-@()
+@()(implicit messages: Messages)
 <!doctype html>
 <html lang="en">
     <head>
         <meta charset="UTF-8"/>
         <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
         <meta name="referrer" content="no-referrer" />
-        <title>A Leaflet map!</title>
+        <title>@messages("app.title")</title>
         <link rel="stylesheet" href="@routes.Assets.at("css/style.css")"/>
+        <script type="text/javascript" src="messages/"></script>
     </head>
     <body>
         <div class="box">
             <div class="row top-bar header">
-                Date from <input name="date-from" id="date-from" type="date"/>
-                to <input name="date-to" id="date-to" type="date"/>
-                | Event type:
-                <select name="event-type" id="event-type">
-                    <option value="ANY">ANY</option>
-                    <option value="LOST">LOST</option>
-                    <option value="FOUND">FOUND</option>
-                </select>
-                <button id="filter-button">Filter</button>
+                <label>@messages("date_from.label") <input name="date-from" id="date-from" type="date"/></label>
+                <label>@messages("date_to.label") <input name="date-to" id="date-to" type="date"/></label>
+                <label>@messages("event_type.label")
+                    <select name="event-type" id="event-type">
+                        <option value="ANY">@messages("event_type.any")</option>
+                        <option value="LOST">@messages("event_type.lost")</option>
+                        <option value="FOUND">@messages("event_type.found")</option>
+                    </select>
+                </label>
+                <button id="filter-button">@messages("filter_button")</button>
             </div>
             <div class="row content">
                 <div class="side-bar">
-                </div><div id="mapContainer"></div>
+                </div>
+                <div id="mapContainer"></div>
             </div>
             <script src="https://maps.googleapis.com/maps/api/js?key=@configuration.underlying.getString("bestaro.googleMapsApi")"></script>
             <script type="text/javascript" src="@routes.Assets.at("js/richmarker.min.js")"></script>

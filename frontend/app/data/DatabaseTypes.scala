@@ -84,9 +84,9 @@ class DatabaseTypes @Inject()(
 
     def link = column[String]("link")
 
-    def postDate = column[Long]("post_date")
-
     def eventDate = column[Long]("event_date")
+
+    def postDate = column[Long]("post_date")
 
     def fullLocation = column[FullLocation]("full_location")
 
@@ -98,7 +98,7 @@ class DatabaseTypes @Inject()(
 
     def * = (
       recordId, eventType, animalType, pictures, link,
-      postDate, eventDate, fullLocation, coordinates
+      eventDate, postDate, fullLocation, coordinates
     ) <> (toModel, fromModel)
 
     private def toModel(a: recordColumns): Record = {
@@ -109,7 +109,7 @@ class DatabaseTypes @Inject()(
       val coords = r.fullLocation.coordinate
         .map(a => geometryFactory.createPoint(new Coordinate(a.lat, a.lon)))
       Some((r.recordId, r.eventType, r.animalType, Json.toJson(r.pictures),
-        r.link, r.postDate, r.eventDate, r.fullLocation, coords))
+        r.link, r.eventDate, r.postDate, r.fullLocation, coords))
     }
   }
 
@@ -122,8 +122,9 @@ class DatabaseTypes @Inject()(
     * It produces queries that need to be executed for a specific table when it's created.
     */
   private def initializeTable(table: TableQuery[_]): DBIO[Int] = table.baseTableRow match {
+    /* UNCOMMENT ON PG 9.5+
     case _: Records =>
-      sqlu"CREATE INDEX record_coordinates ON records USING GIST (coordinates);"
+      sqlu"CREATE INDEX record_coordinates ON records USING GIST (coordinates);"*/
     case _ => DBIO.successful(0)
   }
 
