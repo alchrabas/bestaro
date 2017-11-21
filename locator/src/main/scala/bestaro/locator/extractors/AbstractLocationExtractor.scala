@@ -181,6 +181,9 @@ abstract class AbstractLocationExtractor(locatorDatabase: LocatorDatabase, memor
     val ignoreList = voivodeship.map {
       case Voivodeship.MALOPOLSKIE => Set("rybna", "rybną", "rybnej")
       case Voivodeship.MAZOWIECKIE => Set("paluch", "palucha", "paluchu")
+      case Voivodeship.LODZKIE => Set("marmurowa", "marmurową", "marmurowej")
+      case Voivodeship.PODKARPACKIE => Set("ciepłownicza", "ciepłowniczą", "ciepłowniczej", "cieplownicza", "cieplowniczej")
+      case Voivodeship.DOLNOSLASKIE => Set("ślazowa", "ślazową", "ślazowej", "slazowa", "slazowej")
       case _ => Set[String]()
     }.getOrElse(Set())
 

@@ -67,9 +67,8 @@ class PolishDateExtractor {
             Integer.valueOf(day))
             .atStartOfDay().toInstant(ZoneOffset.UTC))
         }.toOption
-      case _ => {
+      case _ =>
         None
-      }
     }
   }
 }

@@ -18,15 +18,17 @@ case class FacebookGroup(name: String, id: String,
 
 class FacebookCollector(recordConsumer: RawRecord => Unit, isAlreadyStored: RawRecord => Boolean) {
 
-  private val OLDEST_DATE_TO_COLLECT = TimeUnit.DAYS.toSeconds(3 * 30)
+  private val OLDEST_DATE_TO_COLLECT = TimeUnit.DAYS.toSeconds(1 * 30)
   private val POSTS_FETCHED_PER_PAGE = 30
 
   private val GROUPS_TO_SEARCH = Seq(
     FacebookGroup("ZaginioneKrakow", "396743770370604", Some(Voivodeship.MALOPOLSKIE)),
     FacebookGroup("ZaginioneNowyTarg", "635559053174109", Some(Voivodeship.MALOPOLSKIE)),
     FacebookGroup("ZaginioneMalopolska", "1064279656952087", Some(Voivodeship.MALOPOLSKIE)),
-    //    FacebookGroup("ZaginioneWroclaw", "396743770370604", Some(Voivodeship.DOLNOSLASKIE)),
+    FacebookGroup("ZaginioneWroclaw", "147269725398198", Some(Voivodeship.DOLNOSLASKIE)),
     FacebookGroup("ZaginioneWarszawa", "211708982280762", Some(Voivodeship.MAZOWIECKIE)),
+    FacebookGroup("ZaginionePodkarpacie", "1714486045490643", Some(Voivodeship.PODKARPACKIE)),
+    FacebookGroup("ZaginioneLodz", "450184494994903", Some(Voivodeship.LODZKIE)),
   )
 
   def collect(): Unit = {
