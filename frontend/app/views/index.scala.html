@@ -8,21 +8,25 @@
         <meta name="referrer" content="no-referrer" />
         <title>@messages("app.title")</title>
         <link rel="stylesheet" href="@routes.Assets.at("css/style.css")"/>
+        <link rel="stylesheet" href="@routes.Assets.at("lib/purecss/build/pure-min.css")"/>
+        <link rel="stylesheet" href="@routes.Assets.at("lib/purecss/build/grids-responsive-min.css")"/>
         <script type="text/javascript" src="messages/"></script>
     </head>
     <body>
         <div class="box">
             <div class="row top-bar header">
+                <form class="pure-form">
                 <label>@messages("date_from.label") <input name="date-from" id="date-from" type="date"/></label>
                 <label>@messages("date_to.label") <input name="date-to" id="date-to" type="date"/></label>
                 <label>@messages("event_type.label")
                     <select name="event-type" id="event-type">
-                        <option value="ANY">@messages("event_type.any")</option>
-                        <option value="LOST">@messages("event_type.lost")</option>
-                        <option value="FOUND">@messages("event_type.found")</option>
+                        <option value="ANY">@messages("event_type.ANY")</option>
+                        <option value="LOST">@messages("event_type.LOST")</option>
+                        <option value="FOUND">@messages("event_type.FOUND")</option>
                     </select>
                 </label>
-                <button id="filter-button">@messages("filter_button")</button>
+                <button id="filter-button" class="pure-button pure-button-primary">@messages("filter_button")</button>
+                </form>
             </div>
             <div class="row content">
                 <div class="side-bar">

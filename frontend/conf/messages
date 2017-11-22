@@ -2,9 +2,9 @@ app.title=Mapa zaginionych i znalezionych zwierząt
 date_from.label=Data między 
 date_to.label=a 
 event_type.label=Rodzaj: 
-event_type.any=dowolny
-event_type.lost=zaginione
-event_type.found=znalezione
+event_type.ANY=dowolny
+event_type.LOST=zaginione
+event_type.FOUND=znalezione
 filter_button=Filtruj
 welcome_text=<h3>Witaj na Mapie Zwierząt</h3>\
 <p class="welcome-text">Jest to serwis zbierający w jednym miejscu dane z ogłoszeń dotyczących zaginionych i znalezionych zwierząt z całej Polski.<br>\
@@ -15,5 +15,6 @@ Jest to na razie wersja eksperymentalna, co oznacza, że zostało co nieco do po
 details.event_date=Data zdarzenia: 
 details.post_date=Data umieszczenia: 
 details.event_type=Typ zdarzenia: 
-details.picture=Zdjęcie: 
+details.picture=Zdjęcie
 details.link=Przejdź do ogłoszenia
+credits=Stworzył <a href="https://alchrabas.pl">Aleksander Chrabąszcz</a> (<a href="https://github.com/alchrabas/bestaro">Github</a>)

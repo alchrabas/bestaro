@@ -52,11 +52,17 @@ const formatDate = (timestamp) => {
 function onClickMarker() {
     const record = this.record;
     document.getElementsByClassName("side-bar")[0].innerHTML = `
-    ${Messages("details.event_date")}${formatDate(record.eventDate)}<br>
-    ${Messages("details.post_date")}${formatDate(record.publishDate)}<br>
-    ${Messages("details.event_type")}${record.eventType}<br>
-    ${Messages("details.picture")}<br><img class="fullPicturePreview" src="pictures/${record.picture}"/><br>
-    <a href="${record.link}">${Messages("details.link")}</a><br>
+    <div class="pure-g">
+        <div class="pure-u-1 pure-u-md-1-2">${Messages("details.event_date")}</div>
+        <div class="pure-u-1 pure-u-md-1-2">${formatDate(record.eventDate)}</div>
+        <div class="pure-u-1 pure-u-md-1-2">${Messages("details.post_date")}</div>
+        <div class="pure-u-1 pure-u-md-1-2">${formatDate(record.publishDate)}</div>
+        <div class="pure-u-1 pure-u-md-1-2">${Messages("details.event_type")}</div>
+        <div class="pure-u-1 pure-u-md-1-2">${Messages("event_type." + record.eventType)}</div>
+        <div class="pure-u-1">${Messages("details.picture")}</div>
+        <div class="pure-u-1"><img class="fullPicturePreview" src="pictures/${record.picture}"/></div>
+        <div class="pure-u-1"><a href="${record.link}">${Messages("details.link")}</a></div>
+    </div>
     `;
 }
 
@@ -109,10 +115,13 @@ document.getElementById("date-from").value = dateToString(weekAgoDate);
 document.getElementById("date-to").value = dateToString(new Date());
 
 document.getElementById("filter-button").onclick = event => {
+    event.preventDefault();
     updateFilterValues();
     fetchDataFromServer();
 };
 
 updateFilterValues();
-document.querySelector(".side-bar").innerHTML = `<div class="welcome-text">${Messages("welcome_text")}</div>`;
+document.querySelector(".side-bar").innerHTML = `
+    ${Messages("welcome_text")}
+    <div class="credits">${Messages("credits")}</div>`;
 setTimeout(fetchDataFromServer, 1000);

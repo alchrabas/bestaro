@@ -73,6 +73,7 @@ lazy val frontend = project
       "com.github.tminglei" %% "slick-pg" % "0.15.4",
       "com.github.tminglei" %% "slick-pg_jts" % "0.15.4",
       "com.github.tminglei" %% "slick-pg_play-json" % "0.15.4",
+      "org.webjars.npm" % "purecss" % "1.0.0",
       guice
     ),
     PlayKeys.devSettings := Seq("play.server.http.port" -> "8888")
