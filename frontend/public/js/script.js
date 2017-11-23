@@ -53,12 +53,12 @@ function onClickMarker() {
     const record = this.record;
     document.querySelector(".sidebar-content").innerHTML = `
     <div class="pure-g">
-        <div class="pure-u-1 pure-u-md-1-2">${Messages("details.event_date")}</div>
-        <div class="pure-u-1 pure-u-md-1-2">${formatDate(record.eventDate)}</div>
-        <div class="pure-u-1 pure-u-md-1-2">${Messages("details.post_date")}</div>
-        <div class="pure-u-1 pure-u-md-1-2">${formatDate(record.publishDate)}</div>
-        <div class="pure-u-1 pure-u-md-1-2">${Messages("details.event_type")}</div>
-        <div class="pure-u-1 pure-u-md-1-2">${Messages("event_type." + record.eventType)}</div>
+        <div class="pure-u-1-2">${Messages("details.event_date")}</div>
+        <div class="pure-u-1-2">${formatDate(record.eventDate)}</div>
+        <div class="pure-u-1-2">${Messages("details.post_date")}</div>
+        <div class="pure-u-1-2">${formatDate(record.publishDate)}</div>
+        <div class="pure-u-1-2">${Messages("details.event_type")}</div>
+        <div class="pure-u-1-2">${Messages("event_type." + record.eventType)}</div>
         <div class="pure-u-1">${Messages("details.picture")}</div>
         <div class="pure-u-1"><img class="fullPicturePreview" src="pictures/${record.picture}"/></div>
         <div class="pure-u-1"><a href="${record.link}">${Messages("details.link")}</a></div>
