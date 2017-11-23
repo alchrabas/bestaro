@@ -51,7 +51,7 @@ const formatDate = (timestamp) => {
 
 function onClickMarker() {
     const record = this.record;
-    document.getElementsByClassName("side-bar")[0].innerHTML = `
+    document.querySelector(".sidebar-content").innerHTML = `
     <div class="pure-g">
         <div class="pure-u-1 pure-u-md-1-2">${Messages("details.event_date")}</div>
         <div class="pure-u-1 pure-u-md-1-2">${formatDate(record.eventDate)}</div>
@@ -65,6 +65,27 @@ function onClickMarker() {
     </div>
     `;
 }
+
+const sideBar = document.querySelector(".sidebar");
+
+const hideSidebar = event => {
+    event.preventDefault();
+    sideBar.style.display = "none";
+    document.querySelector("#show-sidebar").style.display = "inline";
+    google.maps.event.trigger(googleMap, 'resize');
+};
+
+const showSidebar = event => {
+    event.preventDefault();
+    sideBar.style.display = "block";
+    document.querySelector("#show-sidebar").style.display = "none";
+    google.maps.event.trigger(googleMap, 'resize');
+};
+
+document.querySelector("#hide-sidebar").onclick = hideSidebar;
+document.querySelector("#show-sidebar").onclick = showSidebar;
+document.querySelector("#show-sidebar").style.display = "none";
+
 
 const fetchDataFromServer = () => {
     console.log("FETCHING DATA FROM SERVER");
@@ -121,7 +142,7 @@ document.getElementById("filter-button").onclick = event => {
 };
 
 updateFilterValues();
-document.querySelector(".side-bar").innerHTML = `
+document.querySelector(".sidebar-content").innerHTML = `
     ${Messages("welcome_text")}
     <div class="credits">${Messages("credits")}</div>`;
 setTimeout(fetchDataFromServer, 1000);

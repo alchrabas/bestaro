@@ -1,5 +1,5 @@
 app.title=Mapa zaginionych i znalezionych zwierząt
-date_from.label=Data między 
+date_from.label=Zdarzenie między 
 date_to.label=a 
 event_type.label=Rodzaj: 
 event_type.ANY=dowolny

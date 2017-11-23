@@ -24,7 +24,7 @@ html, body {
     display: flex;
 }
 
-.side-bar {
+.sidebar {
     flex: 0 0 20%;
 }
 
@@ -57,4 +57,23 @@ html, body {
 .credits {
     position: absolute;
     bottom: 0;
+}
+
+@media only screen and (max-width: 480px) {
+    .pure-form label, .pure-form input {
+        display: inline !important;
+    }
+
+    .sidebar {
+        flex: 0 0 90%;
+    }
+}
+
+#hide-sidebar {
+    float:right;
+}
+
+#show-sidebar {
+    float: left;
+    height: 100%;
 }
