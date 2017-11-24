@@ -15,4 +15,6 @@ project/plugins/project/
 .worksheet
 
 .idea/
-src/main/resources/facebook4j.properties
+facebook4j.properties
+app.properties
+*.sqlite
