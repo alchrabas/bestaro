@@ -9,9 +9,19 @@ import com.google.maps.{GeoApiContext, GeocodingApi}
 
 import scala.collection.JavaConverters._
 
+case class CacheEfficiency(cacheHits: Long, allQueries: Long) {
+  def incrementCacheHits(): CacheEfficiency = copy(cacheHits = cacheHits + 1, allQueries = allQueries + 1)
+
+  def incrementNewQueries(): CacheEfficiency = copy(allQueries = allQueries + 1)
+
+  def cacheEfficiency: Double = cacheHits / allQueries
+}
+
 class CachedGoogleApiClient(locatorDatabase: LocatorDatabase,
                             requestLogger: String => Unit = _ => Unit
                            ) {
+
+  private var _cacheEfficiencyMetrics = CacheEfficiency(0, 0)
 
   private type listOfResults = java.util.List[GeocodingResult]
 
@@ -21,18 +31,30 @@ class CachedGoogleApiClient(locatorDatabase: LocatorDatabase,
   properties.load(googleApiPropertiesFIS)
 
   def search(queryString: String): List[GeocodingResult] = {
-    locatorDatabase.retrieveFromCache(queryString).getOrElse {
-      val context = new GeoApiContext.Builder()
-        .apiKey(properties.getProperty("apiKey"))
-        .queryRateLimit(40)
-        .build
-      val results = GeocodingApi.geocode(context, queryString)
-        .language("pl").await.toList.asJava
-      locatorDatabase.saveInCache(locatorDatabase.GoogleCacheEntry(queryString, results, new Date().getTime))
+    locatorDatabase
+      .retrieveFromCache(queryString)
+      .map { a => recordCacheHit(); a }
+      .getOrElse {
+        val context = new GeoApiContext.Builder()
+          .apiKey(properties.getProperty("apiKey"))
+          .queryRateLimit(40)
+          .build
+        val results = GeocodingApi.geocode(context, queryString)
+          .language("pl").await.toList.asJava
+        locatorDatabase.saveInCache(locatorDatabase.GoogleCacheEntry(queryString, results, new Date().getTime))
 
-      requestLogger(queryString)
+        recordNewQuery()
+        requestLogger(queryString)
 
-      results
-    }.asScala.toList
+        results
+      }.asScala.toList
   }
+
+  private def recordCacheHit(): Unit =
+    _cacheEfficiencyMetrics = _cacheEfficiencyMetrics.incrementCacheHits()
+
+  private def recordNewQuery(): Unit =
+    _cacheEfficiencyMetrics = _cacheEfficiencyMetrics.incrementNewQueries()
+
+  def cacheEfficiencyMetrics: CacheEfficiency = _cacheEfficiencyMetrics
 }

@@ -20,6 +20,8 @@ class GoogleLocationExtractor(locatorDatabase: LocatorDatabase, memoryCache: Boo
     }
   }
 
+  def cacheEfficiencyMetrics: CacheEfficiency = geocodingClient.cacheEfficiencyMetrics
+
   override protected def specificExtract(alreadyKnownLocation: FullLocation,
                                          stemmedTokens: List[Token],
                                          foundLocationNames: Seq[MatchedInflectedLocation]):
