@@ -29,6 +29,19 @@ class FacebookCollector(recordConsumer: RawRecord => Unit, isAlreadyStored: RawR
     FacebookGroup("ZaginioneWarszawa", "211708982280762", Some(Voivodeship.MAZOWIECKIE)),
     FacebookGroup("ZaginionePodkarpacie", "1714486045490643", Some(Voivodeship.PODKARPACKIE)),
     FacebookGroup("ZaginioneLodz", "450184494994903", Some(Voivodeship.LODZKIE)),
+    FacebookGroup("ZaginioneKujawskoPomorskie", "1027349197280520", Some(Voivodeship.KUJAWSKO_POMORSKIE)),
+    FacebookGroup("ZaginioneLublinLubelskie", "416563518550942", Some(Voivodeship.LUBELSKIE)),
+    FacebookGroup("ZaginioneLubuskie", "1521330538114927", Some(Voivodeship.LUBUSKIE)),
+    FacebookGroup("ZaginioneLubuskieZielonaGoraGorzow", "655496414515533", Some(Voivodeship.LUBUSKIE)),
+    FacebookGroup("ZaginionePoznan", "307623212630596", Some(Voivodeship.WIELKOPOLSKIE)),
+    FacebookGroup("ZaginioneZachodniopomorskie", "374107929376049", Some(Voivodeship.ZACHODNIOPOMORSKIE)),
+    FacebookGroup("ZaginioneTrojmiasto", "209768362473608", Some(Voivodeship.POMORSKIE)),
+    FacebookGroup("PoszukiwaneOpolskie", "580836405327224", Some(Voivodeship.OPOLSKIE)),
+    FacebookGroup("ZaginioneBialystokGizyckoSuwalki", "306054069477023", Some(Voivodeship.PODLASKIE)),
+    FacebookGroup("ZaginioneSlaskIOkolice", "586787474694575", Some(Voivodeship.SLASKIE)),
+    FacebookGroup("GornySlaskDlaZwierzat", "377426005706051", Some(Voivodeship.SLASKIE)),
+    FacebookGroup("ZaginoneSwietokrzyskie", "1405798499654655", Some(Voivodeship.SWIETOKRZYSKIE)),
+    FacebookGroup("ZaginioneZnalezioneOlsztynOkolice", "1833070163614017", Some(Voivodeship.WARMINSKO_MAZURSKIE)),
   )
 
   def collect(): Unit = {
