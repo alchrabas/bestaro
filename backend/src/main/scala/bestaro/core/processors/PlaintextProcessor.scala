@@ -4,12 +4,15 @@ import bestaro.AppConfig
 import bestaro.core.{RawRecord, Tokenizer}
 import bestaro.extractors.EventTypeExtractor
 import bestaro.locator.LocatorDatabase
-import bestaro.locator.extractors.GoogleLocationExtractor
+import bestaro.locator.extractors.{CacheEfficiency, GoogleLocationExtractor}
 
 
 class PlaintextProcessor(locatorDatabase: LocatorDatabase) {
   private val bestaroLocatorMemoryCache = AppConfig.getProperty("bestaroLocatorMemoryCache") == "true"
   val locationExtractor = new GoogleLocationExtractor(locatorDatabase, bestaroLocatorMemoryCache)
+
+  def cacheEfficiencyMetrics: CacheEfficiency = locationExtractor.cacheEfficiencyMetrics
+
   val eventTypeExtractor = new EventTypeExtractor()
 
   def process(record: RawRecord): RawRecord = {

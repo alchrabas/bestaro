@@ -1,11 +1,14 @@
 package bestaro.core
 
+import java.util.Date
+
 import bestaro.{AppConfig, DataSupplier}
 import bestaro.collectors.util.SlowHttpDownloader
 import bestaro.collectors.{FacebookCollector, OlxCollector}
 import bestaro.common.types.RecordId
 import bestaro.core.processors.{LocationStringProcessor, PlaintextProcessor}
 import bestaro.database.DatabaseWrapper
+import bestaro.database.DatabaseWrapper.CacheEfficiencyRecord
 import bestaro.helpers.TaggedRecordsManager
 import bestaro.helpers.TaggedRecordsManager.TaggedRecord
 import bestaro.locator.LocatorDatabase
@@ -59,6 +62,13 @@ object Main {
         println(eventTypeVerifier.verify(processedRecords).briefSummary)
 
         Await.result(Future.sequence(allFutures), Duration.Inf)
+
+        println(plaintextProcessor.cacheEfficiencyMetrics)
+        val cacheEfficiency = plaintextProcessor.cacheEfficiencyMetrics
+        DatabaseWrapper.saveDataEfficiencyRecord(
+          CacheEfficiencyRecord(cacheEfficiency.cacheHits, cacheEfficiency.allQueries, new Date().getTime)
+        )
+
       case SEND =>
         val dataSupplier = new DataSupplier
         DatabaseWrapper.allNotSentProcessedRecords

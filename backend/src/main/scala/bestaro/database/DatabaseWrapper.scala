@@ -37,7 +37,7 @@ object DatabaseWrapper {
   }
 
   private def createSchemaIfNotExists(db: DatabaseDef): Unit = {
-    val toCreate = List(rawRecords, processedRecords, recordsMetadata)
+    val toCreate = List(rawRecords, processedRecords, recordsMetadata, cacheEfficiencyRecords)
     val existingTables = db.run(MTable.getTables)
     val createSchemaAction = existingTables.flatMap(v => {
       val names = v.map(mTable => mTable.name.name)
@@ -241,6 +241,25 @@ object DatabaseWrapper {
   }
 
   val recordsMetadata = TableQuery[RecordsMetadata]
+
+  case class CacheEfficiencyRecord(cacheHits: Long, allQueries: Long, dateTime: Long)
+
+  class CacheEfficiencyRecords(tag: Tag) extends Table[CacheEfficiencyRecord](tag, "cache_efficiency_records") {
+
+    def cacheHits = column[Long]("cache_hits")
+
+    def allQueries = column[Long]("all_queries")
+
+    def dateTime = column[Long]("date_time", O.PrimaryKey)
+
+    def * = (cacheHits, allQueries, dateTime) <> (CacheEfficiencyRecord.tupled, CacheEfficiencyRecord.unapply)
+  }
+
+  val cacheEfficiencyRecords = TableQuery[CacheEfficiencyRecords]
+
+  def saveDataEfficiencyRecord(cacheEfficiencyRecord: CacheEfficiencyRecord): Unit = {
+    Await.result(db.run(cacheEfficiencyRecords += cacheEfficiencyRecord), Duration.Inf)
+  }
 
   class ProcessedRecords(tag: Tag) extends Table[Record](tag, "processed_records") {
 
