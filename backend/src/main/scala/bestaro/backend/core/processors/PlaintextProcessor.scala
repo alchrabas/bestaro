@@ -6,11 +6,37 @@ import bestaro.backend.extractors.EventTypeExtractor
 import bestaro.backend.types.RawRecord
 import bestaro.locator.LocatorDatabase
 import bestaro.locator.extractors.{CacheEfficiency, GoogleLocationExtractor}
+import bestaro.locator.types.{FullLocation, Token, Voivodeship}
 
 
 class PlaintextProcessor(locatorDatabase: LocatorDatabase) {
   private val bestaroLocatorMemoryCache = AppConfig.getProperty("bestaroLocatorMemoryCache") == "true"
   val locationExtractor = new GoogleLocationExtractor(locatorDatabase, bestaroLocatorMemoryCache)
+
+  private def onIgnoreList(token: Token, knownLocation: FullLocation): Boolean = {
+    val ignoreList = knownLocation.voivodeship.map {
+      case Voivodeship.MALOPOLSKIE => Set("rybna", "rybną", "rybnej")
+      case Voivodeship.MAZOWIECKIE => Set("paluch", "palucha", "paluchu")
+      case Voivodeship.LODZKIE => Set("marmurowa", "marmurową", "marmurowej")
+      case Voivodeship.PODKARPACKIE => Set("ciepłownicza", "ciepłowniczą", "ciepłowniczej", "cieplownicza", "cieplowniczej")
+      case Voivodeship.DOLNOSLASKIE => Set("ślazowa", "ślazową", "ślazowej", "slazowa", "slazowej")
+      case Voivodeship.LUBUSKIE => Set("szwajcarska", "szwajcarską", "szwajcarskiej", "żurawia", "żurawią", "żurawiej", "zurawia", "zurawiej")
+      case Voivodeship.KUJAWSKO_POMORSKIE => Set("przybyszewskiego", "stanisława", "stanislawa", "grunwaldzka", "grunwaldzką", "grunwaldzkiej")
+      case Voivodeship.WIELKOPOLSKIE => Set("bukowska", "bukowską", "bukowskiej")
+      case Voivodeship.LUBELSKIE => Set("metalurgiczna", "metalurgiczną", "metalurgicznej")
+      case Voivodeship.ZACHODNIOPOMORSKIE => Set("wojska", "polskiego")
+      case Voivodeship.POMORSKIE => Set("przyrodników", "przyrodnikow", "małokacka", "małokacką", "małokackiej", "malokacka", "malokackiej")
+      case Voivodeship.OPOLSKIE => Set("torowa", "torową", "torowej")
+      case Voivodeship.PODLASKIE => Set("dolistowska", "dolistowską", "dolistowskiej")
+      case Voivodeship.SLASKIE => Set("milowicka", "milowicką", "milowickiej")
+      case Voivodeship.SWIETOKRZYSKIE => Set("ściegiennego", "sciegiennego")
+      case Voivodeship.WARMINSKO_MAZURSKIE => Set("turystyczna", "turystyczną", "turystycznej")
+    }.getOrElse(Set())
+
+    ignoreList.contains(token.stripped) // for example names/streets of animal shelters in the area
+  }
+
+  locationExtractor.setOnIgnoreListPredicate(onIgnoreList)
 
   def cacheEfficiencyMetrics: CacheEfficiency = locationExtractor.cacheEfficiencyMetrics
 
