@@ -1,4 +1,4 @@
-package bestaro.service;
+package unused_code;
 
 class GusDataReader {
   //  val STREET_NAMES_CSV = "gus/ULIC_Adresowy_2017-07-17.csv"

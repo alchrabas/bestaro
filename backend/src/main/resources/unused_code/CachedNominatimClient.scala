@@ -2,7 +2,7 @@ package unused_code
 
 import java.lang.reflect.Type
 
-import bestaro.service.GeocodingCacheTrait
+import bestaro.backend.service.GeocodingCacheTrait
 import com.google.gson.reflect.TypeToken
 
 import scala.util.Random
