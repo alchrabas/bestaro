@@ -35,6 +35,12 @@ abstract class AbstractLocationExtractor(locatorDatabase: LocatorDatabase, memor
 
   protected val townNamesExtractor = new InflectedTownNamesExtractor(locatorDatabase, memoryCache)
 
+  protected var onIgnoreListPredicate: (Token, FullLocation) => Boolean = (_, _) => false
+
+  def setOnIgnoreListPredicate(predicate: (Token, FullLocation) => Boolean): Unit = {
+    onIgnoreListPredicate = predicate
+  }
+
   def extractLocation(tokens: List[String], alreadyKnownLocation: FullLocation): (List[Token], List[MatchedFullLocation]) = {
 
     println("########################")
@@ -48,7 +54,7 @@ abstract class AbstractLocationExtractor(locatorDatabase: LocatorDatabase, memor
         evaluateMostAccurateBaseName(tokenText)
       }
     }.map(token => {
-      if (onIgnoreList(token, alreadyKnownLocation.voivodeship)) {
+      if (onIgnoreListPredicate(token, alreadyKnownLocation)) {
         token.withAlteredPlacenessScore(NAME_ON_IGNORE_LIST_SCORE)
       } else {
         token
@@ -175,19 +181,6 @@ abstract class AbstractLocationExtractor(locatorDatabase: LocatorDatabase, memor
         List(Gender.F), // because the most common "ulica" is feminine
         0)
     )
-  }
-
-  private def onIgnoreList(token: Token, voivodeship: Option[Voivodeship]): Boolean = {
-    val ignoreList = voivodeship.map {
-      case Voivodeship.MALOPOLSKIE => Set("rybna", "rybną", "rybnej")
-      case Voivodeship.MAZOWIECKIE => Set("paluch", "palucha", "paluchu")
-      case Voivodeship.LODZKIE => Set("marmurowa", "marmurową", "marmurowej")
-      case Voivodeship.PODKARPACKIE => Set("ciepłownicza", "ciepłowniczą", "ciepłowniczej", "cieplownicza", "cieplowniczej")
-      case Voivodeship.DOLNOSLASKIE => Set("ślazowa", "ślazową", "ślazowej", "slazowa", "slazowej")
-      case _ => Set[String]()
-    }.getOrElse(Set())
-
-    ignoreList.contains(token.stripped) // for example names/streets of animal shelters in the area
   }
 
   private def isCapitalized(original: String): Boolean = {
