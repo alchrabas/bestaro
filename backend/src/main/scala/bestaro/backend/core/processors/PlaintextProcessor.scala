@@ -11,7 +11,7 @@ import bestaro.locator.types.{FullLocation, Token, Voivodeship}
 
 class PlaintextProcessor(locatorDatabase: LocatorDatabase) {
   private val bestaroLocatorMemoryCache = AppConfig.getProperty("bestaroLocatorMemoryCache") == "true"
-  val locationExtractor = new GoogleLocationExtractor(locatorDatabase, bestaroLocatorMemoryCache)
+  val locationExtractor = new GoogleLocationExtractor(locatorDatabase, AppConfig.getProperty("googleApiKey"), bestaroLocatorMemoryCache)
 
   private def onIgnoreList(token: Token, knownLocation: FullLocation): Boolean = {
     val ignoreList = knownLocation.voivodeship.map {
