@@ -2,6 +2,7 @@ package bestaro.backend.collectors
 
 import java.nio.file.{Path, Paths}
 import java.time.Instant
+import java.util.Random
 import java.util.concurrent.TimeUnit
 
 import bestaro.backend.types.RawRecord
@@ -44,10 +45,20 @@ class FacebookCollector(recordConsumer: RawRecord => Unit, isAlreadyStored: RawR
     FacebookGroup("ZaginioneZnalezioneOlsztynOkolice", "1833070163614017", Some(Voivodeship.WARMINSKO_MAZURSKIE)),
   )
 
-  def collect(): Unit = {
-    val facebook = new FacebookFactory().getInstance
+  private val facebook = new FacebookFactory().getInstance
 
+  def collect(): Unit = {
     GROUPS_TO_SEARCH.foreach(searchInGroup(_, facebook))
+  }
+
+  // start with a random group
+  private var groupIndex = new Random().nextInt(GROUPS_TO_SEARCH.size)
+
+  def collectFromNextGroup(): Unit = {
+    groupIndex += 1
+    groupIndex %= GROUPS_TO_SEARCH.size
+
+    searchInGroup(GROUPS_TO_SEARCH(groupIndex), facebook)
   }
 
   private def searchInGroup(group: FacebookGroup, facebook: Facebook) {

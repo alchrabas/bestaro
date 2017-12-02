@@ -1,12 +1,16 @@
 package bestaro.backend.collectors
 
 import java.net.URL
+import java.util.Random
 
 import bestaro.backend.collectors.util.HttpDownloader
-import bestaro.common.types._
+import bestaro.backend.database.DatabaseWrapper
 import bestaro.backend.extractors.PolishDateExtractor
 import bestaro.backend.types.RawRecord
 import bestaro.backend.util.ImageUtil
+import bestaro.common.types._
+import bestaro.locator.types.Voivodeship
+import bestaro.locator.util.PolishCharactersAsciizer
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 
@@ -15,17 +19,37 @@ import scala.language.postfixOps
 
 class OlxCollector(recordConsumer: RawRecord => Unit, httpDownloader: HttpDownloader) {
 
+  private val asciizer = new PolishCharactersAsciizer
+
   def collect(): Unit = {
-    collectLostPets()
-    collectFoundPets()
+    Voivodeship.values.foreach(collectForVoivideship)
   }
 
-  def collectLostPets(): Unit = {
-    collectPetsFromListOnUrl(1, EventType.LOST, "https://www.olx.pl/zwierzeta/zaginione-i-znalezione/krakow/?search%5Bfilter_enum_lostfound%5D%5B0%5D=lost")
+  // start with a random voivodeship
+  private var voivodeshipIndex = new Random().nextInt(Voivodeship.values.size)
+
+  def collectFromNextVoivodeship(): Unit = {
+    voivodeshipIndex += 1
+    voivodeshipIndex %= Voivodeship.values.size
+
+    collectForVoivideship(Voivodeship.values(voivodeshipIndex))
   }
 
-  def collectFoundPets(): Unit = {
-    collectPetsFromListOnUrl(1, EventType.FOUND, "https://www.olx.pl/zwierzeta/zaginione-i-znalezione/krakow/?search%5Bfilter_enum_lostfound%5D%5B0%5D=found")
+  def collectForVoivideship(voivodeship: Voivodeship): Unit = {
+    collectLostPets(olxAcceptableName(voivodeship))
+    collectFoundPets(olxAcceptableName(voivodeship))
+  }
+
+  private def olxAcceptableName(voivodeship: Voivodeship): String = {
+    asciizer.convertToAscii(voivodeship.entryName).toLowerCase
+  }
+
+  def collectLostPets(voivodeshipName: String): Unit = {
+    collectPetsFromListOnUrl(1, EventType.LOST, s"https://www.olx.pl/zwierzeta/zaginione-i-znalezione/$voivodeshipName/?search%5Bfilter_enum_lostfound%5D%5B0%5D=lost")
+  }
+
+  def collectFoundPets(voivodeshipName: String): Unit = {
+    collectPetsFromListOnUrl(1, EventType.FOUND, s"https://www.olx.pl/zwierzeta/zaginione-i-znalezione/$voivodeshipName/?search%5Bfilter_enum_lostfound%5D%5B0%5D=found")
   }
 
   def collectPetsFromListOnUrl(page: Int, eventType: EventType, url: String): Unit = {
@@ -34,15 +58,25 @@ class OlxCollector(recordConsumer: RawRecord => Unit, httpDownloader: HttpDownlo
 
     val allTables = offerTables.select("table.fixed.breakword")
 
-    (0 until allTables.size)
+    val existingRecordsCount = (0 until allTables.size)
       .iterator
       .map(allTables.get)
+      .filterNot(row =>
+        DatabaseWrapper.recordIdAlreadyExists(
+          OlxId(row.attr("data-id"))
+        ))
       .map(_.select("a").first().attr("href"))
       .map(requestSlowly)
       .map(collectAdvertisementDetails(_, eventType))
-      .foreach(recordConsumer)
+      .map { a => recordConsumer(a); println("SAVE: " + a.message); a }.size
 
-    enterAnotherPage(page, eventType, url, doc)
+    if (atLeastHalfOfRecordsAreNew(existingRecordsCount, allTables.size())) {
+      enterAnotherPage(page, eventType, url, doc)
+    }
+  }
+
+  def atLeastHalfOfRecordsAreNew(existing: Int, all: Int): Boolean = {
+    existing * 0.5 < all
   }
 
   def enterAnotherPage(page: Int,

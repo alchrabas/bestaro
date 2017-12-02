@@ -100,6 +100,13 @@ object DatabaseWrapper {
     ), Duration.Inf)
   }
 
+  def recordIdAlreadyExists(recordId: RecordId): Boolean = {
+    Await.result(db.run( // todo make async
+      recordsMetadata.filter(_.recordId === recordId)
+        .exists.result
+    ), Duration.Inf)
+  }
+
   def allRawRecords: Seq[RawRecord] = {
     Await.result(db.run( // todo make async
       rawRecords.result
