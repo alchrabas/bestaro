@@ -4,6 +4,7 @@ import bestaro.backend.AppConfig
 import bestaro.backend.core.Tokenizer
 import bestaro.backend.extractors.EventTypeExtractor
 import bestaro.backend.types.RawRecord
+import bestaro.common.types.EventType
 import bestaro.locator.LocatorDatabase
 import bestaro.locator.extractors.{CacheEfficiency, GoogleLocationExtractor}
 import bestaro.locator.types.{FullLocation, Token, Voivodeship}
@@ -49,7 +50,12 @@ class PlaintextProcessor(locatorDatabase: LocatorDatabase) {
     println(inputText)
 
     val recordWithLocation = extractAndUpdateLocation(record, tokens)
-    extractAndUpdateEventType(recordWithLocation, tokens)
+
+    if (recordWithLocation.eventType == EventType.UNKNOWN) {
+      extractAndUpdateEventType(recordWithLocation, tokens)
+    } else {
+      recordWithLocation
+    }
   }
 
   private def getRecordMessage(record: RawRecord) = {
