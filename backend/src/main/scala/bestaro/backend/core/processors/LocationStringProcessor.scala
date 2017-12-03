@@ -9,6 +9,8 @@ import bestaro.locator.types.{FullLocation, Location, Voivodeship, VoivodeshipNa
 
 class LocationStringProcessor(locatorDatabase: LocatorDatabase) {
 
+  val inflectedTownNamesExtractor = new InflectedTownNamesExtractor(locatorDatabase, true)
+
   def process(record: RawRecord): RawRecord = {
 
     if (nonEmpty(record.location)) {
@@ -44,7 +46,7 @@ class LocationStringProcessor(locatorDatabase: LocatorDatabase) {
                                        memoryCache: Boolean = true): Option[Location] = {
     val tokenizer = new Tokenizer
     val locationTokens = tokenizer.tokenize(locationPart)
-    val inflectedTownNamesExtractor = new InflectedTownNamesExtractor(locatorDatabase, memoryCache)
+
     inflectedTownNamesExtractor.findLocationNamesFromDatabase(locationTokens, voivodeshipRestriction)
       .map(_.inflectedLocation.location).headOption
   }
