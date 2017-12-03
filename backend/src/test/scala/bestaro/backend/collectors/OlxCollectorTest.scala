@@ -6,6 +6,7 @@ import java.time.{Instant, LocalDate, Month, ZoneOffset}
 import bestaro.backend.collectors.util.HttpDownloader
 import bestaro.backend.types.RawRecord
 import bestaro.common.types.EventType
+import bestaro.locator.types.Voivodeship
 import org.jsoup.Jsoup
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.FunSpec
@@ -24,7 +25,7 @@ class OlxCollectorTest extends FunSpec with MockFactory {
       val collector = new OlxCollector(saveMock, httpDownloaderMock)
       val doc = Jsoup.parse(getClass.getResourceAsStream("/olxSamplePage.html"), "UTF-8",
         "https://www.olx.pl/oferta/bura-pregowana-starsza-kotka-CID103-ID40upd.html#9537ecc7fe")
-      val record = collector.collectAdvertisementDetails(doc, EventType.UNKNOWN)
+      val record = collector.collectAdvertisementDetails(doc, EventType.UNKNOWN, Voivodeship.MALOPOLSKIE)
 
       assert(record.eventType == EventType.LOST)
       assert(record.title == "Bura, pręgowana, starsza KOTKA ! Kraków Nowa Huta • OLX.pl")

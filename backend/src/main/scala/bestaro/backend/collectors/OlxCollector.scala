@@ -1,6 +1,7 @@
 package bestaro.backend.collectors
 
 import java.net.URL
+import java.nio.file.{Path, Paths}
 import java.util.Random
 
 import bestaro.backend.collectors.util.HttpDownloader
@@ -9,7 +10,7 @@ import bestaro.backend.extractors.PolishDateExtractor
 import bestaro.backend.types.RawRecord
 import bestaro.backend.util.ImageUtil
 import bestaro.common.types._
-import bestaro.locator.types.Voivodeship
+import bestaro.locator.types.{FullLocation, Voivodeship}
 import bestaro.locator.util.PolishCharactersAsciizer
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -36,23 +37,23 @@ class OlxCollector(recordConsumer: RawRecord => Unit, httpDownloader: HttpDownlo
   }
 
   def collectForVoivideship(voivodeship: Voivodeship): Unit = {
-    collectLostPets(olxAcceptableName(voivodeship))
-    collectFoundPets(olxAcceptableName(voivodeship))
+    collectLostPets(voivodeship)
+    collectFoundPets(voivodeship)
   }
 
   private def olxAcceptableName(voivodeship: Voivodeship): String = {
     asciizer.convertToAscii(voivodeship.entryName).toLowerCase
   }
 
-  def collectLostPets(voivodeshipName: String): Unit = {
-    collectPetsFromListOnUrl(1, EventType.LOST, s"https://www.olx.pl/zwierzeta/zaginione-i-znalezione/$voivodeshipName/?search%5Bfilter_enum_lostfound%5D%5B0%5D=lost")
+  def collectLostPets(voivodeship: Voivodeship): Unit = {
+    collectPetsFromListOnUrl(1, EventType.LOST, voivodeship, s"https://www.olx.pl/zwierzeta/zaginione-i-znalezione/${olxAcceptableName(voivodeship)}/?search%5Bfilter_enum_lostfound%5D%5B0%5D=lost")
   }
 
-  def collectFoundPets(voivodeshipName: String): Unit = {
-    collectPetsFromListOnUrl(1, EventType.FOUND, s"https://www.olx.pl/zwierzeta/zaginione-i-znalezione/$voivodeshipName/?search%5Bfilter_enum_lostfound%5D%5B0%5D=found")
+  def collectFoundPets(voivodeship: Voivodeship): Unit = {
+    collectPetsFromListOnUrl(1, EventType.FOUND, voivodeship, s"https://www.olx.pl/zwierzeta/zaginione-i-znalezione/${olxAcceptableName(voivodeship)}/?search%5Bfilter_enum_lostfound%5D%5B0%5D=found")
   }
 
-  def collectPetsFromListOnUrl(page: Int, eventType: EventType, url: String): Unit = {
+  def collectPetsFromListOnUrl(page: Int, eventType: EventType, voivodeship: Voivodeship, url: String): Unit = {
     val doc = requestSlowly(url)
     val offerTables = doc.select("#offers_table").first().children()
 
@@ -67,11 +68,11 @@ class OlxCollector(recordConsumer: RawRecord => Unit, httpDownloader: HttpDownlo
         ))
       .map(_.select("a").first().attr("href"))
       .map(requestSlowly)
-      .map(collectAdvertisementDetails(_, eventType))
+      .map(collectAdvertisementDetails(_, eventType, voivodeship))
       .map { a => recordConsumer(a); println("SAVE: " + a.message); a }.size
 
     if (atLeastHalfOfRecordsAreNew(existingRecordsCount, allTables.size())) {
-      enterAnotherPage(page, eventType, url, doc)
+      enterAnotherPage(page, eventType, voivodeship, url, doc)
     }
   }
 
@@ -80,9 +81,9 @@ class OlxCollector(recordConsumer: RawRecord => Unit, httpDownloader: HttpDownlo
   }
 
   def enterAnotherPage(page: Int,
-                       eventType: EventType, url: String, doc: Document): Unit = {
+                       eventType: EventType, voivodeship: Voivodeship, url: String, doc: Document): Unit = {
     if (nextPageExists(page, url, doc)) {
-      collectPetsFromListOnUrl(page + 1, eventType, url)
+      collectPetsFromListOnUrl(page + 1, eventType, voivodeship, url)
     }
   }
 
@@ -93,7 +94,7 @@ class OlxCollector(recordConsumer: RawRecord => Unit, httpDownloader: HttpDownlo
     nextPageLinkExists
   }
 
-  def collectAdvertisementDetails(adDocument: Document, eventType: EventType): RawRecord = {
+  def collectAdvertisementDetails(adDocument: Document, eventType: EventType, voivodeship: Voivodeship): RawRecord = {
     val locationString = adDocument.select(".show-map-link > strong").text()
     val messageContent = adDocument.select("#textContent").text()
     val title = adDocument.select("title").text()
@@ -108,18 +109,31 @@ class OlxCollector(recordConsumer: RawRecord => Unit, httpDownloader: HttpDownlo
     val extractedEventDate = polishDateExtractor.parse(messageContent)
 
     val id = parseId(idString)
-    if (pictures.nonEmpty) {
-      requestImageSlowly(id, pictures.head, 1)
+
+    var picturePath: Option[Path] = Option.empty
+    if (pictures.nonEmpty) { // todo extract common code from FbCollector
+      try {
+        val potentialPicturePath = ImageUtil.pathToPicture(ImageUtil.pictureName(id, 1))
+        if (potentialPicturePath.toFile.exists()) { // avoid fetching image when it's already there
+          picturePath = Some(Paths.get(ImageUtil.pictureName(id, 1)))
+        } else {
+          picturePath = Some(requestImageSlowly(id, pictures.head, 1))
+        }
+      } catch {
+        case _: Exception => println("Unable to save the picture for ID " + id)
+      }
     }
 
-    RawRecord(id, EventType.LOST, AnimalType.UNKNOWN,
+    RawRecord(id, eventType, AnimalType.UNKNOWN,
       messageContent,
       extractedDate.map(_.toEpochMilli).getOrElse(1L),
-      dataSource = "OLX-0",
-      location = locationString, title = title,
-      pictures = pictures,
+      dataSource = "OLX-" + voivodeship.entryName,
+      location = locationString,
+      title = title,
+      pictures = picturePath.map(_.toString).toList,
       eventDate = extractedEventDate.map(_.toEpochMilli).getOrElse(2L),
-      link = url
+      link = url,
+      fullLocation = FullLocation(None, None, Some(voivodeship), None)
     )
   }
 
@@ -130,7 +144,7 @@ class OlxCollector(recordConsumer: RawRecord => Unit, httpDownloader: HttpDownlo
     }
   }
 
-  def requestImageSlowly(id: RecordId, url: String, serialId: Int): Unit = {
+  def requestImageSlowly(id: RecordId, url: String, serialId: Int): Path = {
     ImageUtil.saveImage(id, serialId, httpDownloader.downloadResource(new URL(url)))
   }
 
