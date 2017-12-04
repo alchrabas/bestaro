@@ -143,7 +143,7 @@ object DatabaseWrapper {
     ), Duration.Inf)
   }
 
-  def markRecordAsSent(record: Record): Unit = {
+  def markRecordAsSent(record: Record): Future[Int] = {
     db.run(
       recordsMetadata
         .filter(_.recordId === record.recordId)

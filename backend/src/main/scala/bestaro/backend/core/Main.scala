@@ -70,12 +70,18 @@ object Main {
         )
 
       case SEND =>
+        import scala.concurrent.ExecutionContext.Implicits.global
+
         val dataSupplier = new DataSupplier
-        DatabaseWrapper.allNotSentProcessedRecords
-          .foreach { record =>
-            dataSupplier.sendRecord(record)
-            DatabaseWrapper.markRecordAsSent(record)
+        val allTheFutures = DatabaseWrapper.allNotSentProcessedRecords
+          .flatMap { record =>
+            Seq(
+              dataSupplier.sendRecord(record),
+              DatabaseWrapper.markRecordAsSent(record)
+            )
           }
+
+        Await.result(Future.sequence(allTheFutures), Duration.Inf)
     }
   }
 

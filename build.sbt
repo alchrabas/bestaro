@@ -22,14 +22,15 @@ lazy val backend = project
       "org.scalamock" %% "scalamock-scalatest-support" % "3.5.0" % Test,
       "com.github.tototoshi" %% "scala-csv" % "1.3.4",
       "com.google.maps" % "google-maps-services" % "0.2.1",
-      "org.slf4j" % "slf4j-nop" % "1.7.25",
       "com.typesafe.play" %% "play-json" % "2.6.3",
       "com.google.guava" % "guava" % "23.0",
       "cc.mallet" % "mallet" % "2.0.8",
       "com.typesafe.slick" %% "slick" % "3.2.1",
       "org.xerial" % "sqlite-jdbc" % "3.20.1",
       "com.beachape" %% "enumeratum" % "1.5.12",
-      "com.beachape" %% "enumeratum-play-json" % "1.5.12-2.6.0-M7"
+      "com.beachape" %% "enumeratum-play-json" % "1.5.12-2.6.0-M7",
+      "ch.qos.logback" % "logback-classic" % "1.2.3",
+      "net.databinder.dispatch" %% "dispatch-core" % "0.13.2"
     )
   )
 

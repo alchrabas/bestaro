@@ -1,18 +1,21 @@
 package bestaro.backend
 
+
 import java.io._
 import java.net.{HttpURLConnection, URL}
+import java.nio.charset.StandardCharsets
 import java.nio.file.{Files, Paths}
-import java.util.Base64
 import javax.imageio.ImageIO
 
 import bestaro.common.types.{NamedPicture, Record, RecordDTO}
 import bestaro.common.util.ImageResizer
+import dispatch.Defaults._
+import dispatch._
 import play.api.libs.json.Json
 
 class DataSupplier {
 
-  def sendRecord(record: Record) {
+  def sendRecord(record: Record): Future[String] = {
     val namedPictures = record.pictures
       .map { pictureName =>
         (pictureName, imageBytes(pictureName), minifiedImageBytes(pictureName))
@@ -38,23 +41,16 @@ class DataSupplier {
     byteOutputStream.toByteArray
   }
 
-  private def uploadBytes(encodedJson: Array[Byte]): Unit = {
-    val connectionToFrontend = new URL(AppConfig.getProperty("frontendURL"))
-    val connection = connectionToFrontend.openConnection().asInstanceOf[HttpURLConnection]
-    connection.setDoOutput(true)
-    connection.setRequestMethod("POST")
+  private def uploadBytes(encodedJson: Array[Byte]): Future[String] = {
+    val Array(username, password) = AppConfig.getProperty("frontendAuthCredentials").split(":")
+    val r = url(AppConfig.getProperty("frontendURL"))
+      .as_!(username, password)
+      .POST
+      .setContentType("application/json", StandardCharsets.UTF_8)
+      .setBody(encodedJson)
 
-    connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8")
-    val userCredentials = AppConfig.getProperty("frontendAuthCredentials").getBytes
-    val basicAuth = "Basic " + new String(Base64.getEncoder.encode(userCredentials))
-    connection.setRequestProperty("Authorization", basicAuth)
-    connection.connect()
-    val outputStream = connection.getOutputStream
-    outputStream.write(encodedJson)
-    outputStream.close()
-
-    val reader = new BufferedReader(new InputStreamReader(connection.getInputStream))
-
-    println(reader.readLine())
+    val future = Http.default(r OK as.String)
+    future.onComplete(a => println(a.get))
+    future
   }
 }
