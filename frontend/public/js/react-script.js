@@ -211,12 +211,43 @@ let SidebarWelcomePage = () => {
     ];
 };
 
+const Grid = window.ReactVirtualized.Grid;
+
+const SidebarWithRecords = ({records}) => {
+    const cellRenderer = ({columnIndex, key, rowIndex, style}) => {
+        if (rowIndex * 7 + columnIndex < records.length) {
+            return tag("div", {
+                key: key,
+                style: style,
+            }, [
+                tag("img", {src: "pictures_min/" + records[rowIndex * 7 + columnIndex].picture})
+            ]);
+        } else {
+            return null;
+        }
+    };
+
+    return tag(Grid, {
+        cellRenderer: cellRenderer,
+        columnCount: 7,
+        columnWidth: 100,
+        height: 900,
+        rowCount: Math.ceil(records.length / 7),
+        rowHeight: 100,
+        width: 750,
+    });
+};
+
+const SidebarWithRecordsContainer = connect(state => {
+    return {records: state.records};
+})(SidebarWithRecords);
+
 let Sidebar = ({selectedRecord}) => {
     const sidebarContents = (record) => {
         if (record) {
             return tag(SideBarWithDetails, {record: record});
         } else {
-            return tag(SidebarWelcomePage, {});
+            return tag(SidebarWithRecordsContainer, {});
         }
     };
 
