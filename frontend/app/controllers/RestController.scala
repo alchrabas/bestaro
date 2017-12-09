@@ -19,7 +19,7 @@ class RestController @Inject()(cc: ControllerComponents,
                                 implicit executionContext: ExecutionContext
                               ) extends AbstractController(cc) {
 
-  private val PICTURES_IN_VIEWPORT_LIMIT = 500
+  private val RECORDS_IN_VIEWPORT_LIMIT = 2500
 
   def getMarkers(minlat: Double, minlon: Double, maxlat: Double, maxlon: Double,
                  dateFrom: String, dateTo: String, eventType: String) = Action.async {
@@ -40,7 +40,7 @@ class RestController @Inject()(cc: ControllerComponents,
     database
       .allRecordsInRange(minLat, minLon, maxLat, maxLon, filterCriteria)
       .map(_.filter(_.pictures.nonEmpty))
-      .map(_.slice(0, PICTURES_IN_VIEWPORT_LIMIT))
+      .map(_.slice(0, RECORDS_IN_VIEWPORT_LIMIT))
       .map(_.map(recordToMarker))
       .map { markers =>
         println(s"Found ${markers.size} markers for $minLat $minLon $maxLat $maxLon")
