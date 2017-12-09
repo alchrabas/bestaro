@@ -14,32 +14,16 @@
         <script type="text/javascript" src="messages/"></script>
     </head>
     <body>
-        <div class="box">
-            <div class="row top-bar header">
-                <form class="pure-form">
-                    <label>@messages("date_from.label") <input name="date-from" id="date-from" type="date"/></label>
-                    <label>@messages("date_to.label") <input name="date-to" id="date-to" type="date"/></label>
-                    <label>@messages("event_type.label")
-                        <select name="event-type" id="event-type">
-                            <option value="ANY">@messages("event_type.ANY")</option>
-                            <option value="LOST">@messages("event_type.LOST")</option>
-                            <option value="FOUND">@messages("event_type.FOUND")</option>
-                        </select>
-                    </label>
-                    <button id="filter-button" class="pure-button pure-button-primary">@messages("filter_button")</button>
-                </form>
-            </div>
-            <div class="row content">
-                <div class="sidebar">
-                    <button id="hide-sidebar">&lt;</button>
-                    <div class="sidebar-content"></div>
-                </div>
-                <button id="show-sidebar">&gt;</button>
-                <div id="mapContainer"></div>
-            </div>
-            <script src="https://maps.googleapis.com/maps/api/js?key=@configuration.underlying.getString("bestaro.googleMapsApi")"></script>
-            <script type="text/javascript" src="@routes.Assets.at("js/richmarker.min.js")"></script>
-            <script type="text/javascript" src="@routes.Assets.at("js/script.js")"></script>
-        </div>
+        <div id="root" class="box"></div>
+        <script src="https://maps.googleapis.com/maps/api/js?key=@configuration.underlying.getString("bestaro.googleMapsApi")"></script>
+        <script type="text/javascript" src="@routes.Assets.at("lib/react/umd/react.production.min.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.at("lib/react-dom/umd/react-dom.production.min.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.at("lib/redux/dist/redux.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.at("lib/redux-thunk/dist/redux-thunk.min.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.at("js/react-redux.js")"></script>
+        <link rel="stylesheet" href="@routes.Assets.at("lib/react-virtualized/styles.css")">
+        <script src="@routes.Assets.at("lib/react-virtualized/dist/umd/react-virtualized.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.at("js/utils.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.at("js/react-script.js")"></script>
     </body>
 </html>

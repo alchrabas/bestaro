@@ -43,7 +43,6 @@ lazy val frontend = project
     libraryDependencies ++= Seq(
       "com.google.guava" % "guava" % "23.0",
       "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2" % Test,
-      "org.webjars" % "leaflet" % "1.2.0",
       "com.beachape" %% "enumeratum" % "1.5.12",
       "com.beachape" %% "enumeratum-play-json" % "1.5.12-2.6.0-M7",
       "com.typesafe.slick" %% "slick" % "3.2.1",
@@ -55,6 +54,13 @@ lazy val frontend = project
       "com.github.tminglei" %% "slick-pg_jts" % "0.15.4",
       "com.github.tminglei" %% "slick-pg_play-json" % "0.15.4",
       "org.webjars.npm" % "purecss" % "1.0.0",
+      "org.webjars.npm" % "react" % "16.1.1",
+      "org.webjars.npm" % "react-dom" % "16.1.1",
+      "org.webjars.npm" % "redux" % "3.7.2",
+      "org.webjars.npm" % "react-redux" % "5.0.5",
+      "org.webjars.npm" % "redux-thunk" % "2.2.0",
+      "org.webjars.npm" % "dom-helpers" % "3.2.1",
+      "org.webjars.npm" % "react-virtualized" % "9.12.0",
       guice
     ),
     PlayKeys.devSettings := Seq("play.server.http.port" -> "8888")
