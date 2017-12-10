@@ -61,6 +61,8 @@ lazy val frontend = project
       "org.webjars.npm" % "redux-thunk" % "2.2.0",
       "org.webjars.npm" % "dom-helpers" % "3.2.1",
       "org.webjars.npm" % "react-virtualized" % "9.12.0",
+      "org.webjars.npm" % "prop-types" % "15.5.10",
+      "org.webjars.npm" % "react-measure" % "0.4.2",
       guice
     ),
     PlayKeys.devSettings := Seq("play.server.http.port" -> "8888")

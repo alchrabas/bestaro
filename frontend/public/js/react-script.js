@@ -213,7 +213,7 @@ let SidebarWelcomePage = () => {
 
 const Grid = window.ReactVirtualized.Grid;
 
-const SidebarWithRecords = ({records}) => {
+const SidebarWithRecords = window.Measure.withContentRect('bounds')(({records}) => {
     const cellRenderer = ({columnIndex, key, rowIndex, style}) => {
         if (rowIndex * 7 + columnIndex < records.length) {
             return tag("div", {
@@ -236,7 +236,7 @@ const SidebarWithRecords = ({records}) => {
         rowHeight: 100,
         width: 750,
     });
-};
+});
 
 const SidebarWithRecordsContainer = connect(state => {
     return {records: state.records};
