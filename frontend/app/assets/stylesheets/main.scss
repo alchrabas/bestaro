@@ -1,0 +1,78 @@
+/* Fix to allow <!doctype html>, because otherwise html and body don't occupy whole screen */
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+.box {
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+  width: 100%;
+}
+
+.box .row.header {
+  flex: 0 1 auto;
+}
+
+.box .row.content {
+  flex: 1 1 auto;
+}
+
+.content {
+  display: flex;
+}
+
+.sidebar {
+  flex: 0 0 40%;
+}
+
+#mapContainer {
+  flex: 1 5 auto;
+}
+
+.animal-marker {
+  cursor: pointer;
+}
+
+.animal-marker-status-lost {
+  border: 1px solid rgba(255, 0, 0, 0.3);
+}
+
+.animal-marker-status-found {
+  border: 1px solid rgba(0, 255, 0, 0.3);
+}
+
+.fullPicturePreview {
+  max-width: 100%;
+  height: auto;
+}
+
+.welcome-text {
+  text-align: justify;
+  padding: 3px;
+}
+
+.credits {
+  position: absolute;
+  bottom: 0;
+}
+
+@media only screen and (max-width: 480px) {
+  .pure-form label, .pure-form input {
+    display: inline !important;
+  }
+
+  .sidebar {
+    flex: 0 0 90%;
+  }
+}
+
+#hide-sidebar {
+  float:right;
+}
+
+#show-sidebar {
+  float: left;
+  height: 100%;
+}

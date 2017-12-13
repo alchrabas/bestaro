@@ -1,6 +1,8 @@
 'use strict';
 
-const tag = function (type, props, children) {
+import React from "react";
+
+export const tag = function (type, props, children) {
     if (!children) {
         if (Array.isArray(props) || typeof props === 'string') {
             children = props;
@@ -15,19 +17,19 @@ const tag = function (type, props, children) {
     return React.createElement.apply(null, allArgs);
 };
 
-const twoDigitNumber = number => {
+export const twoDigitNumber = number => {
     if (number >= 0 && number < 10) {
         return "0" + number;
     }
     return number;
 };
 
-const dateToString = (date) =>
+export const dateToString = (date) =>
     date.getUTCFullYear() + "-" +
     twoDigitNumber(date.getMonth() + 1) +
     "-" + twoDigitNumber(date.getUTCDate());
 
-const formatDate = (timestamp) => {
+export const formatDate = (timestamp) => {
     if (+timestamp === 0) {
         return "-";
     }

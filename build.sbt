@@ -103,16 +103,6 @@ lazy val frontend = project
       "com.github.tminglei" %% "slick-pg" % "0.15.4",
       "com.github.tminglei" %% "slick-pg_jts" % "0.15.4",
       "com.github.tminglei" %% "slick-pg_play-json" % "0.15.4",
-      "org.webjars.npm" % "purecss" % "1.0.0",
-      "org.webjars.npm" % "react" % "16.1.1",
-      "org.webjars.npm" % "react-dom" % "16.1.1",
-      "org.webjars.npm" % "redux" % "3.7.2",
-      "org.webjars.npm" % "react-redux" % "5.0.5",
-      "org.webjars.npm" % "redux-thunk" % "2.2.0",
-      "org.webjars.npm" % "dom-helpers" % "3.2.1",
-      "org.webjars.npm" % "react-virtualized" % "9.12.0",
-      "org.webjars.npm" % "prop-types" % "15.5.10",
-      "org.webjars.npm" % "react-measure" % "0.4.2",
       guice,
       ehcache, // play cache external module
       ws
