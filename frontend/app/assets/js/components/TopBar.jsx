@@ -1,7 +1,6 @@
 import React from "react";
 import {tag} from "../utils";
-import {changeFilter} from "../store";
-import {fetchDataFromServer} from "../react-script";
+import {changeFilter, fetchDataFromServer} from "../store";
 import {connect} from "react-redux";
 import {EVENT_ANY, EVENT_FOUND, EVENT_LOST} from "../constants";
 

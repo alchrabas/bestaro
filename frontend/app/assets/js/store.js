@@ -40,6 +40,25 @@ export const updateMapBounds = (northEast, southWest) => {
     };
 };
 
+
+export const fetchDataFromServer = () => {
+    return (dispatch, getState) => {
+        console.log("FETCHING DATA FROM SERVER");
+        const boundsNE = getState().map.northEast;
+        const boundsSW = getState().map.southWest;
+        const filters = getState().filters;
+        fetch(`/rest/${boundsSW.lat()}/${boundsSW.lng()}/${boundsNE.lat()}/${boundsNE.lng()}/`
+            + `${filters.dateFrom}/${filters.dateTo}/${filters.eventType}`)
+            .then(response => response.json())
+            .then(data =>
+                dispatch(updateRecords(data))
+            ).catch(e => {
+            console.log("Error when trying to fetch data", e);
+        });
+    };
+};
+
+
 const filterReducer = (state = {
     "dateFrom": null,
     "dateTo": null,
