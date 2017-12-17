@@ -18,7 +18,11 @@ let SidebarWithDetails = ({record, moveBack}) => {
         <div className="pure-u-1"/>
         <img className="fullPicturePreview" src={"pictures/" + record.picture}/>
         <div className="pure-u-1">
-            <a className="pure-button" href={record.link}> {Messages("details.link")}</a>
+            <a
+                className="pure-button"
+                href={record.link}
+                target="_blank"
+            > {Messages("details.link")}</a>
         </div>
         <div className="pure-u-1">
             <button className="pure-button" onClick={moveBack}> GO BACK</button>
@@ -65,27 +69,33 @@ const SidebarWelcomePageContainer = connect(state => {
 const SidebarWithRecords = ({records, onClick}) => {
     return <AutoSizer>
         {({width, height}) => {
-            const columnsCount = smartColumnCount(width);
-            const columnWidth = smartColumnWidth(width);
+            const workingWidth = width - scrollbarSize();
+            const columnsCount = smartColumnCount(workingWidth);
+            const columnWidth = smartColumnWidth(workingWidth);
             const cellRenderer = ({columnIndex, key, rowIndex, style}) => {
                 if (rowIndex * columnsCount + columnIndex < records.length) {
                     const record = records[rowIndex * columnsCount + columnIndex];
                     return <div
                         key={key}
                         style={Object.assign({}, {
-                            textAlign: "center",
+                            position: "relative",
                         }, style)}
                     >
                         <img
                             style={{
                                 width: `${columnWidth - 8}px`,
                                 height: `${columnWidth - 8}px`,
+                                position: "relative",
+                                top: "4px",
+                                left: "4px",
                             }}
-                            className={record.eventType === EVENT_LOST
-                                ? "animal-marker-status-lost"
-                                : "animal-marker-status-found"}
+                            className="animal-image"
                             src={"pictures_min/" + record.picture}
                             onClick={() => onClick(record.id)}
+                        />
+                        <div className={record.eventType === EVENT_LOST
+                            ? "animal-image-status-lost"
+                            : "animal-image-status-found"}
                         />
                     </div>;
                 } else {
@@ -105,12 +115,12 @@ const SidebarWithRecords = ({records, onClick}) => {
     </AutoSizer>;
 };
 
-const smartColumnWidth = (width) => {
-    return (width - scrollbarSize()) / smartColumnCount(width);
+const smartColumnWidth = (workingWidth) => {
+    return workingWidth / smartColumnCount(workingWidth);
 };
 
-const smartColumnCount = (width) => {
-    return Math.floor((width - scrollbarSize()) / 150);
+const smartColumnCount = (workingWidth) => {
+    return Math.max(1, Math.floor(workingWidth / 150));
 };
 
 
@@ -138,11 +148,7 @@ const Sidebar = ({selectedRecord, listRow}) => {
         }
     };
 
-    return <div
-        style={{height: "100%"}}
-        className="sidebar-content">
-        {sidebarContents(selectedRecord)}
-    </div>;
+    return sidebarContents(selectedRecord);
 };
 
 const SidebarContainer = connect(state => {

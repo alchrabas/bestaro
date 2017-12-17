@@ -31,16 +31,26 @@ html, body {
   flex: 1 5 auto;
 }
 
-.animal-marker {
+.animal-image {
   cursor: pointer;
 }
 
-.animal-marker-status-lost {
-  border: 2px solid rgba(255, 0, 0, 0.3);
+@mixin animal-image-status {
+  width: 15px;
+  height: 15px;
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
 }
 
-.animal-marker-status-found {
-  border: 2px solid rgba(0, 255, 0, 0.3);
+.animal-image-status-lost {
+  @include animal-image-status;
+  background-color: red;
+}
+
+.animal-image-status-found {
+  @include animal-image-status;
+  background-color: lawngreen;
 }
 
 .fullPicturePreview {
@@ -58,18 +68,8 @@ html, body {
   bottom: 0;
 }
 
-@media only screen and (max-width: 480px) {
-  .pure-form label, .pure-form input {
-    display: inline !important;
-  }
-
-  .sidebar {
-    flex: 0 0 90%;
-  }
-}
-
 #hide-sidebar {
-  float:right;
+  float: right;
 }
 
 #show-sidebar {
