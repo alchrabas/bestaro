@@ -1,80 +1,156 @@
 import {formatDate} from "../utils";
-import {tag} from "../utils";
 import {connect} from "react-redux";
-import {Grid} from "react-virtualized";
+import {AutoSizer, Grid} from "react-virtualized";
+import React from "react";
+import {EVENT_LOST} from "../constants";
+import scrollbarSize from "scrollbar-size";
+import {scrollList, selectRecord} from "../store";
 
-let SideBarWithDetails = ({record}) => {
-    return tag("div", {className: "pure-g"}, [
-        tag("div", {className: "pure-u-1-2"}, Messages("details.event_date")),
-        tag("div", {className: "pure-u-1-2"}, formatDate(record.eventDate)),
-        tag("div", {className: "pure-u-1-2"}, Messages("details.post_date")),
-        tag("div", {className: "pure-u-1-2"}, formatDate(record.publishDate)),
-        tag("div", {className: "pure-u-1-2"}, Messages("details.event_type")),
-        tag("div", {className: "pure-u-1-2"}, Messages("event_type." + record.eventType)),
-        tag("div", {className: "pure-u-1"}, Messages("details.picture")),
-        tag("div", {className: "pure-u-1"}, [
-                tag("img", {className: "fullPicturePreview", src: "pictures/" + record.picture}),
-                tag("div", {className: "pure-u-1"},
-                    tag("a", {href: record.link}, Messages("details.link"))
-                )
-            ]
-        )
-    ]);
+let SidebarWithDetails = ({record, moveBack}) => {
+    return <div className="pure-g">
+        <div className="pure-u-1-2"> {Messages("details.event_date")} </div>
+        <div className="pure-u-1-2"> {formatDate(record.eventDate)} </div>
+        <div className="pure-u-1-2"> {Messages("details.post_date")} </div>
+        <div className="pure-u-1-2"> {formatDate(record.publishDate)} </div>
+        <div className="pure-u-1-2"> {Messages("details.event_type")} </div>
+        <div className="pure-u-1-2"> {Messages("event_type." + record.eventType)} </div>
+        <div className="pure-u-1"> {Messages("details.picture")} </div>
+        <div className="pure-u-1"/>
+        <img className="fullPicturePreview" src={"pictures/" + record.picture}/>
+        <div className="pure-u-1">
+            <a className="pure-button" href={record.link}> {Messages("details.link")}</a>
+        </div>
+        <div className="pure-u-1">
+            <button className="pure-button" onClick={moveBack}> GO BACK</button>
+        </div>
+    </div>;
 };
 
-let SidebarWelcomePage = () => {
+const SidebarWithDetailsContainer = connect((state, ownProps) => {
+        return {
+            record: ownProps.record,
+        }
+    },
+    dispatch => {
+        return {
+            moveBack: () => dispatch(selectRecord(null)),
+        }
+    }
+)(SidebarWithDetails);
+
+const SidebarWelcomePage = ({goToList}) => {
     return [
-        tag("div", {
-            key: "text",
-            dangerouslySetInnerHTML: {__html: Messages("welcome_text")},
-        }),
-        tag("div", {
-            key: "credits",
-            className: "credits",
-            dangerouslySetInnerHTML: {__html: Messages("credits")},
-        }),
+        <div key="text"
+             dangerouslySetInnerHTML={{__html: Messages("welcome_text")}}/>,
+        <div key="credits"
+             className="credits"
+             dangerouslySetInnerHTML={{__html: Messages("credits")}}/>,
+        <button
+            key="goToList "
+            className="pure-button"
+            onClick={goToList}>To list</button>
     ];
 };
 
-const SidebarWithRecords = /*Measure.withContentRect('bounds')*/(({records}) => {
-    const cellRenderer = ({columnIndex, key, rowIndex, style}) => {
-        if (rowIndex * 7 + columnIndex < records.length) {
-            return tag("div", {
-                key: key,
-                style: style,
-            }, [
-                tag("img", {src: "pictures_min/" + records[rowIndex * 7 + columnIndex].picture})
-            ]);
-        } else {
-            return null;
-        }
-    };
+const SidebarWelcomePageContainer = connect(state => {
+        return {};
+    },
+    dispatch => {
+        return {
+            goToList: () => dispatch(scrollList(0)),
+        };
+    })(SidebarWelcomePage);
 
-    return tag(Grid, {
-        cellRenderer: cellRenderer,
-        columnCount: 7,
-        columnWidth: 100,
-        height: 900,
-        rowCount: Math.ceil(records.length / 7),
-        rowHeight: 100,
-        width: 750,
-    });
-});
 
-const SidebarWithRecordsContainer = connect(state => {
-    return {records: state.records};
-})(SidebarWithRecords);
+const SidebarWithRecords = ({records, onClick}) => {
+    return <AutoSizer>
+        {({width, height}) => {
+            const columnsCount = smartColumnCount(width);
+            const columnWidth = smartColumnWidth(width);
+            const cellRenderer = ({columnIndex, key, rowIndex, style}) => {
+                if (rowIndex * columnsCount + columnIndex < records.length) {
+                    const record = records[rowIndex * columnsCount + columnIndex];
+                    return <div
+                        key={key}
+                        style={Object.assign({}, {
+                            textAlign: "center",
+                        }, style)}
+                    >
+                        <img
+                            style={{
+                                width: `${columnWidth - 8}px`,
+                                height: `${columnWidth - 8}px`,
+                            }}
+                            className={record.eventType === EVENT_LOST
+                                ? "animal-marker-status-lost"
+                                : "animal-marker-status-found"}
+                            src={"pictures_min/" + record.picture}
+                            onClick={() => onClick(record.id)}
+                        />
+                    </div>;
+                } else {
+                    return null;
+                }
+            };
 
-const Sidebar = ({selectedRecord}) => {
-    const sidebarContents = (record) => {
-        if (record) {
-            return tag(SideBarWithDetails, {record: record});
-        } else {
-            return tag(SidebarWithRecordsContainer, {});
-        }
-    };
-
-    return tag("div", {className: "sidebar-content"}, sidebarContents(selectedRecord));
+            return <Grid
+                cellRenderer={cellRenderer}
+                columnCount={columnsCount}
+                columnWidth={columnWidth}
+                height={height}
+                rowCount={Math.ceil(records.length / columnsCount)}
+                rowHeight={columnWidth}
+                width={width}/>;
+        }}
+    </AutoSizer>;
 };
 
-export default Sidebar;
+const smartColumnWidth = (width) => {
+    return (width - scrollbarSize()) / smartColumnCount(width);
+};
+
+const smartColumnCount = (width) => {
+    return Math.floor((width - scrollbarSize()) / 150);
+};
+
+
+const SidebarWithRecordsContainer = connect(state => {
+        return {
+            records: state.records,
+        };
+    },
+    dispatch => {
+        return {
+            onClick: recordId => dispatch(selectRecord(recordId)),
+        };
+    })(SidebarWithRecords);
+
+const Sidebar = ({selectedRecord, listRow}) => {
+    const sidebarContents = (record) => {
+        if (record) {
+            return <SidebarWithDetailsContainer record={record}/>;
+        } else if (listRow !== null) {
+            return <SidebarWithRecordsContainer
+                listRow={listRow}
+            />;
+        } else {
+            return <SidebarWelcomePageContainer/>;
+        }
+    };
+
+    return <div
+        style={{height: "100%"}}
+        className="sidebar-content">
+        {sidebarContents(selectedRecord)}
+    </div>;
+};
+
+const SidebarContainer = connect(state => {
+        return {
+            selectedRecord: state.ui.selectedRecord,
+            listRow: state.ui.listRow,
+        };
+    }
+)(Sidebar);
+
+export default SidebarContainer;

@@ -8,6 +8,7 @@ export const CHANGE_FILTER = "CHANGE_FILTER";
 export const UPDATE_RECORDS = "UPDATE_RECORDS";
 export const SELECT_RECORD = "SELECT_RECORD";
 export const UPDATE_MAP_BOUNDS = "UPDATE_MAP_BOUNDS";
+export const SCROLL_LIST = "SCROLL_LIST";
 
 export const changeFilter = (dateFrom, dateTo, eventType) => {
     return {
@@ -86,12 +87,26 @@ const recordsReducer = (state = [], action) => {
     }
 };
 
-const uiReducer = (state = {selectedRecord: null}, action) => {
+export const scrollList = (rowNumber) => {
+    return {
+        type: SCROLL_LIST,
+        listRow: rowNumber,
+    };
+};
+
+const uiReducer = (state = {
+    selectedRecord: null,
+    listRow: null
+}, action) => {
     switch (action.type) {
         case SELECT_RECORD:
-            return {
+            return Object.assign({}, {
                 selectedRecord: action.selectedRecord,
-            };
+            });
+        case SCROLL_LIST:
+            return Object.assign({}, {
+                listRow: action.listRow,
+            });
         default:
             return state;
     }
