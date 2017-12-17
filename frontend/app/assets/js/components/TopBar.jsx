@@ -65,41 +65,40 @@ class TopBar extends React.Component {
     }
 
     render() {
-        return tag("div", {className: "row top-bar header"}, [
-            tag("form", {
-                className: "pure-form",
-                onSubmit: this.handleSubmit,
-            }, [
-                tag("label", {}, [Messages("date_from.label"),
-                    tag("input", {
-                        name: "date-from",
-                        id: "date-from",
-                        type: "date",
-                        onChange: this.handleChangeDateFrom,
-                        value: this.state.dateFrom,
-                    })
-                ]),
-                tag("label", {}, [Messages("date_to.label"),
-                    tag("input", {
-                        name: "date-to",
-                        id: "date-to",
-                        type: "date",
-                        onChange: this.handleChangeDateTo,
-                        value: this.state.dateTo,
-                    })
-                ]),
-                tag("label", {}, Messages("event_type.label")),
-                tag("select", {name: "event-type", id: "event-type", onChange: this.handleChangeEventType}, [
-                    tag("option", {value: EVENT_ANY}, Messages("event_type.ANY")),
-                    tag("option", {value: EVENT_LOST}, Messages("event_type.LOST")),
-                    tag("option", {value: EVENT_FOUND}, Messages("event_type.FOUND")),
-                ]),
-                tag("button", {
-                    id: "filter-button",
-                    className: "pure-button pure-button-primary"
-                }, Messages("filter_button"))
-            ])
-        ]);
+        return <div className="row top-bar header">
+            <form
+                className="pure-form"
+                onSubmit={this.handleSubmit}>
+                <label>{Messages("date_from.label")}
+                    <input
+                        name="date-from"
+                        id="date-from"
+                        type="date"
+                        onChange={this.handleChangeDateFrom}
+                        value={this.state.dateFrom}/>
+                </label>
+                <label>{Messages("date_to.label")}
+                    <input
+                        name="date-to"
+                        id="date-to"
+                        type="date"
+                        onChange={this.handleChangeDateTo}
+                        value={this.state.dateTo}/>
+                </label>
+                <label>{Messages("event_type.label")}
+                    <select name="event-type" id="event-type" onChange={this.handleChangeEventType}>
+                        <option value={EVENT_ANY}>{Messages("event_type.ANY")}</option>
+                        <option value={EVENT_LOST}>{Messages("event_type.LOST")}</option>
+                        <option value={EVENT_FOUND}>{Messages("event_type.FOUND")}</option>
+                    </select>
+                </label>
+                <button
+                    id="filter-button"
+                    className="pure-button pure-button-primary">
+                    {Messages("filter_button")}
+                </button>
+            </form>
+        </div>;
     }
 }
 
