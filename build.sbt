@@ -21,13 +21,6 @@ import sbt._
 import sbt.Keys._
 
 
-lazy val model = Project(
-  "model", file("model"), settings = commonSettings).settings(
-  libraryDependencies ++= Seq(
-    ehcache
-  )
-)
-
 // webpack below
 val webpack = taskKey[Seq[File]]("Webpack source file task")
 
@@ -85,7 +78,7 @@ lazy val backend = project
   )
 
 lazy val frontend = project
-  .dependsOn(common, model)
+  .dependsOn(common)
   .enablePlugins(PlayScala, SbtWeb)
   .settings(
     commonSettings,
@@ -107,8 +100,8 @@ lazy val frontend = project
       ehcache, // play cache external module
       ws
     ),
-    includeFilter in filter := "*.less" || "*.jsx",
-    pipelineStages := Seq(filter, uglify, digest, gzip),
+    includeFilter in filter := "*.scss" || "*.jsx",
+    pipelineStages := Seq(filter, digest, gzip),
     WebKeys.exportedMappings in Assets := Seq(),
     JsEngineKeys.engineType := JsEngineKeys.EngineType.Node,
     PlayKeys.devSettings := Seq("play.server.http.port" -> "8888"),
