@@ -2,19 +2,19 @@ package bestaro.backend.core
 
 import java.util.Date
 
-import bestaro.backend.{AppConfig, DataSupplier}
 import bestaro.backend.collectors.util.SlowHttpDownloader
 import bestaro.backend.collectors.{FacebookCollector, OlxCollector}
-import bestaro.common.types.RecordId
 import bestaro.backend.core.processors.{LocationStringProcessor, PlaintextProcessor}
 import bestaro.backend.database.DatabaseWrapper
 import bestaro.backend.database.DatabaseWrapper.CacheEfficiencyRecord
 import bestaro.backend.helpers.TaggedRecordsManager
 import bestaro.backend.helpers.TaggedRecordsManager.TaggedRecord
+import bestaro.backend.{AppConfig, DataSupplier}
+import bestaro.common.types.RecordId
 import bestaro.locator.LocatorDatabase
 
-import scala.concurrent.{Await, Future}
 import scala.concurrent.duration.Duration
+import scala.concurrent.{Await, Future}
 
 object Main {
 
@@ -23,7 +23,7 @@ object Main {
   val PROCESS = "PROCESS"
   val SEND = "SEND"
 
-  val OPTION = FB
+  val OPTION = SEND
 
   def main(args: Array[String]): Unit = {
 
@@ -73,15 +73,12 @@ object Main {
         import scala.concurrent.ExecutionContext.Implicits.global
 
         val dataSupplier = new DataSupplier
-        val allTheFutures = DatabaseWrapper.allNotSentProcessedRecords
-          .flatMap { record =>
-            Seq(
-              dataSupplier.sendRecord(record),
-              DatabaseWrapper.markRecordAsSent(record)
-            )
+        // synchronous
+        DatabaseWrapper.allNotSentProcessedRecords
+          .map { record =>
+            Await.result(dataSupplier.sendRecord(record)
+              .flatMap(_ => DatabaseWrapper.markRecordAsSent(record)), Duration.Inf)
           }
-
-        Await.result(Future.sequence(allTheFutures), Duration.Inf)
     }
   }
 

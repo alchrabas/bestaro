@@ -2,7 +2,6 @@ package bestaro.backend
 
 
 import java.io._
-import java.net.{HttpURLConnection, URL}
 import java.nio.charset.StandardCharsets
 import java.nio.file.{Files, Paths}
 import javax.imageio.ImageIO
@@ -35,7 +34,16 @@ class DataSupplier {
 
   private def minifiedImageBytes(pictureName: String): Array[Byte] = {
     val bufferedImage = ImageIO.read(new File("pictures/" + pictureName))
-    val resizedImage = ImageResizer.createResizedCopy(bufferedImage, 100, 100, preserveAlpha = true)
+    val width = bufferedImage.getWidth
+    val height = bufferedImage.getHeight()
+
+    val biggerDimension = 200
+    val rescale = (value: Int) => (value / (Math.max(width, height) * (1.0 / biggerDimension))).intValue()
+    val resizedImage = ImageResizer.createResizedCopy(
+      bufferedImage,
+      rescale(width),
+      rescale(height),
+      preserveAlpha = true)
     val byteOutputStream = new ByteArrayOutputStream()
     ImageIO.write(resizedImage, "png", byteOutputStream)
     byteOutputStream.toByteArray
