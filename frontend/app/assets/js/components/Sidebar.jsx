@@ -66,54 +66,74 @@ const SidebarWelcomePageContainer = connect(state => {
     })(SidebarWelcomePage);
 
 
-const SidebarWithRecords = ({records, onClick}) => {
-    return <AutoSizer>
-        {({width, height}) => {
-            const workingWidth = width - scrollbarSize();
-            const columnsCount = smartColumnCount(workingWidth);
-            const columnWidth = smartColumnWidth(workingWidth);
-            const cellRenderer = ({columnIndex, key, rowIndex, style}) => {
-                if (rowIndex * columnsCount + columnIndex < records.length) {
-                    const record = records[rowIndex * columnsCount + columnIndex];
-                    return <div
-                        key={key}
-                        style={Object.assign({}, {
-                            position: "relative",
-                        }, style)}
-                    >
-                        <img
-                            style={{
-                                width: `${columnWidth - 8}px`,
-                                height: `${columnWidth - 8}px`,
-                                position: "relative",
-                                top: "4px",
-                                left: "4px",
-                            }}
-                            className="animal-image"
-                            src={"pictures_min/" + record.picture}
-                            onClick={() => onClick(record.id)}
-                        />
-                        <div className={record.eventType === EVENT_LOST
-                            ? "animal-image-status-lost"
-                            : "animal-image-status-found"}
-                        />
-                    </div>;
-                } else {
-                    return null;
-                }
-            };
+class SidebarWithRecords extends React.Component {
 
-            return <Grid
-                cellRenderer={cellRenderer}
-                columnCount={columnsCount}
-                columnWidth={columnWidth}
-                height={height}
-                rowCount={Math.ceil(records.length / columnsCount)}
-                rowHeight={columnWidth}
-                width={width}/>;
-        }}
-    </AutoSizer>;
-};
+    constructor(props) {
+        super(props);
+    }
+
+    // componentDidMount() {
+    //     console.log(this.lalaRef);
+    //     this.lalaRef.scrollToPosition(0, 100);
+    // }
+
+    render() {
+        const {records, onClick, onListScroll} = this.props;
+        const onScroll = ({scrollTop}) => {
+            onListScroll(scrollTop);
+        };
+
+        return <AutoSizer>
+            {({width, height}) => {
+                const workingWidth = width - scrollbarSize();
+                const columnsCount = smartColumnCount(workingWidth);
+                const columnWidth = smartColumnWidth(workingWidth);
+                const cellRenderer = ({columnIndex, key, rowIndex, style}) => {
+                    if (rowIndex * columnsCount + columnIndex < records.length) {
+                        const record = records[rowIndex * columnsCount + columnIndex];
+                        return <div
+                            key={key}
+                            style={Object.assign({}, {
+                                position: "relative",
+                            }, style)}
+                        >
+                            <img
+                                style={{
+                                    width: `${columnWidth - 8}px`,
+                                    height: `${columnWidth - 8}px`,
+                                    position: "relative",
+                                    top: "4px",
+                                    left: "4px",
+                                }}
+                                className="animal-image"
+                                src={"pictures_min/" + record.picture}
+                                onClick={() => onClick(record.id)}
+                            />
+                            <div className={record.eventType === EVENT_LOST
+                                ? "animal-image-status-lost"
+                                : "animal-image-status-found"}
+                            />
+                        </div>;
+                    } else {
+                        return null;
+                    }
+                };
+
+                return <Grid
+                    ref={a => this.lalaRef = a}
+                    cellRenderer={cellRenderer}
+                    onScroll={onScroll}
+                    columnCount={columnsCount}
+                    columnWidth={columnWidth}
+                    height={height}
+                    rowCount={Math.ceil(records.length / columnsCount)}
+                    rowHeight={columnWidth}
+                    width={width}/>;
+            }}
+        </AutoSizer>;
+    };
+}
+
 
 const smartColumnWidth = (workingWidth) => {
     return workingWidth / smartColumnCount(workingWidth);
@@ -132,6 +152,7 @@ const SidebarWithRecordsContainer = connect(state => {
     dispatch => {
         return {
             onClick: recordId => dispatch(selectRecord(recordId)),
+            onListScroll: topScrolling => dispatch(scrollList(topScrolling)),
         };
     })(SidebarWithRecords);
 

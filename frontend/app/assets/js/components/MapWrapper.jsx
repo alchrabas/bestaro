@@ -15,7 +15,7 @@ const iconPathForEventType = (eventType) => {
     return "/assets/images/" + iconByEventType[eventType];
 };
 
-class MyMapComponent extends React.Component {
+class MapWrapper extends React.Component {
 
     constructor(props) {
         super(props);
@@ -51,7 +51,11 @@ class MyMapComponent extends React.Component {
             }}
             flat={true}
             record={record}
-            icon={iconPathForEventType(record.eventType)}
+            icon={
+                (this.props.selectedRecord && this.props.selectedRecord.id === record.id)
+                    ? "/assets/images/blue-pin.png"
+                    : iconPathForEventType(record.eventType)
+            }
             onClick={() => this.onClickMarker(record)}
             key={"record_" + record.id}
         />;
@@ -63,18 +67,21 @@ class MyMapComponent extends React.Component {
 
 }
 
-const GoogleMapComponent = withScriptjs(withGoogleMap(MyMapComponent));
+const GoogleMapComponent = withScriptjs(withGoogleMap(MapWrapper));
 
 
-const GoogleMapContainer = connect(state => {
+const mapStateToProps = state => {
     return {
         records: state.records,
         googleMapURL: "https://maps.googleapis.com/maps/api/js?key=" + googleApiKey,
         loadingElement: <div style={{height: `100%`}}/>,
         containerElement: <div style={{width: "100%"}}/>,
         mapElement: <div style={{height: `100%`, width: "100%"}}/>,
+        selectedRecord: state.ui.selectedRecord,
     };
-}, dispatch => {
+};
+
+const mapDispatchToProps = dispatch => {
     return {
         selectRecord: recordId => {
             dispatch(selectRecord(recordId));
@@ -86,6 +93,11 @@ const GoogleMapContainer = connect(state => {
             ));
         },
     }
-})(GoogleMapComponent);
+};
+
+const GoogleMapContainer = connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(GoogleMapComponent);
 
 export default GoogleMapContainer;

@@ -1,5 +1,5 @@
 import React from "react";
-import {tag} from "../utils";
+import {dateToString, daysRelativeToNow, tag} from "../utils";
 import {changeFilter, fetchDataFromServer} from "../store";
 import {connect} from "react-redux";
 import {EVENT_ANY, EVENT_FOUND, EVENT_LOST} from "../constants";
@@ -9,94 +9,102 @@ class TopBar extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = TopBar.propsToState(props);
+        this.state = {
+            rangeType: "lastWeek",
+        };
 
         this.handleChangeDateFrom = this.handleChangeDateFrom.bind(this);
         this.handleChangeDateTo = this.handleChangeDateTo.bind(this);
-        this.handleChangeEventType = this.handleChangeEventType.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
-    }
-
-    componentWillReceiveProps(nextProps) {
-        this.setState(TopBar.propsToState(nextProps));
-    }
-
-    static propsToState(props) {
-        return {
-            dateFrom: props.filters.dateFrom || '',
-            dateTo: props.filters.dateTo || '',
-            eventType: props.filters.eventType || '',
-        }
-    }
-
-    handleSubmit(event) {
-        event.preventDefault();
-        if (TopBar.isDateStrValid(this.state.dateFrom) && TopBar.isDateStrValid(this.state.dateTo)) {
-            this.props.updateFilters(this.state);
-        }
+        this.handleUpdateDateRange = this.handleUpdateDateRange.bind(this);
+        this.forceUpdateRangeFromInputs = this.forceUpdateRangeFromInputs.bind(this);
     }
 
     static isDateStrValid(date) {
-        return date !== "";
+        return !!date;
     }
 
     handleChangeDateFrom(event) {
         this.setState({
+            rangeType: "custom",
             dateFrom: event.target.value,
             dateTo: this.state.dateTo,
-            eventType: this.state.eventType,
-        });
+        }, this.forceUpdateRangeFromInputs);
     }
 
     handleChangeDateTo(event) {
         this.setState({
+            rangeType: "custom",
             dateFrom: this.state.dateFrom,
             dateTo: event.target.value,
-            eventType: this.state.eventType,
-        });
+        }, this.forceUpdateRangeFromInputs);
     }
 
-    handleChangeEventType(event) {
-        this.state = {
-            dateFrom: this.state.dateFrom,
-            dateTo: this.state.dateTo,
-            eventType: event.target.value,
+    forceUpdateRangeFromInputs() {
+        if (TopBar.isDateStrValid(this.state.dateFrom) && TopBar.isDateStrValid(this.state.dateTo)) {
+            this.props.updateFilters(this.state.dateFrom, this.state.dateTo, EVENT_ANY);
         }
     }
+
+    handleUpdateDateRange(event) {
+        const value = event.target.value;
+
+        const rangeTypeToBeginDate = {
+            lastWeek: daysRelativeToNow(-7),
+            last2Weeks: daysRelativeToNow(-14),
+            lastMonth: daysRelativeToNow(-31),
+            last3Months: daysRelativeToNow(-92),
+            lastYear: daysRelativeToNow(-366),
+        };
+
+        if (value in rangeTypeToBeginDate) {
+            this.setState({
+                rangeType: value,
+            });
+            this.props.updateFilters(
+                dateToString(rangeTypeToBeginDate[value]),
+                dateToString(new Date()),
+                EVENT_ANY);
+        } else {
+            this.setState(Object.assign({}, this.state, {
+                rangeType: value,
+            }));
+        }
+    };
 
     render() {
         return <div className="row top-bar header">
             <form
-                className="pure-form"
-                onSubmit={this.handleSubmit}>
-                <label>{Messages("date_from.label")}
-                    <input
-                        name="date-from"
-                        id="date-from"
-                        type="date"
-                        onChange={this.handleChangeDateFrom}
-                        value={this.state.dateFrom}/>
-                </label>
-                <label>{Messages("date_to.label")}
-                    <input
-                        name="date-to"
-                        id="date-to"
-                        type="date"
-                        onChange={this.handleChangeDateTo}
-                        value={this.state.dateTo}/>
-                </label>
-                <label>{Messages("event_type.label")}
-                    <select name="event-type" id="event-type" onChange={this.handleChangeEventType}>
-                        <option value={EVENT_ANY}>{Messages("event_type.ANY")}</option>
-                        <option value={EVENT_LOST}>{Messages("event_type.LOST")}</option>
-                        <option value={EVENT_FOUND}>{Messages("event_type.FOUND")}</option>
+                className="pure-form">
+                <label>
+                    <select name="date-range"
+                            id="date-range"
+                            value={this.state.rangeType}
+                            onChange={this.handleUpdateDateRange}>
+                        <option value="lastWeek">Ostatni tydzień</option>
+                        <option value="last2Weeks">Ostatnie 2 tygodnie</option>
+                        <option value="lastMonth">Ostatni miesiąc</option>
+                        <option value="last3Months">Ostatnie 3 miesiące</option>
+                        <option value="lastYear">Ostatni rok</option>
+                        <option value="custom">Niestandardowe...</option>
                     </select>
                 </label>
-                <button
-                    id="filter-button"
-                    className="pure-button pure-button-primary">
-                    {Messages("filter_button")}
-                </button>
+                {this.state.rangeType === "custom" && [
+                    <label key="dateFrom">Przedział dat:
+                        <input
+                            name="date-from"
+                            id="date-from"
+                            type="date"
+                            onChange={this.handleChangeDateFrom}
+                            value={this.state.dateFrom || ""}/>
+                    </label>,
+                    <label key="dateTo">
+                        <input
+                            name="date-to"
+                            id="date-to"
+                            type="date"
+                            onChange={this.handleChangeDateTo}
+                            value={this.state.dateTo || ""}/>
+                    </label>]}
             </form>
         </div>;
     }
@@ -105,11 +113,11 @@ class TopBar extends React.Component {
 let TopBarContainer = ({dispatch, filters}) => {
     return tag(TopBar, {
         filters: filters,
-        updateFilters: filters => {
+        updateFilters: (dateFrom, dateTo, eventType) => {
             dispatch(changeFilter(
-                filters.dateFrom,
-                filters.dateTo,
-                filters.eventType
+                dateFrom,
+                dateTo,
+                eventType
             ));
             dispatch(fetchDataFromServer());
         }
