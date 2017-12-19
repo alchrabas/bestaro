@@ -28,24 +28,23 @@ class DatabaseTypes @Inject()(
     db.run(records.insertOrUpdate(record))
   }
 
-  def allRecordsInRange(minLat: Double, minLon: Double, maxLat: Double, maxLon: Double,
-                        filterCriteria: FilterCriteria): Future[Seq[Record]] = {
-    val poly = geometryFactory.createPolygon(
-      Array(
-        new Coordinate(minLat, minLon),
-        new Coordinate(maxLat, minLon),
-        new Coordinate(maxLat, maxLon),
-        new Coordinate(minLat, maxLon),
-        new Coordinate(minLat, minLon)
-      ))
+  def allRecordsInRange(centerLat: Double, centerLon: Double,
+                        filterCriteria: FilterCriteria,
+                        limit: Int): Future[Seq[(Record, Option[Float])]] = {
+
+    val centerPoint = geometryFactory.createPoint(
+      new Coordinate(centerLat, centerLon))
 
     db.run(records
-      .filter(_.coordinates.within(poly))
       .filter(_.pictures.arrayLength > 0)
       .filter(r =>
         (r.eventDate >= filterCriteria.dateFrom && r.eventDate <= filterCriteria.dateTo) ||
           (r.postDate >= filterCriteria.dateFrom && r.postDate <= filterCriteria.dateTo))
       .filter(_.eventType === filterCriteria.eventType || filterCriteria.eventType.isEmpty)
+      .filter(_.coordinates.nonEmpty)
+      .map(r => (r, r.coordinates.distanceSphere(centerPoint)))
+      .sortBy(_._2)
+      .take(limit)
       .result)
   }
 

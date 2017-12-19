@@ -1,7 +1,7 @@
 import React from "react";
 import {GoogleMap, Marker, withGoogleMap, withScriptjs} from "react-google-maps";
 import {googleApiKey} from "../context";
-import {selectRecord, updateMapBounds} from "../store";
+import {selectRecord, updateMapCenter} from "../store";
 import {connect} from "react-redux";
 import {EVENT_LOST, EVENT_FOUND} from "../constants";
 
@@ -23,10 +23,32 @@ class MapWrapper extends React.Component {
         this.onClickMarker = this.onClickMarker.bind(this);
         this.handleBoundsChanged = this.handleBoundsChanged.bind(this);
         this.createMarker = this.createMarker.bind(this);
+        this.getBounds = this.getBounds.bind(this);
+    }
+
+    getBounds() {
+        if (this.mapRef) {
+            return {
+                northEast: this.mapRef.getBounds().getNorthEast(),
+                southWest: this.mapRef.getBounds().getSouthWest(),
+            }
+        } else {
+            return {
+                northEast: {lat: 0, lng: 0},
+                southWest: {lat: 0, lng: 0},
+            };
+        }
     }
 
     render() {
         const records = this.props.records;
+
+        const {northEast, southWest} = this.getBounds();
+        const markersToPresent = records
+            .filter(record => MapWrapper.pointBetween(
+                record.lat, record.lng,
+                northEast, southWest))
+            .map(this.createMarker);
 
         return <GoogleMap
             ref={ref => this.mapRef = ref}
@@ -35,19 +57,26 @@ class MapWrapper extends React.Component {
             onBoundsChanged={this.handleBoundsChanged}
             options={{gestureHandling: 'greedy'}}
         >
-            {records.map(this.createMarker)}
+            {markersToPresent}
         </GoogleMap>;
     }
 
+    static pointBetween(point, northEast, southWest) {
+        const latInBounds = point.lat <= northEast.lat() && point.lat >= southWest.lat();
+        const lngInBounds = point.lng <= northEast.lng() && point.lng >= southWest.lng();
+
+        return latInBounds && lngInBounds;
+    }
+
     handleBoundsChanged() {
-        this.props.onBoundsChanged(this.mapRef.getBounds());
+        this.props.onCenterChanged(this.mapRef.getCenter().lat(), this.mapRef.getCenter().lng());
     }
 
     createMarker(record) {
         return <Marker
             position={{
                 lat: parseFloat(record.lat),
-                lng: parseFloat(record.lon)
+                lng: parseFloat(record.lng)
             }}
             flat={true}
             record={record}
@@ -86,11 +115,8 @@ const mapDispatchToProps = dispatch => {
         selectRecord: recordId => {
             dispatch(selectRecord(recordId));
         },
-        onBoundsChanged: bounds => {
-            dispatch(updateMapBounds(
-                bounds.getNorthEast(),
-                bounds.getSouthWest()
-            ));
+        onCenterChanged: (lat, lng) => {
+            dispatch(updateMapCenter({lat, lng}));
         },
     }
 };

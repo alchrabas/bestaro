@@ -82,6 +82,7 @@ class SidebarWithRecords extends React.Component {
         const onScroll = ({scrollTop}) => {
             onListScroll(scrollTop);
         };
+        const sortedRecords = records.concat().sort((a, b) => a.distance - b.distance);
 
         return <AutoSizer>
             {({width, height}) => {
@@ -89,8 +90,8 @@ class SidebarWithRecords extends React.Component {
                 const columnsCount = smartColumnCount(workingWidth);
                 const columnWidth = smartColumnWidth(workingWidth);
                 const cellRenderer = ({columnIndex, key, rowIndex, style}) => {
-                    if (rowIndex * columnsCount + columnIndex < records.length) {
-                        const record = records[rowIndex * columnsCount + columnIndex];
+                    if (rowIndex * columnsCount + columnIndex < sortedRecords.length) {
+                        const record = sortedRecords[rowIndex * columnsCount + columnIndex];
                         return <div
                             key={key}
                             style={Object.assign({}, {
@@ -126,7 +127,7 @@ class SidebarWithRecords extends React.Component {
                     columnCount={columnsCount}
                     columnWidth={columnWidth}
                     height={height}
-                    rowCount={Math.ceil(records.length / columnsCount)}
+                    rowCount={Math.ceil(sortedRecords.length / columnsCount)}
                     rowHeight={columnWidth}
                     width={width}/>;
             }}

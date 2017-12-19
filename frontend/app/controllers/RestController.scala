@@ -21,12 +21,12 @@ class RestController @Inject()(cc: ControllerComponents,
 
   private val RECORDS_IN_VIEWPORT_LIMIT = 2500
 
-  def getMarkers(minlat: Double, minlon: Double, maxlat: Double, maxlon: Double,
-                 dateFrom: String, dateTo: String, eventType: String) = Action.async {
+  def getMarkers(centerlat: Double, centerlon: Double,
+                 dateFrom: String, dateTo: String, eventType: String): Action[AnyContent] = Action.async {
     implicit request: Request[AnyContent] =>
-      getJsonWithMarkers(minlat, minlon, maxlat, maxlon,
-        FilterCriteria(strToDate(dateFrom), strToDate(dateTo), EventType.withNameOption(eventType)))
-        .map(Ok(_))
+      getJsonWithMarkers(centerlat, centerlon,
+        FilterCriteria(strToDate(dateFrom), strToDate(dateTo), EventType.withNameOption(eventType))
+      ).map(Ok(_))
   }
 
   private val simpleDateFormat = new SimpleDateFormat("yyyy-M-dd")
@@ -35,20 +35,20 @@ class RestController @Inject()(cc: ControllerComponents,
     simpleDateFormat.parse(dateString).getTime
   }
 
-  private def getJsonWithMarkers(minLat: Double, minLon: Double, maxLat: Double, maxLon: Double,
+  private def getJsonWithMarkers(centerLat: Double, centerLon: Double,
                                  filterCriteria: FilterCriteria): Future[JsValue] = {
     database
-      .allRecordsInRange(minLat, minLon, maxLat, maxLon, filterCriteria)
-      .map(_.filter(_.pictures.nonEmpty))
-      .map(_.slice(0, RECORDS_IN_VIEWPORT_LIMIT))
+      .allRecordsInRange(centerLat, centerLon, filterCriteria,
+        RECORDS_IN_VIEWPORT_LIMIT)
       .map(_.map(recordToMarker))
       .map { markers =>
-        println(s"Found ${markers.size} markers for $minLat $minLon $maxLat $maxLon")
+        println(s"Found ${markers.size} markers for $centerLat $centerLon")
         Json.toJson(markers)
       }
   }
 
-  private def recordToMarker(r: Record) = {
+  private def recordToMarker(recordWithDistance: (Record, Option[Float])) = {
+    val r = recordWithDistance._1
     Map(
       "id" -> r.recordId.toString,
       "eventDate" -> String.valueOf(r.eventDate),
@@ -56,8 +56,9 @@ class RestController @Inject()(cc: ControllerComponents,
       "picture" -> r.pictures.head,
       "eventType" -> r.eventType.entryName,
       "lat" -> String.valueOf(r.fullLocation.coordinate.get.lat),
-      "lon" -> String.valueOf(r.fullLocation.coordinate.get.lon),
-      "link" -> r.link
+      "lng" -> String.valueOf(r.fullLocation.coordinate.get.lon),
+      "link" -> r.link,
+      "distance" -> String.valueOf(recordWithDistance._2.getOrElse(0f)),
     )
   }
 }

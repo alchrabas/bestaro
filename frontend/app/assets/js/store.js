@@ -7,7 +7,7 @@ import ReduxThunk from "redux-thunk";
 export const CHANGE_FILTER = "CHANGE_FILTER";
 export const UPDATE_RECORDS = "UPDATE_RECORDS";
 export const SELECT_RECORD = "SELECT_RECORD";
-export const UPDATE_MAP_BOUNDS = "UPDATE_MAP_BOUNDS";
+export const UPDATE_MAP_CENTER = "UPDATE_MAP_CENTER";
 export const SCROLL_LIST = "SCROLL_LIST";
 
 export const changeFilter = (dateFrom, dateTo, eventType) => {
@@ -33,11 +33,26 @@ export const selectRecord = recordId => {
     }
 };
 
-export const updateMapBounds = (northEast, southWest) => {
+let lastMoveTimestamp = Date.now();
+// create action creator
+const updateLastMoveTimestamp = () => lastMoveTimestamp = Date.now(); // todo move to redux, but for now ugly will work
+
+
+// ask server for data when it may be outdated
+setInterval(() => {
+    const currentTimestamp = Date.now();
+    if (currentTimestamp >= lastMoveTimestamp + 3000) {
+        store.dispatch(fetchDataFromServer());
+        lastMoveTimestamp = Infinity;
+    }
+}, 1000);
+
+
+export const updateMapCenter = center => {
+    updateLastMoveTimestamp();
     return {
-        type: UPDATE_MAP_BOUNDS,
-        northEast,
-        southWest
+        type: UPDATE_MAP_CENTER,
+        center,
     };
 };
 
@@ -45,10 +60,9 @@ export const updateMapBounds = (northEast, southWest) => {
 export const fetchDataFromServer = () => {
     return (dispatch, getState) => {
         console.log("FETCHING DATA FROM SERVER");
-        const boundsNE = getState().map.northEast;
-        const boundsSW = getState().map.southWest;
+        const center = getState().map.center;
         const filters = getState().filters;
-        fetch(`/rest/${boundsSW.lat()}/${boundsSW.lng()}/${boundsNE.lat()}/${boundsNE.lng()}/`
+        fetch(`/rest/${center.lat}/${center.lng}/`
             + `${filters.dateFrom}/${filters.dateTo}/${filters.eventType}`)
             .then(response => response.json())
             .then(data =>
@@ -113,15 +127,13 @@ const uiReducer = (state = {
 };
 
 const mapReducer = (state = {
-    northEast: 0,
-    southWest: 0,
+    center: {lat: 0, lon: 0},
 }, action) => {
     switch (action.type) {
-        case UPDATE_MAP_BOUNDS:
-            return {
-                northEast: action.northEast,
-                southWest: action.southWest,
-            };
+        case UPDATE_MAP_CENTER:
+            return Object.assign({}, state, {
+                center: action.center,
+            });
         default:
             return state;
     }
