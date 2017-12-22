@@ -18,3 +18,13 @@ details.event_type=Typ zdarzenia:
 details.picture=Zdjęcie
 details.link=Przejdź do ogłoszenia
 credits=Stworzył <a href="https://alchrabas.pl">Aleksander Chrabąszcz</a> (<a href="https://github.com/alchrabas/bestaro">Github</a>)
+range_groups.to100m = do 100 metrów
+range_groups.to500m = do 500 metrów
+range_groups.to1km = do 1 kilometra
+range_groups.to5km = do 5 kilometrów
+range_groups.to10km = do 10 kilometrów
+range_groups.to50km = do 50 kilometrów
+range_groups.to100km = do 100 kilometrów
+range_groups.above100km = ponad 100 kilometrów
+record_details.probably_lost = Prawdopodobnie zaginione
+record_details.probably_found = Prawdopodobnie znalezione

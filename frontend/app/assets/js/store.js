@@ -33,6 +33,10 @@ export const selectRecord = recordId => {
     }
 };
 
+export const deselectRecord = () => {
+    return {type: SELECT_RECORD, selectedRecord: null};
+};
+
 let lastMoveTimestamp = Date.now();
 // create action creator
 const updateLastMoveTimestamp = () => lastMoveTimestamp = Date.now(); // todo move to redux, but for now ugly will work
@@ -114,7 +118,7 @@ const uiReducer = (state = {
 }, action) => {
     switch (action.type) {
         case SELECT_RECORD:
-            return Object.assign({}, {
+            return Object.assign({}, state, {
                 selectedRecord: action.selectedRecord,
             });
         case SCROLL_LIST:

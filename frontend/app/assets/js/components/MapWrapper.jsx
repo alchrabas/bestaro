@@ -61,9 +61,9 @@ class MapWrapper extends React.Component {
         </GoogleMap>;
     }
 
-    static pointBetween(point, northEast, southWest) {
-        const latInBounds = point.lat <= northEast.lat() && point.lat >= southWest.lat();
-        const lngInBounds = point.lng <= northEast.lng() && point.lng >= southWest.lng();
+    static pointBetween(lat, lng, northEast, southWest) {
+        const latInBounds = lat <= northEast.lat() && lat >= southWest.lat();
+        const lngInBounds = lng <= northEast.lng() && lng >= southWest.lng();
 
         return latInBounds && lngInBounds;
     }
