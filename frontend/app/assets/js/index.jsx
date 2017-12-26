@@ -12,6 +12,7 @@ import AppContainer from "./components/App";
 import {dateToString} from "./utils";
 
 import {EVENT_ANY} from "./constants";
+import {mediaQueryTracker} from "redux-mediaquery";
 
 
 const weekAgoDate = new Date();
@@ -22,6 +23,12 @@ store.dispatch(changeFilter(
     dateToString(new Date()),
     EVENT_ANY
 ));
+
+mediaQueryTracker({
+    isWide: "screen and (min-width: 1025px)",
+    innerWidth: true,
+    innerHeight: true,
+}, store.dispatch);
 
 
 ReactDOM.render(

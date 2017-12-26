@@ -34,8 +34,8 @@ class MapWrapper extends React.Component {
             }
         } else {
             return {
-                northEast: {lat: 0, lng: 0},
-                southWest: {lat: 0, lng: 0},
+                northEast: {lat: () => 0, lng: () => 0},
+                southWest: {lat: () => 0, lng: () => 0},
             };
         }
     }
@@ -99,7 +99,7 @@ class MapWrapper extends React.Component {
 const GoogleMapComponent = withScriptjs(withGoogleMap(MapWrapper));
 
 
-const mapStateToProps = state => {
+const mapStateToProps = (state, ownProps) => {
     return {
         records: state.records,
         googleMapURL: "https://maps.googleapis.com/maps/api/js?key=" + googleApiKey,
@@ -107,6 +107,8 @@ const mapStateToProps = state => {
         containerElement: <div style={{width: "100%"}}/>,
         mapElement: <div style={{height: `100%`, width: "100%"}}/>,
         selectedRecord: state.ui.selectedRecord,
+        className: ownProps.className || "",
+        style: ownProps.style || {},
     };
 };
 

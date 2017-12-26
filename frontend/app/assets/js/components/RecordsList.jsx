@@ -205,7 +205,8 @@ class RecordsList extends React.Component {
 
     render() {
         return (
-            <div className="records-list-wrapper">
+            <div className="records-list-wrapper"
+                 style={this.props.style}>
                 {RecordsList.renderGroupHeader(this.state.groupHeaderMessage, "headerMessage")}
                 <div className="records-list">
                     {this.renderList()}

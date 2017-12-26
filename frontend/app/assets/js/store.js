@@ -2,6 +2,7 @@ import {applyMiddleware, combineReducers, createStore} from "redux";
 
 import {composeWithDevTools} from "redux-devtools-extension";
 import ReduxThunk from "redux-thunk";
+import {reducer as responsive} from 'redux-mediaquery'
 
 
 export const CHANGE_FILTER = "CHANGE_FILTER";
@@ -144,6 +145,7 @@ const mapReducer = (state = {
 };
 
 const mainReducer = combineReducers({
+    responsive,
     filters: filterReducer,
     records: recordsReducer,
     ui: uiReducer,
