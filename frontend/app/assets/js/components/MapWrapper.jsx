@@ -104,7 +104,7 @@ const mapStateToProps = (state, ownProps) => {
         records: state.records,
         googleMapURL: "https://maps.googleapis.com/maps/api/js?key=" + googleApiKey,
         loadingElement: <div style={{height: `100%`}}/>,
-        containerElement: <div style={{width: "100%"}}/>,
+        containerElement: <div className="googleMapContainer"/>,
         mapElement: <div style={{height: `100%`, width: "100%"}}/>,
         selectedRecord: state.ui.selectedRecord,
         className: ownProps.className || "",

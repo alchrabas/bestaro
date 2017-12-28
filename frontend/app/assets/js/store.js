@@ -46,11 +46,11 @@ const updateLastMoveTimestamp = () => lastMoveTimestamp = Date.now(); // todo mo
 // ask server for data when it may be outdated
 setInterval(() => {
     const currentTimestamp = Date.now();
-    if (currentTimestamp >= lastMoveTimestamp + 3000) {
+    if (currentTimestamp >= lastMoveTimestamp + 1500) {
         store.dispatch(fetchDataFromServer());
         lastMoveTimestamp = Infinity;
     }
-}, 1000);
+}, 250);
 
 
 export const updateMapCenter = center => {

@@ -1,10 +1,10 @@
 import React from "react";
-import GoogleMapContainer from "./MapWrapper";
 import TopBarContainer from "./TopBar";
 import {connect} from "react-redux";
 import RecordsList from "./RecordsList";
 import {selectRecord} from "../store";
 import {RecordDetailsContainer} from "./Sidebar";
+import MapCacheContainer from "./MapCache";
 
 class NarrowLayout extends React.Component {
 
@@ -52,7 +52,7 @@ class NarrowLayout extends React.Component {
                 return [
                     <TopBarContainer key="topBar"/>,
                     <div className="row content" key="center">
-                        <GoogleMapContainer key="googleMap"/>
+                        <MapCacheContainer key="googleMap"/>
                     </div>,
                     <button key="button"
                             className="pure-button-primary big-wide-button"
@@ -65,12 +65,12 @@ class NarrowLayout extends React.Component {
                         flexDirection: "column",
                         height: "100%",
                     }}>
+                    <RecordsList key="records-list" style={{flex: 1}}/>
                     <button onClick={this.goToMap}
                             key="button"
                             className="pure-button-primary big-wide-button">
                         WRÓĆ NA MAPĘ
                     </button>
-                    <RecordsList key="records-list" style={{flex: 1}}/>
                 </div>;
         }
     }

@@ -39,5 +39,5 @@ ReactDOM.render(
     document.getElementById('root')
 );
 
-setTimeout(() => store.dispatch(fetchDataFromServer()), 1000);
+setTimeout(() => store.dispatch(fetchDataFromServer()), 200);
 

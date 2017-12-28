@@ -7,7 +7,8 @@ import {RecordDetailsContainer} from "./Sidebar";
 
 const SidebarForWideLayout = ({selectedRecord, listRow}) => {
     if (selectedRecord) {
-        return <RecordDetailsContainer record={selectedRecord}/>;
+        return <RecordDetailsContainer style={{flex: "0 0 40%"}}
+                                       record={selectedRecord}/>;
     } else {
         return <div
             key="sidebar"

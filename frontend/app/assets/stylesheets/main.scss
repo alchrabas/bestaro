@@ -86,7 +86,7 @@ html, body {
 
 .big-wide-button {
   width: 100%;
-  font-size: 250%;
+  font-size: 200%;
 }
 
 #hide-sidebar {
@@ -96,4 +96,14 @@ html, body {
 #show-sidebar {
   float: left;
   height: 100%;
+}
+
+.googleMapContainer {
+  width: 100%;
+}
+
+@media screen and (max-width: 1024px) {
+  .googleMapContainer {
+    height: 100%;
+  }
 }
