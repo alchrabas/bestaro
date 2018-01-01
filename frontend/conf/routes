@@ -10,7 +10,7 @@ GET         /                                                               cont
 #GET     /                           controllers.HomeController.index
 
 GET         /rest/:centerlat/:centerlon/:dateFrom/:dateTo/:eventType        controllers.RestController.getMarkers(centerlat: Double, centerlon: Double, dateFrom: String, dateTo: String, eventType: String)
-GET         /assets/*file                                                   controllers.Assets.at(path="/public", file)
+GET         /assets/*file                                                   controllers.Assets.versioned(file)
 POST        /upload/                                                        controllers.RecordConsumerController.saveRecord()
 GET         /pictures/:file                                                 controllers.PicturesController.picture(file)
 GET         /pictures_min/:file                                             controllers.PicturesController.minPicture(file)

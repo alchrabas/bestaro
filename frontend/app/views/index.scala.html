@@ -1,4 +1,4 @@
-@this(configuration: play.api.Configuration)
+@this(configuration: play.api.Configuration, assetsFinder: AssetsFinder)
 @()(implicit messages: Messages)
 <!doctype html>
 <html lang="en">
@@ -13,6 +13,6 @@
     </head>
     <body>
         <div id="root" class="box"></div>
-        <script src="@controllers.routes.Assets.at("js/bundle.js")"></script>
+        <script src="@assetsFinder.path("js/bundle.js")"></script>
     </body>
 </html>
