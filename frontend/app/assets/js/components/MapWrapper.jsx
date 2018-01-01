@@ -1,6 +1,5 @@
 import React from "react";
-import {GoogleMap, Marker, withGoogleMap, withScriptjs} from "react-google-maps";
-import {googleApiKey} from "../context";
+import {GoogleMap, Marker, withGoogleMap} from "react-google-maps";
 import {selectRecord, updateMapCenter} from "../store";
 import {connect} from "react-redux";
 import {EVENT_LOST, EVENT_FOUND} from "../constants";
@@ -96,13 +95,12 @@ class MapWrapper extends React.Component {
 
 }
 
-const GoogleMapComponent = withScriptjs(withGoogleMap(MapWrapper));
+const GoogleMapComponent = withGoogleMap(MapWrapper);
 
 
 const mapStateToProps = (state, ownProps) => {
     return {
         records: state.records,
-        googleMapURL: "https://maps.googleapis.com/maps/api/js?key=" + googleApiKey,
         loadingElement: <div style={{height: `100%`}}/>,
         containerElement: <div className="googleMapContainer"/>,
         mapElement: <div style={{height: `100%`, width: "100%"}}/>,

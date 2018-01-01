@@ -9,13 +9,10 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>@messages("app.title")</title>
         <script type="text/javascript" src="messages/"></script>
+        <script src="https://maps.googleapis.com/maps/api/js?key=@configuration.underlying.getString("bestaro.googleMapsApi")"></script>
     </head>
     <body>
         <div id="root" class="box"></div>
-        @*<script src="https://maps.googleapis.com/maps/api/js?key=@configuration.underlying.getString("bestaro.googleMapsApi")"></script>*@
-        <script type="text/javascript" nonce="EDNnf03nceIOfn39fn3e9h4sdfa">
-            var googleApiKey = "@configuration.underlying.getString("bestaro.googleMapsApi")";
-        </script>
         <script src="@controllers.routes.Assets.at("js/bundle.js")"></script>
     </body>
 </html>

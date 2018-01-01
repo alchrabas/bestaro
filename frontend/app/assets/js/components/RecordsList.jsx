@@ -161,14 +161,14 @@ class RecordsList extends React.Component {
 
                 const groupByRowIndex = index => {
                     let previousGroupId = 0;
-                    for (let groupId of Object.keys(firstRowIndexByGroup)) {
+                    const existingGroupIndices = Object.keys(firstRowIndexByGroup);
+                    for (let groupId of existingGroupIndices) {
                         if (firstRowIndexByGroup[groupId] > index) {
                             return previousGroupId;
                         }
                         previousGroupId = groupId;
                     }
-                    const idOfLastGroup = groups.length - 1;
-                    return idOfLastGroup;
+                    return existingGroupIndices[existingGroupIndices.length - 1];
                 };
 
                 // index for each record to know how many rows to omit
