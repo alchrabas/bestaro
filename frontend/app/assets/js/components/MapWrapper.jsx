@@ -81,7 +81,7 @@ class MapWrapper extends React.Component {
             record={record}
             icon={
                 (this.props.selectedRecord && this.props.selectedRecord.id === record.id)
-                    ? "/assets/images/blue-pin.png"
+                    ? "/assets/images/yellow-pin.png"
                     : iconPathForEventType(record.eventType)
             }
             onClick={() => this.onClickMarker(record)}
