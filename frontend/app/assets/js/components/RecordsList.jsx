@@ -98,26 +98,31 @@ class RecordsList extends React.Component {
                         display: "inline-block",
                         position: "relative",
                     }}>
-                    <img
-                        style={{
-                            width: `${recordDimension - 8}px`,
-                            height: `${recordDimension - 8}px`,
-                            position: "relative",
-                            top: "4px",
-                            left: "4px",
-                            objectFit: "contain",
-                        }}
-                        className="animal-image"
-                        src={"pictures_min/" + record.picture}
-                        onClick={() => onClick(record.id)}
-                    />
-                    <div className={record.eventType === EVENT_LOST
-                        ? "animal-image-status-lost"
-                        : "animal-image-status-found"}
-                         title={record.eventType === EVENT_LOST
-                             ? Messages("record_details.probably_lost")
-                             : Messages("record_details.probably_found")}
-                    />
+                    <div style={{
+                        width: `${recordDimension - 8}px`,
+                        height: `${recordDimension - 8}px`,
+                        position: "relative",
+                        top: "4px",
+                        left: "4px",
+                    }}>
+                        <img
+                            style={{
+                                width: "100%",
+                                height: "100%",
+                                objectFit: "contain",
+                            }}
+                            className="animal-image"
+                            src={"pictures_min/" + record.picture}
+                            onClick={() => onClick(record.id)}
+                        />
+                        <div className={record.eventType === EVENT_LOST
+                            ? "animal-image-status-lost"
+                            : "animal-image-status-found"}
+                             title={record.eventType === EVENT_LOST
+                                 ? Messages("record_details.probably_lost")
+                                 : Messages("record_details.probably_found")}
+                        />
+                    </div>
                 </div>
             );
         }

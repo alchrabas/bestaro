@@ -19,7 +19,7 @@ class RestController @Inject()(cc: ControllerComponents,
                                 implicit executionContext: ExecutionContext
                               ) extends AbstractController(cc) {
 
-  private val RECORDS_IN_VIEWPORT_LIMIT = 2500
+  private val RECORDS_IN_VIEWPORT_LIMIT = 1000
 
   def getMarkers(centerlat: Double, centerlon: Double,
                  dateFrom: String, dateTo: String, eventType: String): Action[AnyContent] = Action.async {
