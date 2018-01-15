@@ -4,6 +4,7 @@ import TopBarContainer from "./TopBar";
 import {connect} from "react-redux";
 import RecordsList from "./RecordsList";
 import {RecordDetailsContainer} from "./Sidebar";
+import MapCacheContainer from "./MapCache";
 
 const SidebarForWideLayout = ({selectedRecord, listRow}) => {
     if (selectedRecord) {
@@ -41,7 +42,10 @@ const WideLayout = () => {
         <TopBarContainer key="topBar"/>,
         <div className="row content" key="center">
             <SidebarForWideLayoutContainer/>
-            <GoogleMapContainer key="googleMap"/>
+            <div className="google-map-parent">
+                <MapCacheContainer key="googleMap"/>
+                <div id="center-marker"/>
+            </div>
         </div>
     ];
 };

@@ -52,7 +52,10 @@ class NarrowLayout extends React.Component {
                 return [
                     <TopBarContainer key="topBar"/>,
                     <div className="row content" key="center">
-                        <MapCacheContainer key="googleMap"/>
+                        <div className="google-map-parent">
+                            <MapCacheContainer key="googleMap"/>
+                            <div id="center-marker"/>
+                        </div>
                     </div>,
                     <button key="button"
                             className="pure-button-primary big-wide-button"
