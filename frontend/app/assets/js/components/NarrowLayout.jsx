@@ -6,13 +6,18 @@ import {selectRecord} from "../store";
 import {RecordDetailsContainer} from "./Sidebar";
 import MapCacheContainer from "./MapCache";
 
+
+const VIEW_WELCOME = "WELCOME";
+const VIEW_LIST = "LIST";
+const VIEW_MAP = "MAP";
+
 class NarrowLayout extends React.Component {
 
     constructor(props) {
         super(props);
 
         this.state = {
-            viewName: "WELCOME",
+            viewName: VIEW_WELCOME,
         };
 
         this.goToList = this.goToList.bind(this);
@@ -21,13 +26,13 @@ class NarrowLayout extends React.Component {
 
     goToList() {
         this.setState({
-            viewName: "LIST",
+            viewName: VIEW_LIST,
         });
     }
 
     goToMap() {
         this.setState({
-            viewName: "MAP",
+            viewName: VIEW_MAP,
         });
     }
 
@@ -37,7 +42,7 @@ class NarrowLayout extends React.Component {
         }
 
         switch (this.state.viewName) {
-            case "WELCOME":
+            case VIEW_WELCOME:
                 return <div>
                     <div key="text"
                          dangerouslySetInnerHTML={{__html: Messages("welcome_text")}}
@@ -48,9 +53,11 @@ class NarrowLayout extends React.Component {
                         POKAŻ MAPĘ
                     </button>
                 </div>;
-            case "MAP":
+            case VIEW_MAP:
                 return [
-                    <TopBarContainer key="topBar"/>,
+                    <div className="row top-bar header">
+                        <TopBarContainer key="topBar"/>
+                    </div>,
                     <div className="row content" key="center">
                         <div className="google-map-parent">
                             <MapCacheContainer key="googleMap"/>
@@ -61,7 +68,7 @@ class NarrowLayout extends React.Component {
                             className="pure-button-primary big-wide-button"
                             onClick={this.goToList}>PACZAJ</button>
                 ];
-            case "LIST":
+            case VIEW_LIST:
                 return <div
                     style={{
                         display: "flex",

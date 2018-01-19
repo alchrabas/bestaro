@@ -37,17 +37,47 @@ const SidebarForWideLayoutContainer = connect(state => {
 )(SidebarForWideLayout);
 
 
-const WideLayout = () => {
-    return [
-        <TopBarContainer key="topBar"/>,
-        <div className="row content" key="center">
-            <SidebarForWideLayoutContainer/>
-            <div className="google-map-parent">
-                <MapCacheContainer key="googleMap"/>
-                <div id="center-marker"/>
-            </div>
-        </div>
-    ];
-};
+const VIEW_WELCOME = "WELCOME";
+const VIEW_MAP_AND_LIST = "MAP_AND_LIST";
+
+class WideLayout extends React.Component {
+
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            viewName: VIEW_WELCOME,
+        };
+
+        this.goToMapAndList = this.goToMapAndList.bind(this);
+    }
+
+    goToMapAndList() {
+        this.setState({
+            viewName: VIEW_MAP_AND_LIST,
+        });
+    }
+
+    render() {
+        switch (this.state.viewName) {
+            case VIEW_WELCOME:
+                return <div>HEJ! <button onClick={this.goToMapAndList}>Klik</button></div>;
+            case VIEW_MAP_AND_LIST:
+                return [
+                    <div className="row top-bar header">
+                        Mapazwierząt.pl
+                    </div>,
+                    <div className="row content" key="center">
+                        <TopBarContainer key="topBar"/>
+                        <SidebarForWideLayoutContainer key="sidebar"/>
+                        <div className="google-map-parent">
+                            <MapCacheContainer key="googleMap"/>
+                            <div id="center-marker"/>
+                        </div>
+                    </div>
+                ];
+        }
+    };
+}
 
 export default WideLayout;
