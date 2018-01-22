@@ -5,17 +5,24 @@ import ReduxThunk from "redux-thunk";
 import {reducer as responsive} from 'redux-mediaquery'
 
 
-export const CHANGE_FILTER = "CHANGE_FILTER";
+export const CHANGE_DATE_FILTER = "CHANGE_DATE_FILTER";
+export const CHANGE_EVENT_TYPE_FILTER = "CHANGE_EVENT_TYPE_FILTER";
 export const UPDATE_RECORDS = "UPDATE_RECORDS";
 export const SELECT_RECORD = "SELECT_RECORD";
 export const UPDATE_MAP_CENTER = "UPDATE_MAP_CENTER";
 export const SCROLL_LIST = "SCROLL_LIST";
 
-export const changeFilter = (dateFrom, dateTo, eventType) => {
+export const changeDateFilter = (dateFrom, dateTo) => {
     return {
-        type: CHANGE_FILTER,
+        type: CHANGE_DATE_FILTER,
         dateFrom,
         dateTo,
+    };
+};
+
+export const changeEventTypeFilter = (eventType) => {
+    return {
+        type: CHANGE_EVENT_TYPE_FILTER,
         eventType,
     };
 };
@@ -85,10 +92,13 @@ const filterReducer = (state = {
     "eventType": null
 }, action) => {
     switch (action.type) {
-        case CHANGE_FILTER:
+        case CHANGE_DATE_FILTER:
             return Object.assign({}, state, {
                 dateFrom: action.dateFrom,
                 dateTo: action.dateTo,
+            });
+        case CHANGE_EVENT_TYPE_FILTER:
+            return Object.assign({}, state, {
                 eventType: action.eventType,
             });
         default:

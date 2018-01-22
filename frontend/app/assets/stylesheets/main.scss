@@ -74,9 +74,23 @@ html, body {
   height: auto;
 }
 
+.welcome-page {
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 100px;
+  max-width: 800px;
+}
+
 .welcome-text {
   text-align: justify;
   padding: 3px;
+  white-space: pre-wrap;
+}
+
+.welcome-header {
+  font-size: 40px;
+  padding-top: 25px;
+  margin: 0;
 }
 
 .credits {
@@ -87,6 +101,36 @@ html, body {
 .big-wide-button {
   width: 100%;
   font-size: 200%;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.big-button-lost {
+  @extend .big-wide-button;
+  background-color: #ef201b;
+  border-radius: 10px;
+}
+
+.big-button-found {
+  @extend .big-wide-button;
+  background-color: #91de2b;
+  border-radius: 10px;
+}
+
+label.checkbox-label {
+  cursor: pointer;
+  margin: 0 0 0 20px;
+  display: inline-block;
+}
+
+.checkbox-label > input {
+  width: 23px;
+  height: 23px;
+  vertical-align: middle;
+}
+
+.event-type-checkboxes {
+  display: inline-block;
 }
 
 #hide-sidebar {
@@ -127,8 +171,25 @@ html, body {
   height: 100%;
 }
 
+/* make it mobile-first */
 @media screen and (max-width: 1024px) {
   .googleMapContainer {
     height: 100%;
+  }
+
+  .pure-hidden-md {
+    display: none;
+  }
+
+  .big-wide-button {
+    font-size: 125%;
+  }
+
+  .welcome-page {
+    margin-top: 30px;
+  }
+
+  .welcome-header {
+    font-size: 30px;
   }
 }

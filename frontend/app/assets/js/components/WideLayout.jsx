@@ -1,10 +1,11 @@
-import GoogleMapContainer from "./MapWrapper";
 import * as React from "react";
-import TopBarContainer from "./TopBar";
+import FiltersContainer from "./Filters";
 import {connect} from "react-redux";
 import RecordsList from "./RecordsList";
 import {RecordDetailsContainer} from "./Sidebar";
 import MapCacheContainer from "./MapCache";
+import WelcomePageContainer from "./WelcomePage";
+
 
 const SidebarForWideLayout = ({selectedRecord, listRow}) => {
     if (selectedRecord) {
@@ -18,8 +19,7 @@ const SidebarForWideLayout = ({selectedRecord, listRow}) => {
                 flexDirection: "column"
             }}
             className="sidebar">
-            <div key="text"
-                 dangerouslySetInnerHTML={{__html: Messages("welcome_text")}}/>
+            <FiltersContainer key="filters"/>
             <RecordsList
                 style={{display: "flex", flex: 1}}
                 listRow={listRow}
@@ -39,6 +39,19 @@ const SidebarForWideLayoutContainer = connect(state => {
 
 const VIEW_WELCOME = "WELCOME";
 const VIEW_MAP_AND_LIST = "MAP_AND_LIST";
+
+const WideHeader = () => {
+    return [
+        <img key="logo" src="/assets/images/kotologo.png"/>,
+        <span key="site-name" style={{
+            fontSize: "32px",
+            verticalAlign: "top",
+        }}>mapazwierzat.pl</span>,
+        <div key="nav-buttons" style={{float: "right"}}>
+            <button className="pure-button">Kontakt</button>
+        </div>
+    ];
+};
 
 class WideLayout extends React.Component {
 
@@ -61,14 +74,13 @@ class WideLayout extends React.Component {
     render() {
         switch (this.state.viewName) {
             case VIEW_WELCOME:
-                return <div>HEJ! <button onClick={this.goToMapAndList}>Klik</button></div>;
+                return <WelcomePageContainer goToMap={this.goToMapAndList}/>;
             case VIEW_MAP_AND_LIST:
                 return [
-                    <div className="row top-bar header">
-                        Mapazwierząt.pl
+                    <div className="row top-bar header" key="header">
+                        <WideHeader/>
                     </div>,
                     <div className="row content" key="center">
-                        <TopBarContainer key="topBar"/>
                         <SidebarForWideLayoutContainer key="sidebar"/>
                         <div className="google-map-parent">
                             <MapCacheContainer key="googleMap"/>

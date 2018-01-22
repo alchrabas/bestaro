@@ -1,6 +1,6 @@
 'use strict';
 
-import {fetchDataFromServer, changeFilter, store} from "./store";
+import {fetchDataFromServer, changeDateFilter, store} from "./store";
 import React from "react";
 import ReactDOM from "react-dom";
 import {Provider} from "react-redux";
@@ -18,7 +18,7 @@ import {mediaQueryTracker} from "redux-mediaquery";
 const weekAgoDate = new Date();
 weekAgoDate.setDate(weekAgoDate.getDate() - 7);
 
-store.dispatch(changeFilter(
+store.dispatch(changeDateFilter(
     dateToString(weekAgoDate),
     dateToString(new Date()),
     EVENT_ANY

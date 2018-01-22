@@ -1,10 +1,11 @@
 import React from "react";
-import TopBarContainer from "./TopBar";
+import FiltersContainer from "./Filters";
 import {connect} from "react-redux";
 import RecordsList from "./RecordsList";
 import {selectRecord} from "../store";
 import {RecordDetailsContainer} from "./Sidebar";
 import MapCacheContainer from "./MapCache";
+import WelcomePageContainer from "./WelcomePage";
 
 
 const VIEW_WELCOME = "WELCOME";
@@ -43,20 +44,11 @@ class NarrowLayout extends React.Component {
 
         switch (this.state.viewName) {
             case VIEW_WELCOME:
-                return <div>
-                    <div key="text"
-                         dangerouslySetInnerHTML={{__html: Messages("welcome_text")}}
-                    />
-                    <button
-                        className="pure-button-primary big-wide-button"
-                        onClick={this.goToMap}>
-                        POKAŻ MAPĘ
-                    </button>
-                </div>;
+                return <WelcomePageContainer goToMap={this.goToMap}/>;
             case VIEW_MAP:
                 return [
                     <div className="row top-bar header">
-                        <TopBarContainer key="topBar"/>
+                        <FiltersContainer key="filters"/>
                     </div>,
                     <div className="row content" key="center">
                         <div className="google-map-parent">

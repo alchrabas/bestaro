@@ -6,12 +6,11 @@ event_type.ANY=dowolny
 event_type.LOST=zaginione
 event_type.FOUND=znalezione
 filter_button=Filtruj
-welcome_text=<h3>Witaj na Mapie Zwierząt</h3>\
-<p class="welcome-text">Jest to serwis zbierający w jednym miejscu dane z ogłoszeń dotyczących zaginionych i znalezionych zwierząt z całej Polski.<br>\
-Pobieranie i interpretacja danych wykonywana jest automatycznie, dlatego też czas pomiędzy utworzeniem oryginalnego \
-ogłoszenia a pojawieniem się na tej mapie jest krótki, jednak może nie gwarantować stuprocentowej poprawności danych.<br>\
-W większości przypadków miejsce i szczegóły ogłoszenia uzyskiwane są poprzez analizę i ekstrakcję treści ogłoszenia.<br>\
-Jest to na razie wersja eksperymentalna, co oznacza, że zostało co nieco do poprawy i nie nadaje się do powszechnego użytku.</p>
+welcome_header=Witaj na Mapie Zwierząt (BETA)
+welcome_text=Mapazwierzat.pl to serwis gromadzący dane z ogłoszeń dotyczących zaginionych i znalezionych zwierząt z całej Polski.\n\
+Dane przetwarzane są automatycznie, co pozwala na bardzo szybkie wyświetlenie tu nowych ogłoszeń, jednak nie gwarantuje stuprocentowej poprawności danych.\n\
+Miejsce i inne szczegóły uzyskiwane są poprzez analizę treści ogłoszenia.\n\
+Jest to na razie wersja eksperymentalna, nie nadaje się do powszechnego użytku.
 details.event_date=Data zdarzenia: 
 details.post_date=Data umieszczenia: 
 details.event_type=Typ zdarzenia: 

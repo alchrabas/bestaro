@@ -1,8 +1,8 @@
 import React from "react";
 import {dateToString, daysRelativeToNow, tag} from "../utils";
-import {changeFilter, fetchDataFromServer} from "../store";
+import {changeDateFilter, changeEventTypeFilter, fetchDataFromServer} from "../store";
 import {connect} from "react-redux";
-import {EVENT_ANY, EVENT_FOUND, EVENT_LOST} from "../constants";
+import {EVENT_ANY, EVENT_FOUND, EVENT_LOST, EVENT_NONE} from "../constants";
 
 class Filters extends React.Component {
 
@@ -11,12 +11,16 @@ class Filters extends React.Component {
 
         this.state = {
             rangeType: "lastWeek",
+            eventType: props.filters.eventType,
         };
 
         this.handleChangeDateFrom = this.handleChangeDateFrom.bind(this);
         this.handleChangeDateTo = this.handleChangeDateTo.bind(this);
         this.handleUpdateDateRange = this.handleUpdateDateRange.bind(this);
+        this.handleUpdateEventType = this.handleUpdateEventType.bind(this);
         this.forceUpdateRangeFromInputs = this.forceUpdateRangeFromInputs.bind(this);
+        this.isLostChecked = this.isLostChecked.bind(this);
+        this.isFoundChecked = this.isFoundChecked.bind(this);
     }
 
     static isDateStrValid(date) {
@@ -41,7 +45,7 @@ class Filters extends React.Component {
 
     forceUpdateRangeFromInputs() {
         if (Filters.isDateStrValid(this.state.dateFrom) && Filters.isDateStrValid(this.state.dateTo)) {
-            this.props.updateFilters(this.state.dateFrom, this.state.dateTo, EVENT_ANY);
+            this.props.updateDateFilter(this.state.dateFrom, this.state.dateTo);
         }
     }
 
@@ -60,10 +64,9 @@ class Filters extends React.Component {
             this.setState({
                 rangeType: value,
             });
-            this.props.updateFilters(
+            this.props.updateDateFilter(
                 dateToString(rangeTypeToBeginDate[value]),
-                dateToString(new Date()),
-                EVENT_ANY);
+                dateToString(new Date()));
         } else {
             this.setState(Object.assign({}, this.state, {
                 rangeType: value,
@@ -71,21 +74,74 @@ class Filters extends React.Component {
         }
     };
 
+    handleUpdateEventType(event, type) {
+        const value = event.target.checked;
+        let eventType = null;
+        if (type === "LOST") {
+            eventType = this.isFoundChecked() ? (value ? EVENT_ANY : EVENT_FOUND) : (value ? EVENT_LOST : EVENT_NONE);
+        } else if (type === "FOUND") {
+            eventType = this.isLostChecked() ? (value ? EVENT_ANY : EVENT_LOST) : (value ? EVENT_FOUND : EVENT_NONE);
+        }
+        this.setState(Object.assign({}, this.state, {
+            eventType: eventType
+        }));
+        this.props.updateEventTypeFilter(eventType);
+    }
+
+    isLostChecked() {
+        return [EVENT_ANY, EVENT_LOST].includes(this.state.eventType);
+    }
+
+    isFoundChecked() {
+        return [EVENT_ANY, EVENT_FOUND].includes(this.state.eventType);
+    }
+
     render() {
         return <form
-            className="pure-form">
+            className="pure-form" style={{textAlign: "center"}}>
             <EventDateRange selectedOption={this.state.rangeType}
-                            onChange={this.handleUpdateDateRange}/>
+                            onChange={this.handleUpdateDateRange}
+                            handleChangeDateFrom={this.handleChangeDateFrom}
+                            handleChangeDateTo={this.handleChangeDateTo}
+                            dateFrom={this.state.dateFrom}
+                            dateTo={this.state.dateTo}
+                            key="eventDate"/>
+            <EventType lostChecked={this.isLostChecked()}
+                       foundChecked={this.isFoundChecked()}
+                       onChange={this.handleUpdateEventType}
+                       key="eventType"/>
         </form>;
     }
 }
 
-const EventDateRange = ({selectedOption, onChange}) =>
+const EventType = ({lostChecked, foundChecked, onChange}) => {
+    return <div className="event-type-checkboxes">
+        <label className="checkbox-label" key="lostCheckbox">
+            <input type="checkbox"
+                   checked={lostChecked}
+                   onChange={event => onChange(event, "LOST")}/>
+            Poszukiwane
+        </label>
+        <label className="checkbox-label" key="foundCheckbox">
+            <input type="checkbox"
+                   checked={foundChecked}
+                   onChange={event => onChange(event, "FOUND")}/>
+            Znalezione
+        </label>
+    </div>;
+};
+
+const EventDateRange = ({
+                            selectedOption, onChange,
+                            handleChangeDateFrom, handleChangeDateTo,
+                            dateFrom, dateTo
+                        }) =>
     [
         <select name="date-range"
                 id="date-range"
                 value={selectedOption}
-                onChange={onChange}>
+                onChange={onChange}
+                key="dateRangeSelect">
             <option value="lastWeek">Ostatni tydzień</option>
             <option value="last2Weeks">Ostatnie 2 tygodnie</option>
             <option value="lastMonth">Ostatni miesiąc</option>
@@ -93,24 +149,25 @@ const EventDateRange = ({selectedOption, onChange}) =>
             <option value="lastYear">Ostatni rok</option>
             <option value="custom">Niestandardowe...</option>
         </select>,
-        this.state.rangeType === "custom" &&
-        <label key="dateFrom">Przedział dat:
-            <input
-                name="date-from"
-                id="date-from"
-                type="date"
-                onChange={this.handleChangeDateFrom}
-                value={this.state.dateFrom || ""}/>
-        </label>,
-        this.state.rangeType === "custom" &&
-        <label key="dateTo">
-            <input
-                name="date-to"
-                id="date-to"
-                type="date"
-                onChange={this.handleChangeDateTo}
-                value={this.state.dateTo || ""}/>
-        </label>
+        selectedOption === "custom" &&
+        <div className="event-type-checkboxes">
+            <label key="dateFrom"> W przedziale:
+                <input
+                    name="date-from"
+                    id="date-from"
+                    type="date"
+                    onChange={handleChangeDateFrom}
+                    value={dateFrom || ""}/>
+            </label>
+            <label key="dateTo">
+                <input
+                    name="date-to"
+                    id="date-to"
+                    type="date"
+                    onChange={handleChangeDateTo}
+                    value={dateTo || ""}/>
+            </label>
+        </div>
     ];
 
 
@@ -121,10 +178,15 @@ const FiltersContainer = connect(state => {
     },
     dispatch => {
         return {
-            updateFilters: (dateFrom, dateTo, eventType) => {
-                dispatch(changeFilter(
+            updateDateFilter: (dateFrom, dateTo) => {
+                dispatch(changeDateFilter(
                     dateFrom,
-                    dateTo,
+                    dateTo
+                ));
+                dispatch(fetchDataFromServer());
+            },
+            updateEventTypeFilter: eventType => {
+                dispatch(changeEventTypeFilter(
                     eventType
                 ));
                 dispatch(fetchDataFromServer());
