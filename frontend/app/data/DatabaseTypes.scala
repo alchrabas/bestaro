@@ -40,7 +40,7 @@ class DatabaseTypes @Inject()(
       .filter(r =>
         (r.eventDate >= filterCriteria.dateFrom && r.eventDate <= filterCriteria.dateTo) ||
           (r.postDate >= filterCriteria.dateFrom && r.postDate <= filterCriteria.dateTo))
-      .filter(_.eventType === filterCriteria.eventType || filterCriteria.eventType.isEmpty)
+      .filter(_.eventType.inSet(filterCriteria.eventType))
       .filter(_.coordinates.nonEmpty)
       .map(r => (r, r.coordinates.distanceSphere(centerPoint)))
       .sortBy(_._2)

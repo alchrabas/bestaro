@@ -10,7 +10,7 @@ import play.api.mvc._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-case class FilterCriteria(dateFrom: Long, dateTo: Long, eventType: Option[EventType])
+case class FilterCriteria(dateFrom: Long, dateTo: Long, eventType: Set[EventType])
 
 @Singleton
 class RestController @Inject()(cc: ControllerComponents,
@@ -25,8 +25,18 @@ class RestController @Inject()(cc: ControllerComponents,
                  dateFrom: String, dateTo: String, eventType: String): Action[AnyContent] = Action.async {
     implicit request: Request[AnyContent] =>
       getJsonWithMarkers(centerlat, centerlon,
-        FilterCriteria(strToDate(dateFrom), strToDate(dateTo), EventType.withNameOption(eventType))
+        FilterCriteria(strToDate(dateFrom), strToDate(dateTo), strToEventType(eventType))
       ).map(Ok(_))
+  }
+
+  private def strToEventType(typeStr: String): Set[EventType] = {
+    typeStr match {
+      case "ANY" => Set(EventType.LOST, EventType.FOUND)
+      case "FOUND" => Set(EventType.FOUND)
+      case "LOST" => Set(EventType.LOST)
+      case "NONE" => Set()
+      case _ => throw new IllegalArgumentException(s"invalid value of eventType string: $typeStr")
+    }
   }
 
   private val simpleDateFormat = new SimpleDateFormat("yyyy-M-dd")
