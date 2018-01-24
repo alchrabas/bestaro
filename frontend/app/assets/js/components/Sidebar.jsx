@@ -4,7 +4,14 @@ import React from "react";
 import {deselectRecord, scrollList} from "../store";
 import RecordsList from "./RecordsList";
 
-const RecordDetails = ({record, moveBack, style}) => {
+const RecordDetails = ({record, moveBack, style, buttonsFixed}) => {
+
+    const buttonStyle = {};
+    if (buttonsFixed) {
+        buttonStyle.position = "fixed";
+        buttonStyle.bottom = "0";
+    }
+
     return <div className="pure-g" style={style}>
         {!record.eventDate && [
             <div className="pure-u-1-2"> {Messages("details.event_date")} </div>,
@@ -15,16 +22,16 @@ const RecordDetails = ({record, moveBack, style}) => {
         <div className="pure-u-1-2"> {Messages("details.event_type")} </div>
         <div className="pure-u-1-2"> {Messages("event_type." + record.eventType)} </div>
         <img className="fullPicturePreview" src={"pictures/" + record.picture}/>
-        <div className="pure-u-1">
+        <div className="pure-u-1" style={buttonStyle}>
             <button
                 style={{width: "50%"}}
-                className="pure-button pure-button-primary"
+                className="pure-button pure-button-primary big-wide-button"
                 onClick={moveBack}>
-                GO BACK
+                Powrót
             </button>
             <a
                 style={{width: "50%"}}
-                className="pure-button pure-button-primary"
+                className="pure-button pure-button-primary big-wide-button"
                 href={record.link}
                 target="_blank"
             > {Messages("details.link")}</a>
@@ -36,6 +43,7 @@ export const RecordDetailsContainer = connect((state, ownProps) => {
         return {
             record: ownProps.record,
             style: ownProps.style,
+            buttonsFixed: ownProps.buttonsFixed,
         }
     },
     dispatch => {

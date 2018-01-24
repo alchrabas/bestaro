@@ -15,7 +15,7 @@ details.event_date=Data zdarzenia:
 details.post_date=Data umieszczenia: 
 details.event_type=Typ zdarzenia: 
 details.picture=Zdjęcie
-details.link=Przejdź do ogłoszenia
+details.link=Idź do ogłoszenia
 credits=Stworzył <a href="https://alchrabas.pl">Aleksander Chrabąszcz</a> (<a href="https://github.com/alchrabas/bestaro">Github</a>)
 range_groups.to100m = do 100 metrów
 range_groups.to500m = do 500 metrów

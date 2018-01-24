@@ -1,19 +1,24 @@
 import React from "react";
-import WideLayout from "./WideLayout";
-import NarrowLayout from "./NarrowLayout";
 import {connect} from "react-redux";
+import {VIEW_CONTACT, VIEW_MAP, VIEW_WELCOME} from "../constants";
+import WelcomePageContainer from "./WelcomePage";
+import MapPageContainer from "./MapPage";
+import ContactPageContainer from "./ContactPage";
 
-let App = ({wide}) => {
-    if (wide) {
-        return <WideLayout/>;
-    } else {
-        return <NarrowLayout/>;
+let App = ({currentView}) => {
+    switch (currentView) {
+        case VIEW_WELCOME:
+            return <WelcomePageContainer/>;
+        case VIEW_MAP:
+            return <MapPageContainer/>;
+        case VIEW_CONTACT:
+            return <ContactPageContainer/>;
     }
 };
 
 const AppContainer = connect(state => {
     return {
-        wide: state.responsive.isWide,
+        currentView: state.ui.currentView,
     }
 })(App);
 

@@ -171,7 +171,7 @@ label.checkbox-label {
   height: 100%;
 }
 
-/* make it mobile-first */
+/* todo make it mobile-first */
 @media screen and (max-width: 1024px) {
   .googleMapContainer {
     height: 100%;
@@ -186,7 +186,7 @@ label.checkbox-label {
   }
 
   .welcome-page {
-    margin-top: 30px;
+    margin: 30px 10px 0;
   }
 
   .welcome-header {

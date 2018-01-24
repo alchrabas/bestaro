@@ -3,6 +3,7 @@ import {applyMiddleware, combineReducers, createStore} from "redux";
 import {composeWithDevTools} from "redux-devtools-extension";
 import ReduxThunk from "redux-thunk";
 import {reducer as responsive} from 'redux-mediaquery'
+import {VIEW_CONTACT, VIEW_MAP, VIEW_WELCOME} from "./constants";
 
 
 export const CHANGE_DATE_FILTER = "CHANGE_DATE_FILTER";
@@ -11,6 +12,7 @@ export const UPDATE_RECORDS = "UPDATE_RECORDS";
 export const SELECT_RECORD = "SELECT_RECORD";
 export const UPDATE_MAP_CENTER = "UPDATE_MAP_CENTER";
 export const SCROLL_LIST = "SCROLL_LIST";
+export const CHANGE_VIEW = "CHANGE_VIEW";
 
 export const changeDateFilter = (dateFrom, dateTo) => {
     return {
@@ -123,9 +125,31 @@ export const scrollList = (rowNumber) => {
     };
 };
 
+export const goToMap = () => {
+    return {
+        type: CHANGE_VIEW,
+        view: VIEW_MAP,
+    };
+};
+
+export const goToWelcome = () => {
+    return {
+        type: CHANGE_VIEW,
+        view: VIEW_WELCOME,
+    };
+};
+
+export const goToContact = () => {
+    return {
+        type: CHANGE_VIEW,
+        view: VIEW_CONTACT,
+    };
+};
+
 const uiReducer = (state = {
     selectedRecord: null,
-    listRow: null
+    listRow: null,
+    currentView: VIEW_WELCOME,
 }, action) => {
     switch (action.type) {
         case SELECT_RECORD:
@@ -133,8 +157,12 @@ const uiReducer = (state = {
                 selectedRecord: action.selectedRecord,
             });
         case SCROLL_LIST:
-            return Object.assign({}, {
+            return Object.assign({}, state, {
                 listRow: action.listRow,
+            });
+        case CHANGE_VIEW:
+            return Object.assign({}, state, {
+                currentView: action.view
             });
         default:
             return state;

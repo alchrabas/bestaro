@@ -1,4 +1,4 @@
-import {changeEventTypeFilter} from "../store";
+import {changeEventTypeFilter, goToMap} from "../store";
 import {connect} from "react-redux";
 import {EVENT_FOUND, EVENT_LOST} from "../constants";
 import * as React from "react";
@@ -7,7 +7,7 @@ const WelcomePage = ({goToLost, goToFound}) => {
     return <div className="welcome-page">
         <div style={{overflow: "hidden"}}>
             <img key="logo" src="/assets/images/kotologo-big.png"
-            style={{float: "left", marginRight: "10px"}}/>
+                 style={{float: "left", marginRight: "10px"}}/>
             <p className="welcome-header">
                 {Messages("welcome_header")}
             </p>
@@ -29,15 +29,15 @@ const WelcomePage = ({goToLost, goToFound}) => {
 
 const WelcomePageContainer = connect(
     state => state,
-    (dispatch, ownProps) => {
+    dispatch => {
         return {
             goToLost: () => {
                 dispatch(changeEventTypeFilter(EVENT_LOST));
-                ownProps.goToMap();
+                dispatch(goToMap());
             },
             goToFound: () => {
                 dispatch(changeEventTypeFilter(EVENT_FOUND));
-                ownProps.goToMap();
+                dispatch(goToMap());
             },
         };
     })(WelcomePage);
