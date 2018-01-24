@@ -6,8 +6,8 @@ import java.nio.charset.StandardCharsets
 import java.nio.file.{Files, Paths}
 import javax.imageio.ImageIO
 
+import bestaro.backend.util.ImageUtil
 import bestaro.common.types.{NamedPicture, Record, RecordDTO}
-import bestaro.common.util.ImageResizer
 import dispatch.Defaults._
 import dispatch._
 import play.api.libs.json.Json
@@ -34,16 +34,8 @@ class DataSupplier {
 
   private def minifiedImageBytes(pictureName: String): Array[Byte] = {
     val bufferedImage = ImageIO.read(new File("pictures/" + pictureName))
-    val width = bufferedImage.getWidth
-    val height = bufferedImage.getHeight()
 
-    val biggerDimension = 200
-    val rescale = (value: Int) => (value / (Math.max(width, height) * (1.0 / biggerDimension))).intValue()
-    val resizedImage = ImageResizer.createResizedCopy(
-      bufferedImage,
-      rescale(width),
-      rescale(height),
-      preserveAlpha = true)
+    val resizedImage = ImageUtil.shrinkToDimension(bufferedImage, 200)
     val byteOutputStream = new ByteArrayOutputStream()
     ImageIO.write(resizedImage, "png", byteOutputStream)
     byteOutputStream.toByteArray

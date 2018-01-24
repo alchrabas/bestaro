@@ -145,7 +145,7 @@ class OlxCollector(recordConsumer: RawRecord => Unit, httpDownloader: HttpDownlo
   }
 
   def requestImageSlowly(id: RecordId, url: String, serialId: Int): Path = {
-    ImageUtil.saveImage(id, serialId, httpDownloader.downloadResource(new URL(url)))
+    ImageUtil.saveImageForRecord(id, serialId, httpDownloader.downloadResource(new URL(url)))
   }
 
   def requestSlowly(url: String): Document = {

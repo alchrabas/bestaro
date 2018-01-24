@@ -123,7 +123,7 @@ class FacebookCollector(recordConsumer: RawRecord => Unit, isAlreadyStored: RawR
         if (potentialPicturePath.toFile.exists()) { // avoid fetching image when it's already there
           picturePath = Some(Paths.get(ImageUtil.pictureName(id, 1)))
         } else {
-          picturePath = Some(ImageUtil.saveImage(id, 1, post.getFullPicture.openStream()))
+          picturePath = Some(ImageUtil.saveImageForRecord(id, 1, post.getFullPicture.openStream()))
         }
       } catch {
         case _: Exception => println("Unable to save the picture for ID " + id)
