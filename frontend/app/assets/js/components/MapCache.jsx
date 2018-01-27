@@ -3,8 +3,10 @@ import ReactDOM from "react-dom";
 import GoogleMapContainer from "./MapWrapper";
 import {connect} from "react-redux";
 import PropTypes from "prop-types";
+import {refreshMap} from "../store";
 
 let cachedParentElement = null;
+let cachedReactComponent = null;
 
 class MapCache extends React.Component {
 
@@ -14,12 +16,19 @@ class MapCache extends React.Component {
             cachedParentElement.style.height = "100%";
             cachedParentElement.style.width = "100%";
             ReactDOM.render(
-                <GoogleMapContainer store={this.context.store}/>,
+                <GoogleMapContainer
+                    ref={ref => cachedReactComponent = ref}
+                    store={this.context.store}/>,
                 cachedParentElement
             );
         }
 
         document.getElementById("cachedMapContainer").appendChild(cachedParentElement);
+
+        // this is to force redraw of the cached map, as google map is not meant to be used like that
+        if (cachedReactComponent) {
+            this.props.refreshMap();
+        }
     }
 
     componentWillUnmount() {
@@ -33,6 +42,13 @@ class MapCache extends React.Component {
 
 MapCache.contextTypes = {store: PropTypes.object};
 
-const MapCacheContainer = connect()(MapCache);
+const MapCacheContainer = connect(
+    state => state,
+    dispatch => {
+        return {
+            refreshMap: () => dispatch(refreshMap())
+        };
+    }
+)(MapCache);
 
 export default MapCacheContainer;

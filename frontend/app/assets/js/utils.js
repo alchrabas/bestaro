@@ -36,8 +36,8 @@ export const formatDate = (timestamp) => {
 
     const date = new Date(Number.parseInt(timestamp));
     return ("0" + date.getUTCDate()).slice(-2) +
-        "-" + ("0" + (date.getUTCMonth() + 1)).slice(-2) +
-        "-" + date.getUTCFullYear();
+        "." + ("0" + (date.getUTCMonth() + 1)).slice(-2) +
+        "." + date.getUTCFullYear();
 };
 
 export const daysRelativeToNow = (daysDifference) => {

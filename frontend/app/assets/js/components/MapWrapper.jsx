@@ -39,6 +39,14 @@ class MapWrapper extends React.Component {
         }
     }
 
+    componentDidUpdate(prevProps, prevState) {
+        if (prevProps.refreshSerialId !== this.props.refreshSerialId && this.mapRef) {
+            // force redraw of the map
+            google.maps.event.trigger(
+                this.mapRef.context["__SECRET_MAP_DO_NOT_USE_OR_YOU_WILL_BE_FIRED"], 'resize');
+        }
+    }
+
     render() {
         const records = this.props.records;
 
@@ -48,13 +56,18 @@ class MapWrapper extends React.Component {
                 record.lat, record.lng,
                 northEast, southWest))
             .map(this.createMarker);
-
         return <GoogleMap
             ref={ref => this.mapRef = ref}
             defaultZoom={12}
             defaultCenter={{lat: 50.063408, lng: 19.943933}}
             onBoundsChanged={this.handleBoundsChanged}
-            options={{gestureHandling: 'greedy'}}
+            options={{
+                gestureHandling: 'greedy',
+                streetViewControl: false,
+                mapTypeControlOptions: {
+                    mapTypeIds: []
+                }
+            }}
         >
             {markersToPresent}
         </GoogleMap>;
@@ -107,6 +120,7 @@ const mapStateToProps = (state, ownProps) => {
         selectedRecord: state.ui.selectedRecord,
         className: ownProps.className || "",
         style: ownProps.style || {},
+        refreshSerialId: state.map.refreshSerialId,
     };
 };
 

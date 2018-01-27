@@ -3,7 +3,7 @@ import {applyMiddleware, combineReducers, createStore} from "redux";
 import {composeWithDevTools} from "redux-devtools-extension";
 import ReduxThunk from "redux-thunk";
 import {reducer as responsive} from 'redux-mediaquery'
-import {VIEW_CONTACT, VIEW_MAP, VIEW_WELCOME} from "./constants";
+import {VIEW_READ_MORE, VIEW_MAP, VIEW_WELCOME} from "./constants";
 
 
 export const CHANGE_DATE_FILTER = "CHANGE_DATE_FILTER";
@@ -13,6 +13,7 @@ export const SELECT_RECORD = "SELECT_RECORD";
 export const UPDATE_MAP_CENTER = "UPDATE_MAP_CENTER";
 export const SCROLL_LIST = "SCROLL_LIST";
 export const CHANGE_VIEW = "CHANGE_VIEW";
+export const REFRESH_MAP = "REFRESH_MAP";
 
 export const changeDateFilter = (dateFrom, dateTo) => {
     return {
@@ -67,6 +68,12 @@ export const updateMapCenter = center => {
     return {
         type: UPDATE_MAP_CENTER,
         center,
+    };
+};
+
+export const refreshMap = () => {
+    return {
+        type: REFRESH_MAP,
     };
 };
 
@@ -139,10 +146,10 @@ export const goToWelcome = () => {
     };
 };
 
-export const goToContact = () => {
+export const goToReadMore = () => {
     return {
         type: CHANGE_VIEW,
-        view: VIEW_CONTACT,
+        view: VIEW_READ_MORE,
     };
 };
 
@@ -170,12 +177,17 @@ const uiReducer = (state = {
 };
 
 const mapReducer = (state = {
-    center: {lat: 0, lon: 0},
+    center: {lat: 0, lng: 0},
+    refreshSerialId: 0,
 }, action) => {
     switch (action.type) {
         case UPDATE_MAP_CENTER:
             return Object.assign({}, state, {
                 center: action.center,
+            });
+        case REFRESH_MAP:
+            return Object.assign({}, state, {
+                refreshSerialId: state.refreshSerialId + 1,
             });
         default:
             return state;
