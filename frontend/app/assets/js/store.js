@@ -48,7 +48,7 @@ export const deselectRecord = () => {
     return {type: SELECT_RECORD, selectedRecord: null};
 };
 
-let lastMoveTimestamp = Date.now();
+let lastMoveTimestamp = Infinity;
 // create action creator
 const updateLastMoveTimestamp = () => lastMoveTimestamp = Date.now(); // todo move to redux, but for now ugly will work
 
@@ -58,7 +58,6 @@ setInterval(() => {
     const currentTimestamp = Date.now();
     if (currentTimestamp >= lastMoveTimestamp + 1500) {
         store.dispatch(fetchDataFromServer());
-        lastMoveTimestamp = Infinity;
     }
 }, 250);
 
@@ -91,6 +90,7 @@ export const fetchDataFromServer = () => {
             ).catch(e => {
             console.log("Error when trying to fetch data", e);
         });
+        lastMoveTimestamp = Infinity;
     };
 };
 

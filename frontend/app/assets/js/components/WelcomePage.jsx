@@ -1,4 +1,4 @@
-import {changeEventTypeFilter, goToMap} from "../store";
+import {changeEventTypeFilter, fetchDataFromServer, goToMap} from "../store";
 import {connect} from "react-redux";
 import {EVENT_FOUND, EVENT_LOST} from "../constants";
 import * as React from "react";
@@ -33,10 +33,12 @@ const WelcomePageContainer = connect(
         return {
             goToLost: () => {
                 dispatch(changeEventTypeFilter(EVENT_LOST));
+                dispatch(fetchDataFromServer());
                 dispatch(goToMap());
             },
             goToFound: () => {
                 dispatch(changeEventTypeFilter(EVENT_FOUND));
+                dispatch(fetchDataFromServer());
                 dispatch(goToMap());
             },
         };

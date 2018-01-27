@@ -7,7 +7,7 @@ const WideHeader = ({goToReadMore}) => {
             fontSize: "32px",
             verticalAlign: "top",
         }}>MapaZwierzat.pl</span>,
-        <div key="nav-buttons" style={{float: "right"}}>
+        <div key="nav-buttons" className="nav-buttons">
             <button className="pure-button" onClick={goToReadMore}>Jak to działa?</button>
         </div>
     ];

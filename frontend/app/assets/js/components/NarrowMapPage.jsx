@@ -46,7 +46,7 @@ class NarrowMapPage extends React.Component {
         if (this.state.subview === SUBVIEW_MAP) {
             return [
                 <div className="row top-bar header" key="header">
-                    <NarrowMenu toggleMenu={this.toggleMenu}/>
+                    <NarrowMenu/>
                     <FiltersContainer key="filters"/>
                 </div>,
                 <div className="row content" key="center">

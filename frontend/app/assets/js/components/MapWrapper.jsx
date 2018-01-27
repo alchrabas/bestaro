@@ -26,7 +26,7 @@ class MapWrapper extends React.Component {
     }
 
     getBounds() {
-        if (this.mapRef) {
+        if (this.mapRef && this.mapRef.getBounds()) {
             return {
                 northEast: this.mapRef.getBounds().getNorthEast(),
                 southWest: this.mapRef.getBounds().getSouthWest(),
@@ -64,9 +64,10 @@ class MapWrapper extends React.Component {
             options={{
                 gestureHandling: 'greedy',
                 streetViewControl: false,
+                fullscreenControl: false,
                 mapTypeControlOptions: {
                     mapTypeIds: []
-                }
+                },
             }}
         >
             {markersToPresent}
