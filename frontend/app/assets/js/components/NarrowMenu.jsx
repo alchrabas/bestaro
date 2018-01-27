@@ -1,4 +1,9 @@
 import React from "react";
+import DropdownMenu from "react-dd-menu";
+import "react-dd-menu/src/scss/react-dd-menu.scss";
+import {connect} from "react-redux";
+import {goToMap, goToReadMore} from "../store";
+
 
 class NarrowMenu extends React.Component {
 
@@ -6,7 +11,7 @@ class NarrowMenu extends React.Component {
         super(props);
 
         this.state = {
-            showMenu: false,
+            open: false,
         };
 
         this.toggleMenu = this.toggleMenu.bind(this);
@@ -14,33 +19,36 @@ class NarrowMenu extends React.Component {
 
     toggleMenu() {
         this.setState({
-            showMenu: !this.state.showMenu,
+            open: !this.state.open,
         });
     }
 
     render() {
-        return <div style={{position: "fixed", top: 0, right: 0, zIndex: 100}}>
-            <img onClick={this.toggleMenu}
-                 src="/assets/images/hamburger.png"
-                 style={{float: "right"}}/>
-            {this.state.showMenu &&
-            <MenuList/>}
-        </div>;
+        return <DropdownMenu
+            isOpen={this.state.open}
+            close={this.toggleMenu}
+            toggle={<img src="/assets/images/hamburger.png"
+                         onClick={this.toggleMenu}/>}
+            align="right">
+            <li onClick={this.props.goToMap}>
+                <button type="button">Mapa</button>
+            </li>
+            <li onClick={this.props.goToReadMore}>
+                <button type="button">Jak to działa?</button>
+            </li>
+        </DropdownMenu>;
     }
 }
 
-const MenuList = () => {
-    return <ul style={{
-        listStyleType: "none",
-        paddingLeft: 0,
-        backgroundColor: "#ddd",
-        margin: 0,
-        clear: "both",
-        fontSize: "24px"
-    }}>
-        <li>Mapa</li>
-        <li>Jak to działa?</li>
-    </ul>;
-};
 
-export default NarrowMenu;
+const NarrowMenuContainer = connect(
+    state => state,
+    dispatch => {
+        return {
+            goToMap: () => dispatch(goToMap()),
+            goToReadMore: () => dispatch(goToReadMore()),
+        };
+    }
+)(NarrowMenu);
+
+export default NarrowMenuContainer;

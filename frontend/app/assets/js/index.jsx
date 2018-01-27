@@ -1,6 +1,6 @@
 'use strict';
 
-import {fetchDataFromServer, changeDateFilter, store} from "./store";
+import {changeDateFilter, store} from "./store";
 import React from "react";
 import ReactDOM from "react-dom";
 import {Provider} from "react-redux";

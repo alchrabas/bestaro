@@ -1,14 +1,14 @@
 import {connect} from "react-redux";
-import {changeEventTypeFilter, goToReadMore, goToMap} from "../store";
+import {goToReadMore, goToMap} from "../store";
 import React from "react";
 import WideHeader from "./WideHeader";
-import {EVENT_LOST} from "../constants";
+import NarrowMenu from "./NarrowMenu";
 
 
-const ReadMorePage = ({goToMap, goToReadMore}) => {
+const ReadMorePage = ({wide, goToMap}) => {
     return [
         <div className="row top-bar header" key="header">
-            <WideHeader goToReadMore={goToReadMore}/>
+            {wide ? <WideHeader/> : <NarrowMenu/>}
         </div>,
         <div className="page-with-text">
             <div style={{overflow: "hidden"}}>
@@ -18,7 +18,7 @@ const ReadMorePage = ({goToMap, goToReadMore}) => {
                     Dane kontaktowe
                 </p>
             </div>
-            <div key="text" className="welcome-text">Ple ple ple zrobione przez Aleksander Chrabąszcz.<br/>
+            <div key="text" className="welcome-text">Ple ple ple zrobione przez: Aleksander Chrabąszcz.<br/>
                 Jakiś ładny obrazek. COś jeszcze więcej tu napiszę ale nei wiem o co chodzi tyle że to istotne
                 przyanierjiwje qiwej qiwe jqiw jdolorem ipsum costam sit amet, <br/>
                 He hE he
@@ -34,7 +34,9 @@ const ReadMorePage = ({goToMap, goToReadMore}) => {
 
 const ReadMorePageContainer = connect(
     state => {
-        return {};
+        return {
+            wide: state.responsive.isWide,
+        };
     },
     dispatch => {
         return {
