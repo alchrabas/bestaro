@@ -1,9 +1,9 @@
 import React from "react";
 import {connect} from "react-redux";
-import {VIEW_CONTACT, VIEW_MAP, VIEW_WELCOME} from "../constants";
+import {VIEW_READ_MORE, VIEW_MAP, VIEW_WELCOME} from "../constants";
 import WelcomePageContainer from "./WelcomePage";
 import MapPageContainer from "./MapPage";
-import ContactPageContainer from "./ContactPage";
+import ReadMorePageContainer from "./ReadMorePage";
 
 let App = ({currentView}) => {
     switch (currentView) {
@@ -11,8 +11,8 @@ let App = ({currentView}) => {
             return <WelcomePageContainer/>;
         case VIEW_MAP:
             return <MapPageContainer/>;
-        case VIEW_CONTACT:
-            return <ContactPageContainer/>;
+        case VIEW_READ_MORE:
+            return <ReadMorePageContainer/>;
     }
 };
 

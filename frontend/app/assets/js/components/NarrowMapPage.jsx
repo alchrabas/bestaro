@@ -44,7 +44,7 @@ class NarrowMapPage extends React.Component {
 
         if (this.state.subview === SUBVIEW_MAP) {
             return [
-                <div className="row top-bar header">
+                <div className="row top-bar header" key="header">
                     <FiltersContainer key="filters"/>
                 </div>,
                 <div className="row content" key="center">
@@ -53,9 +53,9 @@ class NarrowMapPage extends React.Component {
                         <div id="center-marker"/>
                     </div>
                 </div>,
-                <button key="button"
-                        className="pure-button-primary big-wide-button"
-                        onClick={this.goToList}>Pokaż listę ogłoszeń</button>
+                <button className="pure-button-primary big-wide-button button-on-bottom"
+                        onClick={this.goToList}
+                        key="button">Pokaż ogłoszenia w pobliżu</button>
             ];
         } else {
             return <div
@@ -68,7 +68,7 @@ class NarrowMapPage extends React.Component {
                 <RecordsList key="records-list" style={{flex: 1}}/>
                 <button onClick={this.goToMap}
                         key="button"
-                        className="pure-button-primary big-wide-button">
+                        className="pure-button-primary big-wide-button button-on-bottom">
                     Powrót na mapę
                 </button>
             </div>;

@@ -21,17 +21,19 @@ const RecordDetails = ({record, moveBack, style, buttonsFixed}) => {
         <div className="pure-u-1-2"> {formatDate(record.publishDate)} </div>
         <div className="pure-u-1-2"> {Messages("details.event_type")} </div>
         <div className="pure-u-1-2"> {Messages("event_type." + record.eventType)} </div>
-        <img className="fullPicturePreview" src={"pictures/" + record.picture}/>
+        <div className="pure-u-1-1" style={{textAlign: "center"}}>
+            <img className="fullPicturePreview" src={"pictures/" + record.picture}/>
+        </div>
         <div className="pure-u-1" style={buttonStyle}>
             <button
                 style={{width: "50%"}}
-                className="pure-button pure-button-primary big-wide-button"
+                className="pure-button pure-button-primary big-wide-button button-on-bottom"
                 onClick={moveBack}>
                 Powrót
             </button>
             <a
-                style={{width: "50%"}}
-                className="pure-button pure-button-primary big-wide-button"
+                className="pure-button pure-button-primary big-wide-button button-on-bottom"
+                style={{borderLeft: "2px solid #22f", width: "50%"}}
                 href={record.link}
                 target="_blank"
             > {Messages("details.link")}</a>

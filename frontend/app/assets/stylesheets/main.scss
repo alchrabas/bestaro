@@ -74,7 +74,7 @@ html, body {
   height: auto;
 }
 
-.welcome-page {
+.page-with-text {
   margin-left: auto;
   margin-right: auto;
   margin-top: 100px;
@@ -87,7 +87,7 @@ html, body {
   white-space: pre-wrap;
 }
 
-.welcome-header {
+.page-with-text-header {
   font-size: 40px;
   padding-top: 25px;
   margin: 0;
@@ -107,13 +107,13 @@ html, body {
 
 .big-button-lost {
   @extend .big-wide-button;
-  background-color: #ef201b;
+  background-color: #ff8070;
   border-radius: 10px;
 }
 
 .big-button-found {
   @extend .big-wide-button;
-  background-color: #91de2b;
+  background-color: #a1fe8b;
   border-radius: 10px;
 }
 
@@ -149,13 +149,15 @@ label.checkbox-label {
 
 #center-marker {
   position: absolute;
-  top: calc(50% - 20px);
-  left: calc(50% - 20px);
+  top: 50%;
+  left: 50%;
+  margin-top: -20px;
+  margin-left: -20px;
   height: 40px;
   width: 40px;
   border: 2px solid #88f;
   border-radius: 50%;
-  background-color: rgba(30, 144, 255, 0.3);
+  background-color: rgba(30, 144, 255, 0.2);
   box-sizing: border-box;
   pointer-events: none;
 }
@@ -185,11 +187,11 @@ label.checkbox-label {
     font-size: 125%;
   }
 
-  .welcome-page {
+  .page-with-text {
     margin: 30px 10px 0;
   }
 
-  .welcome-header {
+  .page-with-text-header {
     font-size: 30px;
   }
 }

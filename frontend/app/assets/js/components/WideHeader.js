@@ -1,7 +1,6 @@
 import React from "react";
 
-
-const WideHeader = ({goToContact}) => {
+const WideHeader = ({goToReadMore}) => {
     return [
         <img key="logo" src="/assets/images/kotologo.png"/>,
         <span key="site-name" style={{
@@ -9,7 +8,7 @@ const WideHeader = ({goToContact}) => {
             verticalAlign: "top",
         }}>MapaZwierzat.pl</span>,
         <div key="nav-buttons" style={{float: "right"}}>
-            <button className="pure-button" onClick={goToContact}>Kontakt</button>
+            <button className="pure-button" onClick={goToReadMore}>Jak to działa?</button>
         </div>
     ];
 };

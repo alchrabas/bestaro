@@ -4,7 +4,7 @@ import {connect} from "react-redux";
 import RecordsList from "./RecordsList";
 import {RecordDetailsContainer} from "./Sidebar";
 import MapCacheContainer from "./MapCache";
-import {goToContact} from "../store";
+import {goToReadMore} from "../store";
 import WideHeader from "./WideHeader";
 
 
@@ -38,10 +38,10 @@ const SidebarForWideLayoutContainer = connect(state => {
 )(SidebarForWideLayout);
 
 
-const WideMapPage = ({goToContact}) => {
+const WideMapPage = ({goToReadMore}) => {
     return [
         <div className="row top-bar header" key="header">
-            <WideHeader goToContact={goToContact}/>
+            <WideHeader goToReadMore={goToReadMore}/>
         </div>,
         <div className="row content" key="center">
             <SidebarForWideLayoutContainer key="sidebar"/>
@@ -61,7 +61,7 @@ const WideMapPageContainer = connect(state => {
     },
     dispatch => {
         return {
-            goToContact: () => dispatch(goToContact()),
+            goToReadMore: () => dispatch(goToReadMore()),
         };
     })(WideMapPage);
 

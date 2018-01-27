@@ -4,11 +4,11 @@ import {EVENT_FOUND, EVENT_LOST} from "../constants";
 import * as React from "react";
 
 const WelcomePage = ({goToLost, goToFound}) => {
-    return <div className="welcome-page">
+    return <div className="page-with-text">
         <div style={{overflow: "hidden"}}>
             <img key="logo" src="/assets/images/kotologo-big.png"
                  style={{float: "left", marginRight: "10px"}}/>
-            <p className="welcome-header">
+            <p className="page-with-text-header">
                 {Messages("welcome_header")}
             </p>
         </div>
