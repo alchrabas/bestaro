@@ -5,6 +5,7 @@ import RecordsList from "./RecordsList";
 import {selectRecord} from "../store";
 import {RecordDetailsContainer} from "./Sidebar";
 import MapCacheContainer from "./MapCache";
+import NarrowMenu from "./NarrowMenu";
 
 
 const SUBVIEW_LIST = "SUBVIEW_LIST";
@@ -45,6 +46,7 @@ class NarrowMapPage extends React.Component {
         if (this.state.subview === SUBVIEW_MAP) {
             return [
                 <div className="row top-bar header" key="header">
+                    <NarrowMenu toggleMenu={this.toggleMenu}/>
                     <FiltersContainer key="filters"/>
                 </div>,
                 <div className="row content" key="center">
