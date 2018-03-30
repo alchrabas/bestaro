@@ -1,5 +1,6 @@
 package bestaro.backend.core
 
+import java.io.File
 import java.util.Date
 
 import bestaro.backend.collectors.util.SlowHttpDownloader
@@ -10,7 +11,7 @@ import bestaro.backend.database.DatabaseWrapper.CacheEfficiencyRecord
 import bestaro.backend.helpers.TaggedRecordsManager
 import bestaro.backend.helpers.TaggedRecordsManager.TaggedRecord
 import bestaro.backend.{AppConfig, DataSupplier}
-import bestaro.common.types.RecordId
+import bestaro.common.types.{Record, RecordId}
 import bestaro.locator.LocatorDatabase
 
 import scala.concurrent.duration.Duration
@@ -75,11 +76,18 @@ object Main {
         val dataSupplier = new DataSupplier
         // synchronous
         DatabaseWrapper.allNotSentProcessedRecords
+          .filter(allPicturesAreValid)
           .map { record =>
             Await.result(dataSupplier.sendRecord(record)
-              .flatMap(_ => DatabaseWrapper.markRecordAsSent(record)), Duration.Inf)
+              .flatMap(_ => DatabaseWrapper.markRecordAsSent(record))
+              , Duration.Inf)
           }
     }
+  }
+
+  private def allPicturesAreValid(record: Record): Boolean = {
+    record.pictures.nonEmpty && record.pictures.forall(picture =>
+      new File("pictures/" + picture).length() > 0)
   }
 
   private def getLocationTaggedRecords: Map[RecordId, TaggedRecord] = {

@@ -3,6 +3,7 @@ package bestaro.backend.util
 import java.awt.image.BufferedImage
 import java.io.InputStream
 import java.nio.file.{Path, Paths}
+import java.security.MessageDigest
 import javax.imageio.ImageIO
 
 import bestaro.common.types.RecordId
@@ -14,16 +15,28 @@ object ImageUtil {
 
   def saveImageForRecord(id: RecordId, serialId: Int, stream: InputStream): Path = {
     val _pictureName = pictureName(id, serialId)
-    val _pathToPicture = pathToPicture(_pictureName)
+    val _pathToPicture = generatePicturePath(_pictureName)
     val bufferedImage = ImageIO.read(stream)
     val resizedImage = shrinkToDimension(bufferedImage, MAX_ALLOWED_DIMENSION)
+    _pathToPicture.toFile.getParentFile.mkdirs()
     ImageIO.write(resizedImage, "png", _pathToPicture.toFile)
 
-    Paths.get(_pictureName)
+    generatePathWithHash(_pictureName)
   }
 
-  def pathToPicture(pictureName: String): Path = {
-    Paths.get("pictures", pictureName)
+  def generatePicturePath(pictureName: String): Path = {
+    Paths.get("pictures", generatePathWithHash(pictureName).toString)
+  }
+
+  def generatePathWithHash(pictureName: String): Path = {
+    Paths.get(nameBasedDirectoryHash(pictureName), pictureName)
+  }
+
+  def nameBasedDirectoryHash(name: String): String = {
+    val messageDigest = MessageDigest.getInstance("MD5")
+    val hash = messageDigest.digest(name.getBytes)
+    val firstTwoCharsOfHash = f"${hash(0)}%02x"
+    firstTwoCharsOfHash
   }
 
   def pictureName(id: RecordId, serialId: Int): String = {

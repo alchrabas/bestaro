@@ -14,7 +14,7 @@ object RecordDTO {
 }
 
 case class NamedPicture(
-                         name: String,
+                         path: String,
                          bytes: Array[Byte],
                          minifiedBytes: Array[Byte]
                        )
@@ -24,7 +24,7 @@ object NamedPicture {
   implicit val topWrites: Writes[NamedPicture] = Writes[NamedPicture] {
     picture =>
       JsObject(Map(
-        "name" -> JsString(picture.name),
+        "name" -> JsString(picture.path),
         "bytes" -> JsString(new String(Base64.getEncoder.encode(picture.bytes))),
         "minifiedBytes" -> JsString(new String(Base64.getEncoder.encode(picture.minifiedBytes)))
       ))

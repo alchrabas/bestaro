@@ -119,9 +119,9 @@ class FacebookCollector(recordConsumer: RawRecord => Unit, isAlreadyStored: RawR
     var picturePath: Option[Path] = Option.empty
     if (post.getFullPicture != null) {
       try {
-        val potentialPicturePath = ImageUtil.pathToPicture(ImageUtil.pictureName(id, 1))
+        val potentialPicturePath = ImageUtil.generatePicturePath(ImageUtil.pictureName(id, 1))
         if (potentialPicturePath.toFile.exists()) { // avoid fetching image when it's already there
-          picturePath = Some(Paths.get(ImageUtil.pictureName(id, 1)))
+          picturePath = Some(potentialPicturePath)
         } else {
           picturePath = Some(ImageUtil.saveImageForRecord(id, 1, post.getFullPicture.openStream()))
         }
