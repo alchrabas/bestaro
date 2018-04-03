@@ -2,10 +2,10 @@ package controllers
 
 import java.io.{File, FileOutputStream}
 import java.util.Base64
-import javax.inject.Inject
 
 import bestaro.common.types.{NamedPicture, Record, RecordDTO}
 import data.DatabaseTypes
+import javax.inject.Inject
 import play.api.mvc._
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -64,12 +64,16 @@ class RecordConsumerController @Inject()(cc: ControllerComponents,
     val picturesDir = configuration.underlying.getString("bestaro.picturesDir")
     val minPicturesDir = configuration.underlying.getString("bestaro.minPicturesDir")
 
-    saveImage(picture.bytes, new File(picturesDir + "/" + picture.name))
-    saveImage(picture.minifiedBytes, new File(minPicturesDir + "/" + picture.name))
+    saveImage(picture.bytes, new File(picturesDir + "/" + picture.path))
+    saveImage(picture.minifiedBytes, new File(minPicturesDir + "/" + picture.path))
   }
 
   private def saveImage(bytes: Array[Byte], picturePath: File): Unit = {
     val fileWriter = new FileOutputStream(picturePath)
+
+    // ensure the directory path exists
+    picturePath.getParentFile.mkdirs()
+
     fileWriter.write(bytes)
     fileWriter.close()
   }
