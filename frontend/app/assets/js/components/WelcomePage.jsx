@@ -9,18 +9,18 @@ const WelcomePage = ({goToLost, goToFound}) => {
             <img key="logo" src="/assets/images/kotologo-big.png"
                  style={{float: "left", marginRight: "10px"}}/>
             <p className="page-with-text-header">
-                {Messages("welcome_header")}
+                {Messages("welcome.header")}
             </p>
         </div>
-        <div key="text" className="welcome-text">{Messages("welcome_text")}</div>
+        <div key="text" className="welcome-text">{Messages("welcome.text")}</div>
         <div className="pure-g" style={{marginTop: "50px"}}>
             <div className="pure-hidden-md pure-u-lg-1-12"/>
             <div className="pure-u-11-24 pure-u-lg-1-3">
-                <button onClick={goToLost} className="pure-button big-button-lost">Poszukiwane</button>
+                <button onClick={goToLost} className="pure-button big-button-lost">{Messages("event_type.FOUND")}</button>
             </div>
             <div className="pure-u-1-12 pure-u-lg-1-6"/>
             <div className="pure-u-11-24 pure-u-lg-1-3">
-                <button onClick={goToFound} className="pure-button big-button-found">Znalezione</button>
+                <button onClick={goToFound} className="pure-button big-button-found">{Messages("event_type.LOST")}</button>
             </div>
             <div className="pure-hidden-md pure-u-md-1-12"/>
         </div>

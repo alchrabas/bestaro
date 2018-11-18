@@ -31,10 +31,10 @@ class NarrowMenu extends React.Component {
                          onClick={this.toggleMenu}/>}
             align="right">
             <li onClick={this.props.goToMap}>
-                <button type="button">Mapa</button>
+                <button type="button">{Messages("navbar.map")}</button>
             </li>
             <li onClick={this.props.goToReadMore}>
-                <button type="button">Jak to działa?</button>
+                <button type="button">{Messages("navbar.read_more")}</button>
             </li>
         </DropdownMenu>;
     }

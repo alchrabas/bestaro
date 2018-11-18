@@ -57,7 +57,7 @@ class NarrowMapPage extends React.Component {
                 </div>,
                 <button className="pure-button-primary big-wide-button button-on-bottom"
                         onClick={this.goToList}
-                        key="button">Pokaż ogłoszenia w pobliżu</button>
+                        key="button">{Messages("show_announcements_in_proximity")}</button>
             ];
         } else {
             return <div

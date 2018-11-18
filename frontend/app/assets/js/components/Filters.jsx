@@ -120,13 +120,13 @@ const EventType = ({lostChecked, foundChecked, onChange}) => {
             <input type="checkbox"
                    checked={lostChecked}
                    onChange={event => onChange(event, "LOST")}/>
-            Poszukiwane
+            {Messages("event_type.LOST")}
         </label>
         <label className="checkbox-label" key="foundCheckbox">
             <input type="checkbox"
                    checked={foundChecked}
                    onChange={event => onChange(event, "FOUND")}/>
-            Znalezione
+            {Messages("event_type.FOUND")}
         </label>
     </div>;
 };
@@ -142,16 +142,16 @@ const EventDateRange = ({
                 value={selectedOption}
                 onChange={onChange}
                 key="dateRangeSelect">
-            <option value="lastWeek">Ostatni tydzień</option>
-            <option value="last2Weeks">Ostatnie 2 tygodnie</option>
-            <option value="lastMonth">Ostatni miesiąc</option>
-            <option value="last3Months">Ostatnie 3 miesiące</option>
-            <option value="lastYear">Ostatni rok</option>
-            <option value="custom">Niestandardowe...</option>
+            <option value="lastWeek">{Messages("event_date.last_week")}</option>
+            <option value="last2Weeks">{Messages("event_date.last_2_weeks")}</option>
+            <option value="lastMonth">{Messages("event_date.last_month")}</option>
+            <option value="last3Months">{Messages("event_date.last_3_months")}</option>
+            <option value="lastYear">{Messages("event_date.last_year")}</option>
+            <option value="custom">{Messages("event_date.custom")}</option>
         </select>,
         selectedOption === "custom" &&
         <div className="event-type-checkboxes">
-            <label key="dateFrom"> W przedziale:
+            <label key="dateFrom"> {Messages("event_date.custom_range")}
                 <input
                     name="date-from"
                     id="date-from"

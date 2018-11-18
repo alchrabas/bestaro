@@ -10,8 +10,8 @@ const WideHeader = ({goToMap, goToReadMore}) => {
             verticalAlign: "top",
         }}>MapaZwierzat.pl</span>,
         <div key="nav-buttons" className="nav-buttons">
-            <button className="pure-button" onClick={goToMap}>Mapa</button>
-            <button className="pure-button" onClick={goToReadMore}>Jak to działa?</button>
+            <button className="pure-button" onClick={goToMap}>{Messages("navbar.map")}</button>
+            <button className="pure-button" onClick={goToReadMore}>{Messages("navbar.read_more")}</button>
         </div>,
     ];
 };
