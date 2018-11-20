@@ -5,7 +5,9 @@
 
 # An example controller showing a sample home page
 
-GET         /                                                               controllers.HomeController.index()
+GET         /                                                               controllers.HomeController.index(language: String = "pl")
+GET         /pl/                                                            controllers.HomeController.index(language: String = "pl")
+GET         /en/                                                            controllers.HomeController.index(language: String = "en")
 
 #GET     /                           controllers.HomeController.index
 
@@ -14,4 +16,5 @@ GET         /assets/*file                                                   cont
 POST        /upload/                                                        controllers.RecordConsumerController.saveRecord()
 GET         /pictures/:file                                                 controllers.PicturesController.picture(file)
 GET         /pictures_min/:file                                             controllers.PicturesController.minPicture(file)
-GET         /messages/                                                      controllers.HomeController.messages()
+GET         /messages/                                                      controllers.HomeController.messages(language: String = "pl")
+GET         /en/messages/                                                   controllers.HomeController.messages(language: String = "en")

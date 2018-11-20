@@ -3,7 +3,7 @@ import {applyMiddleware, combineReducers, createStore} from "redux";
 import {composeWithDevTools} from "redux-devtools-extension";
 import ReduxThunk from "redux-thunk";
 import {reducer as responsive} from 'redux-mediaquery'
-import {VIEW_READ_MORE, VIEW_MAP, VIEW_WELCOME} from "./constants";
+import {VIEW_READ_MORE, VIEW_MAP, VIEW_WELCOME, VIEW_PRIVACY_POLICY} from "./constants";
 
 
 export const CHANGE_DATE_FILTER = "CHANGE_DATE_FILTER";
@@ -152,6 +152,14 @@ export const goToReadMore = () => {
         view: VIEW_READ_MORE,
     };
 };
+
+export const goToPrivacyPolicy = () => {
+    return {
+        type: CHANGE_VIEW,
+        view: VIEW_PRIVACY_POLICY,
+    };
+};
+
 
 const uiReducer = (state = {
     selectedRecord: null,

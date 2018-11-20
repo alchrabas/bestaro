@@ -6,3 +6,4 @@ export const EVENT_NONE = "NONE";
 export const VIEW_WELCOME = "VIEW_WELCOME";
 export const VIEW_MAP = "VIEW_MAP";
 export const VIEW_READ_MORE = "VIEW_READ_MORE";
+export const VIEW_PRIVACY_POLICY = "VIEW_PRIVACY_POLICY";

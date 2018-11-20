@@ -14,18 +14,23 @@ import play.api.mvc._
 @Singleton
 class HomeController @Inject()(view: views.html.index,
                                cc: ControllerComponents,
+                               langs: Langs,
                                messagesApi: MessagesApi,
-                               jsMessagesFactory: JsMessagesFactory,
                                implicit val configuration: Configuration)
-  extends AbstractController(cc)
-    with I18nSupport {
-  
-  val messages = Action { implicit request =>
-    val jsMessages = jsMessagesFactory.all
-    Ok(jsMessages(Some("window.Messages")))
+  extends AbstractController(cc) {
+
+  private def messagesObject(language: String): Messages = {
+    messagesApi.preferred(langs.availables.find(_.code == language).toSeq ++ langs.availables)
   }
 
-  def index() = Action { implicit request =>
-    Ok(view())
+  def messages(language: String) = Action { implicit request =>
+    val jsMessagesFactory = new JsMessagesFactory(messagesApi)
+    val jsMessages = jsMessagesFactory.all
+
+    Ok(jsMessages(Some("window.Messages"))(messagesObject(language)))
+  }
+
+  def index(language: String) = Action { implicit request =>
+    Ok(view()(messagesObject(language)))
   }
 }

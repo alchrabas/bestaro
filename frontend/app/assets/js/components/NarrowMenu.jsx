@@ -36,6 +36,13 @@ class NarrowMenu extends React.Component {
             <li onClick={this.props.goToReadMore}>
                 <button type="button">{Messages("navbar.read_more")}</button>
             </li>
+            <li onClick={this.props.goToReadMore}>
+                {true ? <button className="pure-button" onClick={goToReadMore}>{Messages("navbar.english")}</button>
+                             : <button className="pure-button" onClick={goToReadMore}>{Messages("navbar.polish")}</button>}
+            </li>
+            <li onClick={this.props.goToReadMore}>
+                            <button type="button">{Messages("navbar.privacy_policy")}</button>
+            </li>
         </DropdownMenu>;
     }
 }
