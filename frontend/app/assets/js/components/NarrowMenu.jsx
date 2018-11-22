@@ -2,7 +2,7 @@ import React from "react";
 import DropdownMenu from "react-dd-menu";
 import "react-dd-menu/src/scss/react-dd-menu.scss";
 import {connect} from "react-redux";
-import {goToMap, goToReadMore} from "../store";
+
 
 
 class NarrowMenu extends React.Component {
@@ -24,36 +24,31 @@ class NarrowMenu extends React.Component {
     }
 
     render() {
+
+            console.log("ZYJESZ " + this.props.items[0].message_tag);
         return <DropdownMenu
             isOpen={this.state.open}
             close={this.toggleMenu}
             toggle={<img src="/assets/images/hamburger.png"
                          onClick={this.toggleMenu}/>}
             align="right">
-            <li onClick={this.props.goToMap}>
-                <button type="button">{Messages("navbar.map")}</button>
-            </li>
-            <li onClick={this.props.goToReadMore}>
-                <button type="button">{Messages("navbar.read_more")}</button>
-            </li>
-            <li onClick={this.props.goToReadMore}>
-                {true ? <button className="pure-button" onClick={goToReadMore}>{Messages("navbar.english")}</button>
-                             : <button className="pure-button" onClick={goToReadMore}>{Messages("navbar.polish")}</button>}
-            </li>
-            <li onClick={this.props.goToReadMore}>
-                            <button type="button">{Messages("navbar.privacy_policy")}</button>
-            </li>
+            {this.props.items.map(item =>
+                <li onClick={item.callback} key={item.message_tag}>
+                    <button type="button">{Messages(item.message_tag)}</button>
+                </li>)}
         </DropdownMenu>;
     }
 }
 
 
 const NarrowMenuContainer = connect(
-    state => state,
+    (state, ownProps) => {
+        return Object.assign({}, {
+            items: ownProps.items
+        }, state);
+    },
     dispatch => {
         return {
-            goToMap: () => dispatch(goToMap()),
-            goToReadMore: () => dispatch(goToReadMore()),
         };
     }
 )(NarrowMenu);

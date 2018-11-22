@@ -5,7 +5,7 @@ import RecordsList from "./RecordsList";
 import {RecordDetailsContainer} from "./Sidebar";
 import MapCacheContainer from "./MapCache";
 import {goToReadMore} from "../store";
-import WideHeader from "./WideHeader";
+import HeaderContainer from "./HeaderContainer";
 
 
 const SidebarForWideLayout = ({selectedRecord, listRow}) => {
@@ -41,7 +41,7 @@ const SidebarForWideLayoutContainer = connect(state => {
 const WideMapPage = ({goToReadMore}) => {
     return [
         <div className="row top-bar header" key="header">
-            <WideHeader goToReadMore={goToReadMore}/>
+            <HeaderContainer/>
         </div>,
         <div className="row content" key="center">
             <SidebarForWideLayoutContainer key="sidebar"/>

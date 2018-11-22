@@ -14,6 +14,7 @@ export const UPDATE_MAP_CENTER = "UPDATE_MAP_CENTER";
 export const SCROLL_LIST = "SCROLL_LIST";
 export const CHANGE_VIEW = "CHANGE_VIEW";
 export const REFRESH_MAP = "REFRESH_MAP";
+export const SET_LANGUAGE = "SET_LANGUAGE";
 
 export const changeDateFilter = (dateFrom, dateTo) => {
     return {
@@ -160,11 +161,28 @@ export const goToPrivacyPolicy = () => {
     };
 };
 
+//todo bad naming
+export const switchLanguage = (language) => {
+    console.log("LANGUAGE: " + language);
+    if (language == "en") {
+        window.location.replace("/en/");
+    } else {
+        window.location.replace("/");
+    }
+};
+
+export const setLanguage = (language) => {
+    return {
+        type: SET_LANGUAGE,
+        language,
+    };
+};
 
 const uiReducer = (state = {
     selectedRecord: null,
     listRow: null,
     currentView: VIEW_WELCOME,
+    language: "pl",
 }, action) => {
     switch (action.type) {
         case SELECT_RECORD:
@@ -178,6 +196,10 @@ const uiReducer = (state = {
         case CHANGE_VIEW:
             return Object.assign({}, state, {
                 currentView: action.view
+            });
+        case SET_LANGUAGE:
+            return Object.assign({}, state, {
+                language: action.language
             });
         default:
             return state;
@@ -213,3 +235,9 @@ const mainReducer = combineReducers({
 export let store = createStore(mainReducer,
     composeWithDevTools(applyMiddleware(ReduxThunk))
 );
+
+if (window.location.href.endsWith("/en/")) {
+    store.dispatch(setLanguage("en"));
+} else {
+    store.dispatch(setLanguage("pl"));
+}

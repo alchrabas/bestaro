@@ -1,7 +1,4 @@
 app.title=Mapa zaginionych i znalezionych zwierząt
-date_to.label=a 
-event_type.label=Rodzaj: 
-event_type.ANY=Dowolny
 event_type.LOST=Poszukiwane
 event_type.FOUND=Znalezione
 event_date.last_week=Ostatni tydzień
@@ -18,10 +15,9 @@ Miejsce i inne szczegóły uzyskiwane są poprzez analizę treści ogłoszenia.\
 Jest to na razie wersja eksperymentalna, nie nadaje się do powszechnego użytku.
 details.event_date=Data zdarzenia: 
 details.post_date=Data umieszczenia: 
-details.event_type=Typ zdarzenia: 
-details.picture=Zdjęcie
+details.event_type=Typ zdarzenia:
 details.link=Idź do ogłoszenia
-credits=Stworzył <a href="https://chrabasz.cz">Aleksander Chrabąszcz</a> (<a href="https://github.com/alchrabas/bestaro">Github</a>)
+map.back_to_map=Powrót na mapę
 range_groups.to100m=do 100 metrów
 range_groups.to500m=do 500 metrów
 range_groups.to1km=do 1 kilometra
@@ -33,9 +29,9 @@ range_groups.above100km=ponad 100 kilometrów
 record_details.probably_lost=Prawdopodobnie zaginione
 record_details.probably_found=Prawdopodobnie znalezione
 read_more.header=Jak działa Mapa Zwierząt?
-read_more.text=Ple ple ple zrobione przez: Aleksander Chrabąszcz.<br/>\
-Jakiś ładny obrazek. Coś jeszcze więcej tu napiszę ale nei wiem o co chodzi tyle że to istotne\
-przyanierjiwje qiwej qiwe jqiw jdolorem ipsum costam sit amet.<br/>
+read_more.text=Jakiś ładny obrazek. Coś jeszcze więcej tu napiszę ale nie wiem o co chodzi, tyle że to istotne\
+przyanierjiwje qiwej qiwe jqiw dolorem ipsum costam sit amet.<br/>\
+Stworzył <a href="https://chrabasz.cz">Aleksander Chrabąszcz</a> (<a href="https://github.com/alchrabas/bestaro">Github</a>)
 read_more.back_button=Powrót
 show_announcements_in_proximity=Pokaż ogłoszenia w pobliżu
 navbar.map=Mapa

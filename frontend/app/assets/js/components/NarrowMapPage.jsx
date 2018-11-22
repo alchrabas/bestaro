@@ -5,7 +5,7 @@ import RecordsList from "./RecordsList";
 import {selectRecord} from "../store";
 import {RecordDetailsContainer} from "./Sidebar";
 import MapCacheContainer from "./MapCache";
-import NarrowMenu from "./NarrowMenu";
+import HeaderContainer from "./HeaderContainer";
 
 
 const SUBVIEW_LIST = "SUBVIEW_LIST";
@@ -46,7 +46,7 @@ class NarrowMapPage extends React.Component {
         if (this.state.subview === SUBVIEW_MAP) {
             return [
                 <div className="row top-bar header" key="header">
-                    <NarrowMenu/>
+                    <HeaderContainer key="header"/>
                     <FiltersContainer key="filters"/>
                 </div>,
                 <div className="row content" key="center">
@@ -71,7 +71,7 @@ class NarrowMapPage extends React.Component {
                 <button onClick={this.goToMap}
                         key="button"
                         className="pure-button-primary big-wide-button button-on-bottom">
-                    Powrót na mapę
+                    {Messages("map.back_to_map")}
                 </button>
             </div>;
         }
