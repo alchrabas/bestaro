@@ -1,1 +1,44 @@
 app.title=Map of Lost and Found Pets
+event_type.LOST=Lost
+event_type.FOUND=Found
+event_date.last_week=Last week
+event_date.last_2_weeks=Last 2 weeks
+event_date.last_month=Last month
+event_date.last_3_months=Last 3 months
+event_date.last_year=Last year
+event_date.custom=Custom...
+event_date.custom_range=In range:
+welcome.header=Welcome to Mapa Zwierząt (BETA)
+welcome.text=Mapazwierzat.pl is a service storing data about lost and found pets from all around Poland.\n\
+Data is loaded automatically, which makes it fast to appear on the list, but it doesn't guarantee 100% data correctness.\n\
+Location and date are got by analysis of the advertisment's content.\n\
+It's currently an experimental version, not suitable for public use.
+details.event_date=Event date:
+details.post_date=Post date:
+details.event_type=Event type:
+details.link=Go to ad
+map.back_to_map=Back to map
+range_groups.to100m=at most 100 meters
+range_groups.to500m=at most 500 meters
+range_groups.to1km=at most 1 kilometer
+range_groups.to5km=at most 5 kilometers
+range_groups.to10km=at most 10 kilometers
+range_groups.to50km=at most 50 kilometers
+range_groups.to100km=at most 100 kilometers
+range_groups.above100km=over 100 kilometers
+record_details.probably_lost=Probably lost
+record_details.probably_found=Probably found
+read_more.header=How does Mapa Zwierząt work?
+read_more.text=Jakiś ładny obrazek. Coś jeszcze więcej tu napiszę ale nie wiem o co chodzi, tyle że to istotne\
+przyanierjiwje qiwej qiwe jqiw dolorem ipsum costam sit amet.<br/>\
+Stworzył <a href="https://chrabasz.cz">Aleksander Chrabąszcz</a> (<a href="https://github.com/alchrabas/bestaro">Github</a>)
+read_more.back_button=Powrót
+show_announcements_in_proximity=Show ads in proximity
+navbar.map=Map
+navbar.read_more=How it works?
+navbar.english=English
+navbar.polish=Polish
+navbar.privacy_policy=Privacy Policy
+privacy_policy.header=Privacy Policy
+privacy_policy.text=I hereby grant cośtam... TODO
+privacy_policy.back_button=Back
