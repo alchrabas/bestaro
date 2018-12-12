@@ -1,10 +1,10 @@
 import React from "react";
 import {connect} from "react-redux";
 import {VIEW_READ_MORE, VIEW_MAP, VIEW_WELCOME, VIEW_PRIVACY_POLICY} from "../constants";
-import WelcomePageContainer from "./WelcomePage";
-import MapPageContainer from "./MapPage";
-import ReadMorePageContainer from "./ReadMorePage";
-import PrivacyPolicyPageContainer from "./PrivacyPolicyPage";
+import WelcomePageContainer from "./WelcomePageContainer";
+import MapPageContainer from "./MapPageContainer";
+import ReadMorePageContainer from "./ReadMorePageContainer";
+import PrivacyPolicyPageContainer from "./PrivacyPolicyPageContainer";
 
 let App = ({currentView}) => {
     switch (currentView) {

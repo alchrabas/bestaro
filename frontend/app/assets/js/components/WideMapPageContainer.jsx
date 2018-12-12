@@ -1,10 +1,9 @@
 import React from "react";
-import FiltersContainer from "./Filters";
+import FiltersContainer from "./FiltersContainer";
 import {connect} from "react-redux";
-import RecordsList from "./RecordsList";
-import {RecordDetailsContainer} from "./Sidebar";
-import MapCacheContainer from "./MapCache";
-import {goToReadMore} from "../store";
+import RecordsListContainer from "./RecordsListContainer";
+import {RecordDetailsContainer} from "./RecordsListContainer";
+import MapCacheContainer from "./MapCacheContainer";
 import HeaderContainer from "./HeaderContainer";
 
 
@@ -21,7 +20,7 @@ const SidebarForWideLayout = ({selectedRecord, listRow}) => {
             }}
             className="sidebar">
             <FiltersContainer key="filters"/>
-            <RecordsList
+            <RecordsListContainer
                 style={{display: "flex", flex: 1}}
                 listRow={listRow}
             />
@@ -38,7 +37,7 @@ const SidebarForWideLayoutContainer = connect(state => {
 )(SidebarForWideLayout);
 
 
-const WideMapPage = ({goToReadMore}) => {
+const WideMapPage = () => {
     return [
         <div className="row top-bar header" key="header">
             <HeaderContainer/>
@@ -54,16 +53,10 @@ const WideMapPage = ({goToReadMore}) => {
 };
 
 
-const WideMapPageContainer = connect(state => {
-        return {
-            wide: state.responsive.isWide,
-        };
-    },
-    dispatch => {
-        return {
-            goToReadMore: () => dispatch(goToReadMore()),
-        };
-    })(WideMapPage);
+const WideMapPageContainer = connect(state => ({
+        wide: state.responsive.isWide,
+    })
+)(WideMapPage);
 
 
 export default WideMapPageContainer;

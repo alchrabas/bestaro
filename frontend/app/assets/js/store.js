@@ -140,13 +140,6 @@ export const goToMap = () => {
     };
 };
 
-export const goToWelcome = () => {
-    return {
-        type: CHANGE_VIEW,
-        view: VIEW_WELCOME,
-    };
-};
-
 export const goToReadMore = () => {
     return {
         type: CHANGE_VIEW,
@@ -161,10 +154,8 @@ export const goToPrivacyPolicy = () => {
     };
 };
 
-//todo bad naming
 export const switchLanguage = (language) => {
-    console.log("LANGUAGE: " + language);
-    if (language == "en") {
+    if (language === "en") {
         window.location.replace("/en/");
     } else {
         window.location.replace("/");

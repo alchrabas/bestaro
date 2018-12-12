@@ -1,7 +1,7 @@
 import {connect} from "react-redux";
 import React from "react";
-import WideMapPage from "./WideMapPage";
-import NarrowMapPageContainer from "./NarrowMapPage";
+import WideMapPage from "./WideMapPageContainer";
+import NarrowMapPageContainer from "./NarrowMapPageContainer";
 
 const MapPage = ({wide}) => {
     if (wide) {

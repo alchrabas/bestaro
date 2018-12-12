@@ -1,8 +1,7 @@
 import {formatDate} from "../utils";
 import {connect} from "react-redux";
 import React from "react";
-import {deselectRecord, scrollList} from "../store";
-import RecordsList from "./RecordsList";
+import {deselectRecord} from "../store";
 
 const RecordDetails = ({record, moveBack, style, buttonsFixed}) => {
 

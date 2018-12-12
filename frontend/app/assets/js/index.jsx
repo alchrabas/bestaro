@@ -8,7 +8,7 @@ import 'purecss/build/pure-min.css';
 import 'purecss/build/grids-responsive-min.css';
 import 'react-virtualized/styles.css';
 import "../stylesheets/main.scss";
-import AppContainer from "./components/App";
+import AppContainer from "./components/AppContainer";
 import {dateToString} from "./utils";
 
 import {EVENT_ANY} from "./constants";

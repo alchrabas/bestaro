@@ -24,8 +24,6 @@ class NarrowMenu extends React.Component {
     }
 
     render() {
-
-            console.log("ZYJESZ " + this.props.items[0].message_tag);
         return <DropdownMenu
             isOpen={this.state.open}
             close={this.toggleMenu}
@@ -46,10 +44,6 @@ const NarrowMenuContainer = connect(
         return Object.assign({}, {
             items: ownProps.items
         }, state);
-    },
-    dispatch => {
-        return {
-        };
     }
 )(NarrowMenu);
 

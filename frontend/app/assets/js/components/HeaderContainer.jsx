@@ -1,8 +1,8 @@
 import React from "react";
 import {connect} from "react-redux";
 import {goToMap, goToReadMore, goToPrivacyPolicy, switchLanguage} from "../store";
-import WideHeader from "./WideHeader";
-import NarrowMenu from "./NarrowMenu";
+import WideHeader from "./WideHeaderContainer";
+import NarrowMenu from "./NarrowMenuContainer";
 
 const LANGUAGE_ENGLISH = "en";
 const LANGUAGE_POLISH = "pl";
@@ -19,7 +19,7 @@ const Header = ({wide, language, goToMap, goToReadMore, switchToEnglish, switchT
     const items = [
         new NavbarItem("navbar.map", goToMap),
         new NavbarItem("navbar.read_more", goToReadMore),
-        (language != "en"
+        (language !== "en"
             ? new NavbarItem("navbar.english", switchToEnglish)
             : new NavbarItem("navbar.polish", switchToPolish)),
         new NavbarItem("navbar.privacy_policy", goToPrivacyPolicy)

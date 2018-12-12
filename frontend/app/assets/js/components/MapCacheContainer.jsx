@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import GoogleMapContainer from "./MapWrapper";
+import GoogleMapContainer from "./GoogleMapContainer";
 import {connect} from "react-redux";
 import PropTypes from "prop-types";
 import {refreshMap} from "../store";

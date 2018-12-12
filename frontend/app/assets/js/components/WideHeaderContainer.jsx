@@ -1,9 +1,7 @@
 import React from "react";
 import {connect} from "react-redux";
-import {goToMap, goToReadMore, goToPrivacyPolicy} from "../store";
 
 const WideHeader = (props) => {
-console.log(props);
     return [
         <img key="logo" src="/assets/images/kotologo.png"/>,
         <span key="site-name" style={{

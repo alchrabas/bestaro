@@ -1,10 +1,10 @@
 import React from "react";
-import FiltersContainer from "./Filters";
+import FiltersContainer from "./FiltersContainer";
 import {connect} from "react-redux";
-import RecordsList from "./RecordsList";
+import RecordsList from "./RecordsListContainer";
 import {selectRecord} from "../store";
-import {RecordDetailsContainer} from "./Sidebar";
-import MapCacheContainer from "./MapCache";
+import {RecordDetailsContainer} from "./RecordsListContainer";
+import MapCacheContainer from "./MapCacheContainer";
 import HeaderContainer from "./HeaderContainer";
 
 

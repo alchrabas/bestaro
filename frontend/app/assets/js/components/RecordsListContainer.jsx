@@ -246,7 +246,7 @@ const smartColumnCount = (workingWidth) => {
 };
 
 
-export default connect((state, ownProps) => {
+const RecordsListContainer = connect((state, ownProps) => {
         return {
             records: state.records,
             listOffset: state.ui.listRow,
@@ -259,3 +259,5 @@ export default connect((state, ownProps) => {
             onListScroll: topScrolling => dispatch(scrollList(topScrolling)),
         };
     })(RecordsList);
+
+export default RecordsListContainer;

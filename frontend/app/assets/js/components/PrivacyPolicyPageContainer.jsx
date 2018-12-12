@@ -1,10 +1,10 @@
 import {connect} from "react-redux";
-import {goToReadMore, goToMap} from "../store";
+import {goToPrivacyPolicy, goToMap} from "../store";
 import React from "react";
 import HeaderContainer from "./HeaderContainer";
 
 
-const ReadMorePage = ({wide, goToMap}) => {
+const PrivacyPolicyPage = ({wide, goToMap}) => {
     return [
         <div className="row top-bar header" key="header">
             <HeaderContainer/>
@@ -27,7 +27,7 @@ const ReadMorePage = ({wide, goToMap}) => {
     ];
 };
 
-const ReadMorePageContainer = connect(
+const PrivacyPolicyPageContainer = connect(
     state => {
         return {
             wide: state.responsive.isWide,
@@ -36,13 +36,13 @@ const ReadMorePageContainer = connect(
     dispatch => {
         return {
             goToContact: () => {
-                dispatch(goToReadMore())
+                dispatch(goToPrivacyPolicy())
             },
             goToMap: () => {
                 dispatch(goToMap());
             },
         }
     },
-)(ReadMorePage);
+)(PrivacyPolicyPage);
 
-export default ReadMorePageContainer;
+export default PrivacyPolicyPageContainer;
