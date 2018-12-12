@@ -15,12 +15,12 @@ const PrivacyPolicyPage = ({wide, goToMap}) => {
                     {Messages("privacy_policy.header")}
                 </p>
             </div>
-            <div key="text" className="welcome-text">
-                {Messages("privacy_policy.text")}
-            </div>
+            <div key="text" className="welcome-text"
+                 dangerouslySetInnerHTML={{__html: Messages("privacy_policy.text")}}/>
             <div className="pure-g" style={{marginTop: "20px"}}>
                 <div className="pure-u-1-1 pure-u-lg-1-3" style={{margin: "auto"}}>
-                    <button onClick={goToMap} className="pure-button pure-button-primary big-wide-button">{Messages("privacy_policy.back_button")}</button>
+                    <button onClick={goToMap} className="pure-button pure-button-primary big-wide-button">
+                        {Messages("privacy_policy.back_button")}</button>
                 </div>
             </div>
         </div>
