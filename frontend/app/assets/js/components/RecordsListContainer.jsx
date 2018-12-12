@@ -112,7 +112,7 @@ class RecordsList extends React.Component {
                                 objectFit: "contain",
                             }}
                             className="animal-image"
-                            src={"pictures_min/" + record.picture}
+                            src={"/pictures_min/" + record.picture}
                             onClick={() => onClick(record.id)}
                         />
                         <div className={record.eventType === EVENT_LOST

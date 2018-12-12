@@ -21,7 +21,7 @@ const RecordDetails = ({record, moveBack, style, buttonsFixed}) => {
         <div className="pure-u-1-2"> {Messages("details.event_type")} </div>
         <div className="pure-u-1-2"> {Messages("event_type." + record.eventType)} </div>
         <div className="pure-u-1-1" style={{textAlign: "center"}}>
-            <img className="fullPicturePreview" src={"pictures/" + record.picture}/>
+            <img className="fullPicturePreview" src={"/pictures/" + record.picture}/>
         </div>
         <div className="pure-u-1" style={buttonStyle}>
             <button
@@ -40,7 +40,7 @@ const RecordDetails = ({record, moveBack, style, buttonsFixed}) => {
     </div>;
 };
 
-export const RecordDetailsContainer = connect((state, ownProps) => {
+const RecordDetailsContainer = connect((state, ownProps) => {
         return {
             record: ownProps.record,
             style: ownProps.style,
@@ -54,3 +54,4 @@ export const RecordDetailsContainer = connect((state, ownProps) => {
     }
 )(RecordDetails);
 
+export default RecordDetailsContainer;

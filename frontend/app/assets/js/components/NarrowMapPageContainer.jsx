@@ -3,7 +3,7 @@ import FiltersContainer from "./FiltersContainer";
 import {connect} from "react-redux";
 import RecordsList from "./RecordsListContainer";
 import {selectRecord} from "../store";
-import {RecordDetailsContainer} from "./RecordsListContainer";
+import RecordDetailsContainer from "./RecordsListContainer";
 import MapCacheContainer from "./MapCacheContainer";
 import HeaderContainer from "./HeaderContainer";
 

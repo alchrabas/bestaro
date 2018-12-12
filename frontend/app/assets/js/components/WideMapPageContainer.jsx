@@ -2,7 +2,7 @@ import React from "react";
 import FiltersContainer from "./FiltersContainer";
 import {connect} from "react-redux";
 import RecordsListContainer from "./RecordsListContainer";
-import {RecordDetailsContainer} from "./RecordsListContainer";
+import RecordDetailsContainer from "./RecordDetailsContainer";
 import MapCacheContainer from "./MapCacheContainer";
 import HeaderContainer from "./HeaderContainer";
 
