@@ -1,6 +1,6 @@
 import React from "react";
 import {connect} from "react-redux";
-import {goToMap, goToReadMore, goToPrivacyPolicy, switchLanguage} from "../store";
+import {goToMap, goToPrivacyPolicy, goToReadMore, switchLanguage} from "../ducks/ui";
 import WideHeader from "./WideHeaderContainer";
 import NarrowMenu from "./NarrowMenuContainer";
 

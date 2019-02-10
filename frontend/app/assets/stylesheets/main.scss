@@ -103,12 +103,11 @@ html, body {
   font-size: 200%;
   padding-top: 20px;
   padding-bottom: 20px;
+  border-radius: 10px;
 }
 
 .big-button-cta {
   @extend .big-wide-button;
-  background-color: #a1fe8b;
-  border-radius: 10px;
 }
 
 label.checkbox-label {

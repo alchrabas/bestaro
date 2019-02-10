@@ -1,9 +1,10 @@
 import {connect} from "react-redux";
 import React from "react";
-import {scrollList, selectRecord} from "../store";
+import {scrollList} from "../ducks/ui";
 import scrollbarSize from "scrollbar-size/dist/scrollbar-size";
 import {EVENT_LOST} from "../constants";
 import {AutoSizer, List} from "react-virtualized";
+import {selectRecord} from "../ducks/records";
 
 const groups = [
     {

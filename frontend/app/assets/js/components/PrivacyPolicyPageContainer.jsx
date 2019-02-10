@@ -1,5 +1,5 @@
 import {connect} from "react-redux";
-import {goToPrivacyPolicy, goToMap} from "../store";
+import {goToMap, goToPrivacyPolicy} from "../ducks/ui";
 import React from "react";
 import HeaderContainer from "./HeaderContainer";
 

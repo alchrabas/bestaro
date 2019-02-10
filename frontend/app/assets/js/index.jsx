@@ -1,6 +1,6 @@
 'use strict';
 
-import {changeDateFilter, store} from "./store";
+import {store} from "./store";
 import React from "react";
 import ReactDOM from "react-dom";
 import {Provider} from "react-redux";
@@ -13,6 +13,7 @@ import {dateToString} from "./utils";
 
 import {EVENT_ANY} from "./constants";
 import {mediaQueryTracker} from "redux-mediaquery";
+import {changeDateFilter} from "./ducks/filter";
 
 
 const weekAgoDate = new Date();

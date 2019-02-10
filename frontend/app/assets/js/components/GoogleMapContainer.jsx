@@ -1,8 +1,9 @@
 import React from "react";
 import {GoogleMap, Marker, withGoogleMap} from "react-google-maps";
-import {selectRecord, updateMapCenter} from "../store";
+import {selectRecord} from "../ducks/ui";
 import {connect} from "react-redux";
-import {EVENT_LOST, EVENT_FOUND} from "../constants";
+import {EVENT_FOUND, EVENT_LOST} from "../constants";
+import {updateMapCenter} from "../ducks/map";
 
 const iconByEventType = {
     [EVENT_LOST]: "red-pin.png",

@@ -1,5 +1,5 @@
 import {connect} from "react-redux";
-import {goToReadMore, goToMap} from "../store";
+import {goToMap, goToReadMore} from "../ducks/ui";
 import React from "react";
 import HeaderContainer from "./HeaderContainer";
 

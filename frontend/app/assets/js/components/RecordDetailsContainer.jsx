@@ -1,7 +1,7 @@
 import {formatDate} from "../utils";
 import {connect} from "react-redux";
 import React from "react";
-import {deselectRecord} from "../store";
+import {deselectRecord} from "../ducks/ui";
 
 const RecordDetails = ({record, moveBack, style, buttonsFixed}) => {
 

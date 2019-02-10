@@ -1,8 +1,9 @@
 import React from "react";
-import {dateToString, daysRelativeToNow, tag} from "../utils";
-import {changeDateFilter, changeEventTypeFilter, fetchDataFromServer} from "../store";
+import {dateToString, daysRelativeToNow} from "../utils";
+import {changeDateFilter, changeEventTypeFilter} from "../ducks/filter";
 import {connect} from "react-redux";
 import {EVENT_ANY, EVENT_FOUND, EVENT_LOST, EVENT_NONE} from "../constants";
+import {fetchDataFromServer} from "../ducks/records";
 
 class Filters extends React.Component {
 
