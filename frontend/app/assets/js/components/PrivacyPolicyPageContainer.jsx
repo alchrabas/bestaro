@@ -23,6 +23,7 @@ const PrivacyPolicyPage = ({wide, goToMap}) => {
                         {Messages("privacy_policy.back_button")}</button>
                 </div>
             </div>
+            <div className="footer"/>
         </div>
     ];
 };

@@ -13,6 +13,7 @@ welcome.text=Mapazwierzat.pl to serwis gromadzący dane z ogłoszeń dotyczącyc
 Dane przetwarzane są automatycznie, co pozwala na bardzo szybkie wyświetlenie tu nowych ogłoszeń, jednak nie gwarantuje stuprocentowej poprawności danych.\n\
 Miejsce i inne szczegóły uzyskiwane są poprzez analizę treści ogłoszenia.\n\
 Jest to na razie wersja eksperymentalna, nie nadaje się do powszechnego użytku.
+welcome.go_to_map=Przejdź do Mapy
 details.event_date=Data zdarzenia: 
 details.post_date=Data umieszczenia: 
 details.event_type=Typ zdarzenia:
@@ -28,6 +29,7 @@ range_groups.to100km=do 100 kilometrów
 range_groups.above100km=ponad 100 kilometrów
 record_details.probably_lost=Prawdopodobnie zaginione
 record_details.probably_found=Prawdopodobnie znalezione
+record_details.back_button=Powrót
 read_more.header=Jak działa Mapa Zwierząt?
 read_more.text=Jakiś ładny obrazek. Coś jeszcze więcej tu napiszę ale nie wiem o co chodzi, tyle że to istotne\
 przyanierjiwje qiwej qiwe jqiw dolorem ipsum costam sit amet.<br/>\

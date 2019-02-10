@@ -105,13 +105,7 @@ html, body {
   padding-bottom: 20px;
 }
 
-.big-button-lost {
-  @extend .big-wide-button;
-  background-color: #ff8070;
-  border-radius: 10px;
-}
-
-.big-button-found {
+.big-button-cta {
   @extend .big-wide-button;
   background-color: #a1fe8b;
   border-radius: 10px;
@@ -182,12 +176,18 @@ label.checkbox-label {
 }
 
 .nav-buttons {
-  float:right;
+  float: right;
   margin: 5px;
 }
 
-.nav-buttons button {
+.button-link {
+  background: none;
   margin: 0 3px;
+  font-variant: small-caps;
+}
+
+.footer {
+  margin-top: 60px;
 }
 
 /* todo make it mobile-first */

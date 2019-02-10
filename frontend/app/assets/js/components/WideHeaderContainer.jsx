@@ -11,7 +11,7 @@ const WideHeader = (props) => {
         <div key="nav-buttons" className="nav-buttons">
             {props.items.map(item =>
                 <button
-                    className="pure-button"
+                    className="pure-button button-link"
                     key={item.message_tag}
                     onClick={item.callback}>
                     {Messages(item.message_tag)}

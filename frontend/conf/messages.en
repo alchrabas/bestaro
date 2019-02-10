@@ -13,6 +13,7 @@ welcome.text=Mapazwierzat.pl is a service storing data about lost and found pets
 Data is loaded automatically, which makes it fast to appear on the list, but it doesn't guarantee 100% data correctness.\n\
 Location and date are got by analysis of the advertisment's content.\n\
 It's currently an experimental version, not suitable for public use.
+welcome.go_to_map=Go to Map
 details.event_date=Event date:
 details.post_date=Post date:
 details.event_type=Event type:
@@ -28,6 +29,7 @@ range_groups.to100km=at most 100 kilometers
 range_groups.above100km=over 100 kilometers
 record_details.probably_lost=Probably lost
 record_details.probably_found=Probably found
+record_details.back_button=Back
 read_more.header=How does Mapa Zwierząt work?
 read_more.text=Jakiś ładny obrazek. Coś jeszcze więcej tu napiszę ale nie wiem o co chodzi, tyle że to istotne\
 przyanierjiwje qiwej qiwe jqiw dolorem ipsum costam sit amet.<br/>\
