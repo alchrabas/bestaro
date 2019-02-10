@@ -4,7 +4,7 @@ import {scrollList} from "../ducks/ui";
 import scrollbarSize from "scrollbar-size/dist/scrollbar-size";
 import {EVENT_LOST} from "../constants";
 import {AutoSizer, List} from "react-virtualized";
-import {selectRecord} from "../ducks/records";
+import {selectRecord} from "../ducks/ui";
 
 const groups = [
     {
