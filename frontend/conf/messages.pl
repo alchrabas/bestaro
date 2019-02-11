@@ -18,6 +18,7 @@ details.event_date=Data zdarzenia:
 details.post_date=Data umieszczenia: 
 details.event_type=Typ zdarzenia:
 details.link=Idź do ogłoszenia
+details.back=Powrót
 map.back_to_map=Powrót na mapę
 range_groups.to100m=do 100 metrów
 range_groups.to500m=do 500 metrów

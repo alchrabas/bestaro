@@ -28,7 +28,7 @@ const RecordDetails = ({record, moveBack, style, buttonsFixed}) => {
                 style={{width: "50%"}}
                 className="pure-button pure-button-primary big-wide-button button-on-bottom"
                 onClick={moveBack}>
-                Powrót
+                {Messages("details.back")}
             </button>
             <a
                 className="pure-button pure-button-primary big-wide-button button-on-bottom"

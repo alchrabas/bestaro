@@ -18,6 +18,7 @@ details.event_date=Event date:
 details.post_date=Post date:
 details.event_type=Event type:
 details.link=Go to ad
+details.back=Back
 map.back_to_map=Back to map
 range_groups.to100m=at most 100 meters
 range_groups.to500m=at most 500 meters

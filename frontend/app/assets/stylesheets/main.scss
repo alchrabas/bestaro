@@ -108,6 +108,9 @@ html, body {
 
 .big-button-cta {
   @extend .big-wide-button;
+  border-radius: 10px;
+  font-size: 125%;
+  width: 80%;
 }
 
 label.checkbox-label {
@@ -182,7 +185,15 @@ label.checkbox-label {
 .button-link {
   background: none;
   margin: 0 3px;
-  font-variant: small-caps;
+  color: #666;
+}
+
+.button-link-active {
+  font-weight: bold;
+}
+
+.nav-menu-item-active {
+  font-weight: bold;
 }
 
 .footer {
@@ -209,5 +220,13 @@ label.checkbox-label {
 
   .page-with-text-header {
     font-size: 30px;
+  }
+
+  .big-wide-button {
+    border-radius: 0;
+  }
+
+  .big-button-cta {
+    width: 100%;
   }
 }

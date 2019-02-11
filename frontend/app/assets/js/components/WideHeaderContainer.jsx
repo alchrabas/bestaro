@@ -11,10 +11,10 @@ const WideHeader = (props) => {
         <div key="nav-buttons" className="nav-buttons">
             {props.items.map(item =>
                 <button
-                    className="pure-button button-link"
-                    key={item.message_tag}
+                    className={"pure-button button-link " + (item.isActive ? "button-link-active" : "")}
+                    key={item.messageTag}
                     onClick={item.callback}>
-                    {Messages(item.message_tag)}
+                    {Messages(item.messageTag)}
                 </button>
             )}
         </div>,

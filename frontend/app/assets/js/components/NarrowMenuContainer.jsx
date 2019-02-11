@@ -4,7 +4,6 @@ import "react-dd-menu/src/scss/react-dd-menu.scss";
 import {connect} from "react-redux";
 
 
-
 class NarrowMenu extends React.Component {
 
     constructor(props) {
@@ -31,8 +30,11 @@ class NarrowMenu extends React.Component {
                          onClick={this.toggleMenu}/>}
             align="right">
             {this.props.items.map(item =>
-                <li onClick={item.callback} key={item.message_tag}>
-                    <button type="button">{Messages(item.message_tag)}</button>
+                <li onClick={item.callback} key={item.messageTag}>
+                    <button type="button"
+                            className={item.isActive ? "nav-menu-item-active" : ""}>
+                        {Messages(item.messageTag)}
+                    </button>
                 </li>)}
         </DropdownMenu>;
     }

@@ -2,8 +2,8 @@ import React from "react";
 import FiltersContainer from "./FiltersContainer";
 import {connect} from "react-redux";
 import RecordsList from "./RecordsListContainer";
-import RecordDetailsContainer from "./RecordsListContainer";
-import {selectRecord} from "../ducks/records";
+import RecordDetailsContainer from "./RecordDetailsContainer";
+import {selectRecord} from "../ducks/ui";
 import MapCacheContainer from "./MapCacheContainer";
 import HeaderContainer from "./HeaderContainer";
 
