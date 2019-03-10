@@ -1,9 +1,6 @@
-import {goToMap} from "../ducks/ui";
 import {connect} from "react-redux";
-import {EVENT_ANY} from "../constants";
 import React from "react";
-import {fetchDataFromServer} from "../ducks/records";
-import {changeEventTypeFilter} from "../ducks/filter";
+import {withRouter} from "react-router";
 
 const WelcomePage = ({goToMap}) => {
     return <div className="page-with-text">
@@ -27,16 +24,14 @@ const WelcomePage = ({goToMap}) => {
     </div>;
 };
 
-const WelcomePageContainer = connect(
+const WelcomePageContainer = withRouter(connect(
     state => state,
-    dispatch => {
+    (dispatch, ownProps) => {
         return {
             goToMap: () => {
-                dispatch(changeEventTypeFilter(EVENT_ANY));
-                dispatch(fetchDataFromServer());
-                dispatch(goToMap());
+                ownProps.history.push("map");
             },
         };
-    })(WelcomePage);
+    })(WelcomePage));
 
 export default WelcomePageContainer;

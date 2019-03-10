@@ -1,7 +1,7 @@
 import {connect} from "react-redux";
-import {goToMap, goToReadMore} from "../ducks/ui";
 import React from "react";
 import HeaderContainer from "./HeaderContainer";
+import {withRouter} from "react-router";
 
 
 const ReadMorePage = ({wide, goToMap}) => {
@@ -30,22 +30,22 @@ const ReadMorePage = ({wide, goToMap}) => {
     ];
 };
 
-const ReadMorePageContainer = connect(
+const ReadMorePageContainer = withRouter(connect(
     state => {
         return {
             wide: state.responsive.isWide,
         };
     },
-    dispatch => {
+    (dispatch, ownProps) => {
         return {
             goToContact: () => {
-                dispatch(goToReadMore())
+                ownProps.history.push("read-more");
             },
             goToMap: () => {
-                dispatch(goToMap());
+                ownProps.history.push("map");
             },
         }
     },
-)(ReadMorePage);
+)(ReadMorePage));
 
 export default ReadMorePageContainer;

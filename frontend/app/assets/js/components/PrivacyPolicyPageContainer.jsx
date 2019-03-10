@@ -5,6 +5,12 @@ import HeaderContainer from "./HeaderContainer";
 
 
 const PrivacyPolicyPage = ({wide, goToMap}) => {
+    const buttonStyle = {};
+    if (!wide) {
+        buttonStyle.position = "fixed";
+        buttonStyle.bottom = "0";
+    }
+
     return [
         <div className="row top-bar header" key="header">
             <HeaderContainer/>
@@ -19,7 +25,8 @@ const PrivacyPolicyPage = ({wide, goToMap}) => {
                  dangerouslySetInnerHTML={{__html: Messages("privacy_policy.text")}}/>
             <div className="pure-g" style={{marginTop: "20px"}}>
                 <div className="pure-u-1-1 pure-u-lg-1-3" style={{margin: "auto"}}>
-                    <button onClick={goToMap} className="pure-button pure-button-primary big-wide-button">
+                    <button style={buttonStyle} onClick={goToMap}
+                            className="pure-button pure-button-primary big-wide-button">
                         {Messages("privacy_policy.back_button")}</button>
                 </div>
             </div>
@@ -34,13 +41,13 @@ const PrivacyPolicyPageContainer = connect(
             wide: state.responsive.isWide,
         };
     },
-    dispatch => {
+    (dispatch, ownProps) => {
         return {
             goToContact: () => {
-                dispatch(goToPrivacyPolicy())
+                ownProps.history.push("privacy-policy");
             },
             goToMap: () => {
-                dispatch(goToMap());
+                ownProps.history.push("map");
             },
         }
     },

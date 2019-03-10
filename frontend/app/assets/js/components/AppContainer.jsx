@@ -1,28 +1,41 @@
 import React from "react";
 import {connect} from "react-redux";
-import {VIEW_READ_MORE, VIEW_MAP, VIEW_WELCOME, VIEW_PRIVACY_POLICY} from "../constants";
 import WelcomePageContainer from "./WelcomePageContainer";
-import MapPageContainer from "./MapPageContainer";
 import ReadMorePageContainer from "./ReadMorePageContainer";
 import PrivacyPolicyPageContainer from "./PrivacyPolicyPageContainer";
+import {Redirect, Route, Switch} from "react-router";
+import {BrowserRouter} from 'react-router-dom';
+import NarrowMapPageContainer from "./NarrowMapPageContainer";
+import WideMapPageContainer from "./WideMapPageContainer";
 
-let App = ({currentView}) => {
-    switch (currentView) {
-        case VIEW_WELCOME:
-            return <WelcomePageContainer/>;
-        case VIEW_MAP:
-            return <MapPageContainer/>;
-        case VIEW_READ_MORE:
-            return <ReadMorePageContainer/>;
-        case VIEW_PRIVACY_POLICY:
-            return <PrivacyPolicyPageContainer/>;
-    }
+const EnglishOrNot = ({wide, match}) => {
+    const matchUrl = match.url.endsWith("/") ? match.url.slice(0, -1) : match.url;
+    return <Switch>
+        <Route exact path={`${matchUrl}`} component={WelcomePageContainer}/>
+        <Route path={`${matchUrl}/map`} component={
+            wide ? WideMapPageContainer : NarrowMapPageContainer}/>
+        <Route path={`${matchUrl}/read-more`} component={ReadMorePageContainer}/>
+        <Route path={`${matchUrl}/privacy-policy`} component={PrivacyPolicyPageContainer}/>
+        <Redirect from={`${matchUrl}/list`} to="/map"/>
+    </Switch>;
 };
 
-const AppContainer = connect(state => {
-    return {
-        currentView: state.ui.currentView,
-    }
-})(App);
+const App = ({wide}) => {
+    return (
+        <BrowserRouter>
+            <Switch>
+                <Route path="/en/" render={(props) => <EnglishOrNot {...props} wide={wide}/>}/>
+                <Route path="/" render={(props) => <EnglishOrNot {...props} wide={wide}/>}/>
+            </Switch>
+        </BrowserRouter>
+    );
+};
+
+
+const mapStateToProps = (state) => ({
+    wide: state.responsive.isWide,
+});
+
+const AppContainer = connect(mapStateToProps)(App);
 
 export default AppContainer;

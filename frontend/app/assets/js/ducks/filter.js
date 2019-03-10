@@ -1,3 +1,5 @@
+import {EVENT_ANY} from "../constants";
+
 export const CHANGE_DATE_FILTER = "CHANGE_DATE_FILTER";
 export const CHANGE_EVENT_TYPE_FILTER = "CHANGE_EVENT_TYPE_FILTER";
 
@@ -19,7 +21,7 @@ export const changeEventTypeFilter = (eventType) => {
 export const filterReducer = (state = {
     "dateFrom": null,
     "dateTo": null,
-    "eventType": null
+    "eventType": EVENT_ANY,
 }, action) => {
     switch (action.type) {
         case CHANGE_DATE_FILTER:

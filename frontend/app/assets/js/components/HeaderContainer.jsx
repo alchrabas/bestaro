@@ -4,6 +4,7 @@ import {goToMap, goToPrivacyPolicy, goToReadMore, switchLanguage} from "../ducks
 import WideHeader from "./WideHeaderContainer";
 import NarrowMenu from "./NarrowMenuContainer";
 import {VIEW_MAP, VIEW_PRIVACY_POLICY, VIEW_READ_MORE} from "../constants";
+import {withRouter} from "react-router";
 
 const LANGUAGE_ENGLISH = "en";
 const LANGUAGE_POLISH = "pl";
@@ -35,7 +36,7 @@ const Header = ({
         : <NarrowMenu items={items}/>;
 };
 
-const HeaderContainer = connect(
+const HeaderContainer = withRouter(connect(
     state => {
         return {
             wide: state.responsive.isWide,
@@ -43,13 +44,13 @@ const HeaderContainer = connect(
             currentView: state.ui.currentView,
         };
     },
-    dispatch => {
+    (dispatch, ownProps) => {
         return {
             goToReadMore: () => {
-                dispatch(goToReadMore())
+                ownProps.history.push("read-more");
             },
             goToMap: () => {
-                dispatch(goToMap());
+                ownProps.history.push("map");
             },
             switchToEnglish: () => {
                 dispatch(switchLanguage(LANGUAGE_ENGLISH));
@@ -58,10 +59,10 @@ const HeaderContainer = connect(
                 dispatch(switchLanguage(LANGUAGE_POLISH));
             },
             goToPrivacyPolicy: () => {
-                dispatch(goToPrivacyPolicy());
+                ownProps.history.push("privacy-policy");
             },
         }
     },
-)(Header);
+)(Header));
 
 export default HeaderContainer;

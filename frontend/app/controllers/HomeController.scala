@@ -30,7 +30,7 @@ class HomeController @Inject()(view: views.html.index,
     Ok(jsMessages(Some("window.Messages"))(messagesObject(language)))
   }
 
-  def index(language: String) = Action { implicit request =>
+  def index(language: String, useless: String = "") = Action { implicit request =>
     Ok(view()(messagesObject(language)))
   }
 }

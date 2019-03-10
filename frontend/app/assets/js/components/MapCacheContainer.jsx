@@ -4,6 +4,7 @@ import GoogleMapContainer from "./GoogleMapContainer";
 import {connect} from "react-redux";
 import PropTypes from "prop-types";
 import {refreshMap} from "../ducks/map";
+import {fetchDataFromServer} from "../ducks/records";
 
 let cachedParentElement = null;
 let cachedReactComponent = null;
@@ -29,6 +30,7 @@ class MapCache extends React.Component {
         if (cachedReactComponent) {
             this.props.refreshMap();
         }
+        fetchDataFromServer();
     }
 
     componentWillUnmount() {

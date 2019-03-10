@@ -1,7 +1,7 @@
 import {applyMiddleware, combineReducers, createStore} from "redux";
 
 import {composeWithDevTools} from "redux-devtools-extension";
-import ReduxThunk from "redux-thunk";
+import thunkMiddleware from "redux-thunk";
 import {reducer as responsive} from 'redux-mediaquery'
 import {mapReducer} from "./ducks/map";
 import {fetchDataFromServer, lastMoveTimestamp, recordsReducer} from "./ducks/records";
@@ -28,7 +28,7 @@ const mainReducer = combineReducers({
 });
 
 export let store = createStore(mainReducer,
-    composeWithDevTools(applyMiddleware(ReduxThunk))
+    composeWithDevTools(applyMiddleware(thunkMiddleware))
 );
 
 if (window.location.href.endsWith("/en/")) {
