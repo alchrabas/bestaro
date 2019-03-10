@@ -11,7 +11,7 @@ import WideMapPageContainer from "./WideMapPageContainer";
 const EnglishOrNot = ({wide, match}) => {
     const matchUrl = match.url.endsWith("/") ? match.url.slice(0, -1) : match.url;
     return <Switch>
-        <Route exact path={`${matchUrl}`} component={WelcomePageContainer}/>
+        <Route exact path={`${matchUrl}/`} component={WelcomePageContainer}/>
         <Route path={`${matchUrl}/map`} component={
             wide ? WideMapPageContainer : NarrowMapPageContainer}/>
         <Route path={`${matchUrl}/read-more`} component={ReadMorePageContainer}/>
@@ -25,6 +25,7 @@ const App = ({wide}) => {
         <BrowserRouter>
             <Switch>
                 <Route path="/en/" render={(props) => <EnglishOrNot {...props} wide={wide}/>}/>
+                <Route path="/pl/" render={(props) => <EnglishOrNot {...props} wide={wide}/>}/>
                 <Route path="/" render={(props) => <EnglishOrNot {...props} wide={wide}/>}/>
             </Switch>
         </BrowserRouter>

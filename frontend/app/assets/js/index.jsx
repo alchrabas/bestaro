@@ -16,11 +16,11 @@ import {mediaQueryTracker} from "redux-mediaquery";
 import {changeDateFilter} from "./ducks/filter";
 
 
-const weekAgoDate = new Date();
-weekAgoDate.setDate(weekAgoDate.getDate() - 7);
+const yearAgoDate = new Date();
+yearAgoDate.setDate(yearAgoDate.getDate() - 365);
 
 store.dispatch(changeDateFilter(
-    dateToString(weekAgoDate),
+    dateToString(yearAgoDate),
     dateToString(new Date()),
     EVENT_ANY
 ));
@@ -30,7 +30,6 @@ mediaQueryTracker({
     innerWidth: true,
     innerHeight: true,
 }, store.dispatch);
-
 
 ReactDOM.render(
     <Provider store={store}>
