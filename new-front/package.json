@@ -2,6 +2,7 @@
   "name": "new-front",
   "version": "0.1.0",
   "private": true,
+  "proxy": "http://localhost:8888",
   "dependencies": {
     "react": "^16.8.6",
     "react-dom": "^16.8.6",

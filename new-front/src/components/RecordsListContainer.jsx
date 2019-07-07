@@ -113,7 +113,7 @@ class RecordsList extends React.Component {
                                 height: "100%",
                                 objectFit: "contain",
                             }}
-                            alt="Logo"
+                            alt={Messages('details.animal_picture')}
                             className="animal-image"
                             src={"/pictures_min/" + record.picture}
                             onClick={() => onClick(record.id)}

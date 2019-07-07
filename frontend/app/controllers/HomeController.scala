@@ -12,8 +12,7 @@ import play.api.mvc._
   * application's home page.
   */
 @Singleton
-class HomeController @Inject()(view: views.html.index,
-                               cc: ControllerComponents,
+class HomeController @Inject()(cc: ControllerComponents,
                                langs: Langs,
                                messagesApi: MessagesApi,
                                implicit val configuration: Configuration)
@@ -28,9 +27,5 @@ class HomeController @Inject()(view: views.html.index,
     val jsMessages = jsMessagesFactory.all
 
     Ok(jsMessages(Some("window.Messages"))(messagesObject(language)))
-  }
-
-  def index(language: String, useless: String = "") = Action { implicit request =>
-    Ok(view()(messagesObject(language)))
   }
 }
