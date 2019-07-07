@@ -17,6 +17,7 @@ welcome.go_to_map=Przejdź do Mapy
 details.event_date=Data zdarzenia: 
 details.post_date=Data umieszczenia: 
 details.event_type=Typ zdarzenia:
+details.animal_picture=Zdjęcie zwierzęcia
 details.link=Idź do ogłoszenia
 details.back=Powrót
 map.back_to_map=Powrót na mapę
@@ -44,6 +45,7 @@ navbar.read_more=Jak to działa?
 navbar.english=English
 navbar.polish=Polish
 navbar.privacy_policy=Polityka Prywatności
+navbar.menu=Menu
 privacy_policy.header=Polityka Prywatności
 privacy_policy.text=<p>Data wejścia w życie: 12 grudnia 2018</p>\
 \

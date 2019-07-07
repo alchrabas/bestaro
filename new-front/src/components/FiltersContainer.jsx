@@ -4,6 +4,7 @@ import {changeDateFilter, changeEventTypeFilter} from "../ducks/filter";
 import {connect} from "react-redux";
 import {EVENT_ANY, EVENT_FOUND, EVENT_LOST, EVENT_NONE} from "../constants";
 import {fetchDataFromServer} from "../ducks/records";
+import Messages from './Messages';
 
 class Filters extends React.Component {
 
@@ -11,7 +12,7 @@ class Filters extends React.Component {
         super(props);
 
         this.state = {
-            rangeType: "lastWeek",
+            rangeType: "lastYear",
             eventType: props.filters.eventType,
         };
 

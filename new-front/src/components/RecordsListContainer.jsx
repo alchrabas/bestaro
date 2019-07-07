@@ -1,10 +1,11 @@
 import {connect} from "react-redux";
 import React from "react";
 import {scrollList} from "../ducks/ui";
-import scrollbarSize from "scrollbar-size/dist/scrollbar-size";
+import scrollbarSize from "scrollbar-size";
 import {EVENT_LOST} from "../constants";
 import {AutoSizer, List} from "react-virtualized";
 import {selectRecord} from "../ducks/ui";
+import Messages from './Messages';
 
 const groups = [
     {
@@ -112,6 +113,7 @@ class RecordsList extends React.Component {
                                 height: "100%",
                                 objectFit: "contain",
                             }}
+                            alt="Logo"
                             className="animal-image"
                             src={"/pictures_min/" + record.picture}
                             onClick={() => onClick(record.id)}

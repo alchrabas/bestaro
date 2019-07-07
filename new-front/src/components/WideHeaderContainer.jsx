@@ -1,9 +1,11 @@
 import React from "react";
 import {connect} from "react-redux";
+import Messages from './Messages';
+import kotologo from '../images/kotologo.png';
 
 const WideHeader = (props) => {
     return [
-        <img key="logo" src="/assets/images/kotologo.png"/>,
+        <img alt="Logo" key="logo" src={kotologo} />,
         <span key="site-name" style={{
             fontSize: "32px",
             verticalAlign: "top",

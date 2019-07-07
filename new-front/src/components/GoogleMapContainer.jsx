@@ -20,6 +20,8 @@ class MapWrapper extends React.Component {
     constructor(props) {
         super(props);
 
+        this.mapRef = React.createRef();
+
         this.onClickMarker = this.onClickMarker.bind(this);
         this.handleBoundsChanged = this.handleBoundsChanged.bind(this);
         this.createMarker = this.createMarker.bind(this);
@@ -27,10 +29,10 @@ class MapWrapper extends React.Component {
     }
 
     getBounds() {
-        if (this.mapRef && this.mapRef.getBounds()) {
+        if (this.mapRef.current && this.mapRef.current.getBounds()) {
             return {
-                northEast: this.mapRef.getBounds().getNorthEast(),
-                southWest: this.mapRef.getBounds().getSouthWest(),
+                northEast: this.mapRef.current.getBounds().getNorthEast(),
+                southWest: this.mapRef.current.getBounds().getSouthWest(),
             }
         } else {
             return {
@@ -41,10 +43,10 @@ class MapWrapper extends React.Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if (prevProps.refreshSerialId !== this.props.refreshSerialId && this.mapRef) {
+        if (prevProps.refreshSerialId !== this.props.refreshSerialId && this.mapRef.current) {
             // force redraw of the map
-            google.maps.event.trigger(
-                this.mapRef.context["__SECRET_MAP_DO_NOT_USE_OR_YOU_WILL_BE_FIRED"], 'resize');
+            window.google.maps.event.trigger(
+                this.mapRef.current.context["__SECRET_MAP_DO_NOT_USE_OR_YOU_WILL_BE_FIRED"], 'resize');
         }
     }
 
@@ -58,7 +60,7 @@ class MapWrapper extends React.Component {
                 northEast, southWest))
             .map(this.createMarker);
         return <GoogleMap
-            ref={ref => this.mapRef = ref}
+            ref={this.mapRef}
             defaultZoom={12}
             defaultCenter={{lat: 50.063408, lng: 19.943933}}
             onBoundsChanged={this.handleBoundsChanged}
@@ -83,7 +85,7 @@ class MapWrapper extends React.Component {
     }
 
     handleBoundsChanged() {
-        this.props.onCenterChanged(this.mapRef.getCenter().lat(), this.mapRef.getCenter().lng());
+        this.props.onCenterChanged(this.mapRef.current.getCenter().lat(), this.mapRef.current.getCenter().lng());
     }
 
     createMarker(record) {
@@ -139,7 +141,9 @@ const mapDispatchToProps = dispatch => {
 
 const GoogleMapContainer = connect(
     mapStateToProps,
-    mapDispatchToProps
+    mapDispatchToProps,
+    null,
+    {forwardRef : true}
 )(GoogleMapComponent);
 
 export default GoogleMapContainer;

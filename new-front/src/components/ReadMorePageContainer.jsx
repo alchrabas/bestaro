@@ -2,7 +2,8 @@ import {connect} from "react-redux";
 import React from "react";
 import HeaderContainer from "./HeaderContainer";
 import {withRouter} from "react-router";
-
+import Messages from './Messages';
+import kotologoBig from '../images/kotologo-big.png';
 
 const ReadMorePage = ({wide, goToMap}) => {
     return [
@@ -11,7 +12,7 @@ const ReadMorePage = ({wide, goToMap}) => {
         </div>,
         <div className="page-with-text" key="content">
             <div style={{overflow: "hidden"}}>
-                <img key="logo" src="/assets/images/kotologo-big.png"
+                <img alt="Logo" key="logo" src={kotologoBig}
                      style={{float: "left", marginRight: "10px"}}/>
                 <p className="page-with-text-header">
                     {Messages("read_more.header")}

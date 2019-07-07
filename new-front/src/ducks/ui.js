@@ -35,11 +35,13 @@ export const goToPrivacyPolicy = () => {
 };
 
 export const switchLanguage = (language) => {
-    if (language === "en") {
-        window.location.replace("/en/");
-    } else {
-        window.location.replace("/");
-    }
+    return () => {
+        if (language === "en") {
+            window.location.replace("/en/");
+        } else {
+            window.location.replace("/");
+        }
+    };
 };
 
 export const setLanguage = (language) => {

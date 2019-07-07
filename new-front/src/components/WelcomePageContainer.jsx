@@ -1,11 +1,13 @@
 import {connect} from "react-redux";
 import React from "react";
 import {withRouter} from "react-router";
+import Messages from './Messages';
+import kotologoBig from '../images/kotologo-big.png';
 
 const WelcomePage = ({goToMap}) => {
     return <div className="page-with-text">
         <div style={{overflow: "hidden"}}>
-            <img className="pure-img" key="logo" src="/assets/images/kotologo-big.png"
+            <img alt="Logo" className="pure-img" key="logo" src={kotologoBig}
                  style={{float: "left", marginRight: "10px"}}/>
             <p className="page-with-text-header">
                 {Messages("welcome.header")}

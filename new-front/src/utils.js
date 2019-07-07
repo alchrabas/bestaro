@@ -1,21 +1,3 @@
-'use strict';
-
-import React from "react";
-
-export const tag = function (type, props, children) {
-    if (!children) {
-        if (Array.isArray(props) || typeof props === 'string') {
-            children = props;
-            props = null;
-        } else {
-            children = [];
-        }
-    }
-
-    const allArgs = [type, props].concat(children);
-
-    return React.createElement.apply(null, allArgs);
-};
 
 export const twoDigitNumber = number => {
     if (number >= 0 && number < 10) {

@@ -2,6 +2,7 @@ import React from "react";
 import DropdownMenu from "react-dd-menu";
 import "react-dd-menu/src/scss/react-dd-menu.scss";
 import {connect} from "react-redux";
+import Messages from './Messages';
 
 
 class NarrowMenu extends React.Component {
@@ -27,6 +28,7 @@ class NarrowMenu extends React.Component {
             isOpen={this.state.open}
             close={this.toggleMenu}
             toggle={<img src="/assets/images/hamburger.png"
+                         alt={Messages("")}
                          onClick={this.toggleMenu}/>}
             align="right">
             {this.props.items.map(item =>

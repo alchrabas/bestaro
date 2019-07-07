@@ -6,6 +6,7 @@ import RecordDetailsContainer from "./RecordDetailsContainer";
 import {selectRecord} from "../ducks/ui";
 import MapCacheContainer from "./MapCacheContainer";
 import HeaderContainer from "./HeaderContainer";
+import Messages from './Messages';
 
 
 const SUBVIEW_LIST = "SUBVIEW_LIST";
@@ -78,7 +79,8 @@ class NarrowMapPage extends React.Component {
     }
 }
 
-const NarrowMapPageContainer = connect(state => {
+const NarrowMapPageContainer = connect(
+    state => {
         return {
             selectedRecord: state.ui.selectedRecord,
         };
@@ -87,6 +89,7 @@ const NarrowMapPageContainer = connect(state => {
         return {
             onClick: recordId => dispatch(selectRecord(recordId)),
         };
-    })(NarrowMapPage);
+    }
+)(NarrowMapPage);
 
 export default NarrowMapPageContainer;

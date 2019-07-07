@@ -1,7 +1,7 @@
-import {connect} from "react-redux";
-import {goToMap, goToPrivacyPolicy} from "../ducks/ui";
-import React from "react";
-import HeaderContainer from "./HeaderContainer";
+import { connect } from 'react-redux';
+import React from 'react';
+import HeaderContainer from './HeaderContainer';
+import Messages from './Messages';
 
 
 const PrivacyPolicyPage = ({wide, goToMap}) => {

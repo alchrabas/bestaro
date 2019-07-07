@@ -58,7 +58,7 @@ lazy val backend = project
     name := "bestaro-backend",
     libraryDependencies ++= Seq(
       "org.jsoup" % "jsoup" % "1.10.3",
-      "org.facebook4j" % "facebook4j-core" % "2.4.9",
+      "org.facebook4j" % "facebook4j-core" % "2.4.13",
       "org.scalactic" %% "scalactic" % "3.0.1",
       "org.scalatest" %% "scalatest" % "3.0.1" % "test",
       "org.carrot2" % "morfologik-polish" % "2.1.3",

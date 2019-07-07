@@ -17,6 +17,7 @@ welcome.go_to_map=Go to Map
 details.event_date=Event date:
 details.post_date=Post date:
 details.event_type=Event type:
+details.animal_picture=Picture of the animal
 details.link=Go to ad
 details.back=Back
 map.back_to_map=Back to map
@@ -44,6 +45,7 @@ navbar.read_more=How it works?
 navbar.english=English
 navbar.polish=Polish
 navbar.privacy_policy=Privacy Policy
+navbar.menu=Dropdown Menu
 privacy_policy.header=Privacy Policy
 privacy_policy.text=<p>Effective date: December 12, 2018</p>\
 \

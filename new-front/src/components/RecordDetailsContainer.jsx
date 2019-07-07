@@ -2,6 +2,7 @@ import {formatDate} from "../utils";
 import {connect} from "react-redux";
 import React from "react";
 import {deselectRecord} from "../ducks/ui";
+import Messages from './Messages';
 
 const RecordDetails = ({record, moveBack, style, buttonsFixed}) => {
 
@@ -21,7 +22,7 @@ const RecordDetails = ({record, moveBack, style, buttonsFixed}) => {
         <div className="pure-u-1-2"> {Messages("details.event_type")} </div>
         <div className="pure-u-1-2"> {Messages("event_type." + record.eventType)} </div>
         <div className="pure-u-1-1" style={{textAlign: "center"}}>
-            <img className="fullPicturePreview" src={"/pictures/" + record.picture}/>
+            <img alt={Messages("details.animal_picture")} className="fullPicturePreview" src={"/pictures/" + record.picture}/>
         </div>
         <div className="pure-u-1" style={buttonStyle}>
             <button
@@ -35,6 +36,7 @@ const RecordDetails = ({record, moveBack, style, buttonsFixed}) => {
                 style={{borderLeft: "2px solid #22f", width: "50%"}}
                 href={record.link}
                 target="_blank"
+                rel="noopener noreferrer"
             > {Messages("details.link")}</a>
         </div>
     </div>;
