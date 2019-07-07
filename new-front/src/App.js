@@ -1,5 +1,4 @@
 import React from 'react';
-import './App.css';
 
 import { store } from './store';
 import { Provider } from 'react-redux';
@@ -8,6 +7,7 @@ import 'purecss/build/grids-responsive-min.css';
 import 'react-virtualized/styles.css';
 import AppContainer from './components/AppContainer';
 import { dateToString } from './utils';
+import './main.scss';
 
 import { EVENT_ANY } from './constants';
 import { mediaQueryTracker } from 'redux-mediaquery';
