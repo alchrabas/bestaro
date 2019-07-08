@@ -1,8 +1,8 @@
-import {formatDate} from "../utils";
-import {connect} from "react-redux";
-import React from "react";
-import {deselectRecord} from "../ducks/ui";
-import Messages from './Messages';
+import { formatDate } from '../utils';
+import { connect } from 'react-redux';
+import React from 'react';
+import { deselectRecord } from '../ducks/ui';
+import { useTranslation } from 'react-i18next';
 
 const RecordDetails = ({record, moveBack, style, buttonsFixed}) => {
 
@@ -12,24 +12,26 @@ const RecordDetails = ({record, moveBack, style, buttonsFixed}) => {
         buttonStyle.bottom = "0";
     }
 
+    const { t } = useTranslation();
+
     return <div className="pure-g" style={style}>
         {!record.eventDate && [
-            <div className="pure-u-1-2"> {Messages("details.event_date")} </div>,
+            <div className="pure-u-1-2"> {t("details.event_date")} </div>,
             <div className="pure-u-1-2"> {formatDate(record.eventDate)} </div>
         ]}
-        <div className="pure-u-1-2"> {Messages("details.post_date")} </div>
+        <div className="pure-u-1-2"> {t("details.post_date")} </div>
         <div className="pure-u-1-2"> {formatDate(record.publishDate)} </div>
-        <div className="pure-u-1-2"> {Messages("details.event_type")} </div>
-        <div className="pure-u-1-2"> {Messages("event_type." + record.eventType)} </div>
+        <div className="pure-u-1-2"> {t("details.event_type")} </div>
+        <div className="pure-u-1-2"> {t("event_type." + record.eventType)} </div>
         <div className="pure-u-1-1" style={{textAlign: "center"}}>
-            <img alt={Messages("details.animal_picture")} className="fullPicturePreview" src={"/pictures/" + record.picture}/>
+            <img alt={t("details.animal_picture")} className="fullPicturePreview" src={"/pictures/" + record.picture}/>
         </div>
         <div className="pure-u-1" style={buttonStyle}>
             <button
                 style={{width: "50%"}}
                 className="pure-button pure-button-primary big-wide-button button-on-bottom"
                 onClick={moveBack}>
-                {Messages("details.back")}
+                {t("details.back")}
             </button>
             <a
                 className="pure-button pure-button-primary big-wide-button button-on-bottom"
@@ -37,7 +39,7 @@ const RecordDetails = ({record, moveBack, style, buttonsFixed}) => {
                 href={record.link}
                 target="_blank"
                 rel="noopener noreferrer"
-            > {Messages("details.link")}</a>
+            > {t("details.link")}</a>
         </div>
     </div>;
 };

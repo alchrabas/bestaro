@@ -1,10 +1,10 @@
-import React from "react";
-import {dateToString, daysRelativeToNow} from "../utils";
-import {changeDateFilter, changeEventTypeFilter} from "../ducks/filter";
-import {connect} from "react-redux";
-import {EVENT_ANY, EVENT_FOUND, EVENT_LOST, EVENT_NONE} from "../constants";
-import {fetchDataFromServer} from "../ducks/records";
-import Messages from './Messages';
+import React from 'react';
+import { dateToString, daysRelativeToNow } from '../utils';
+import { changeDateFilter, changeEventTypeFilter } from '../ducks/filter';
+import { connect } from 'react-redux';
+import { EVENT_ANY, EVENT_FOUND, EVENT_LOST, EVENT_NONE } from '../constants';
+import { fetchDataFromServer } from '../ducks/records';
+import { useTranslation } from 'react-i18next';
 
 class Filters extends React.Component {
 
@@ -117,18 +117,19 @@ class Filters extends React.Component {
 }
 
 const EventType = ({lostChecked, foundChecked, onChange}) => {
+    const {t} = useTranslation();
     return <div className="event-type-checkboxes">
         <label className="checkbox-label" key="lostCheckbox">
             <input type="checkbox"
                    checked={lostChecked}
                    onChange={event => onChange(event, "LOST")}/>
-            {Messages("event_type.LOST")}
+            {t("event_type.LOST")}
         </label>
         <label className="checkbox-label" key="foundCheckbox">
             <input type="checkbox"
                    checked={foundChecked}
                    onChange={event => onChange(event, "FOUND")}/>
-            {Messages("event_type.FOUND")}
+            {t("event_type.FOUND")}
         </label>
     </div>;
 };
@@ -137,23 +138,24 @@ const EventDateRange = ({
                             selectedOption, onChange,
                             handleChangeDateFrom, handleChangeDateTo,
                             dateFrom, dateTo
-                        }) =>
-    [
+                        }) => {
+    const { t } = useTranslation();
+    return [
         <select name="date-range"
                 id="date-range"
                 value={selectedOption}
                 onChange={onChange}
                 key="dateRangeSelect">
-            <option value="lastWeek">{Messages("event_date.last_week")}</option>
-            <option value="last2Weeks">{Messages("event_date.last_2_weeks")}</option>
-            <option value="lastMonth">{Messages("event_date.last_month")}</option>
-            <option value="last3Months">{Messages("event_date.last_3_months")}</option>
-            <option value="lastYear">{Messages("event_date.last_year")}</option>
-            <option value="custom">{Messages("event_date.custom")}</option>
+            <option value="lastWeek">{t("event_date.last_week")}</option>
+            <option value="last2Weeks">{t("event_date.last_2_weeks")}</option>
+            <option value="lastMonth">{t("event_date.last_month")}</option>
+            <option value="last3Months">{t("event_date.last_3_months")}</option>
+            <option value="lastYear">{t("event_date.last_year")}</option>
+            <option value="custom">{t("event_date.custom")}</option>
         </select>,
         selectedOption === "custom" &&
         <div className="event-type-checkboxes">
-            <label key="dateFrom"> {Messages("event_date.custom_range")}
+            <label key="dateFrom"> {t("event_date.custom_range")}
                 <input
                     name="date-from"
                     id="date-from"
@@ -170,7 +172,7 @@ const EventDateRange = ({
                     value={dateTo || ""}/>
             </label>
         </div>
-    ];
+    ]};
 
 
 const FiltersContainer = connect(state => {

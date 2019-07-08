@@ -1,9 +1,10 @@
-import React from "react";
-import {connect} from "react-redux";
-import Messages from './Messages';
+import React from 'react';
+import { connect } from 'react-redux';
 import kotologo from '../images/kotologo.png';
+import { useTranslation } from 'react-i18next';
 
 const WideHeader = (props) => {
+    const { t } = useTranslation();
     return [
         <img alt="Logo" key="logo" src={kotologo} />,
         <span key="site-name" style={{
@@ -16,7 +17,7 @@ const WideHeader = (props) => {
                     className={"pure-button button-link " + (item.isActive ? "button-link-active" : "")}
                     key={item.messageTag}
                     onClick={item.callback}>
-                    {Messages(item.messageTag)}
+                    {t(item.messageTag)}
                 </button>
             )}
         </div>,

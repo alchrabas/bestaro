@@ -1,37 +1,37 @@
-import {connect} from "react-redux";
-import React from "react";
-import {scrollList} from "../ducks/ui";
-import scrollbarSize from "scrollbar-size";
-import {EVENT_LOST} from "../constants";
-import {AutoSizer, List} from "react-virtualized";
-import {selectRecord} from "../ducks/ui";
-import Messages from './Messages';
+import { connect } from 'react-redux';
+import React from 'react';
+import { scrollList, selectRecord } from '../ducks/ui';
+import scrollbarSize from 'scrollbar-size';
+import { EVENT_LOST } from '../constants';
+import { AutoSizer, List } from 'react-virtualized';
+import { withTranslation } from 'react-i18next';
+import { compose } from 'redux';
 
 const groups = [
     {
         upperBound: 100,
-        message: Messages("range_groups.to100m"),
+        message: 'range_groups.to100m',
     }, {
         upperBound: 500,
-        message: Messages("range_groups.to500m"),
+        message: 'range_groups.to500m',
     }, {
         upperBound: 1000,
-        message: Messages("range_groups.to1km"),
+        message: 'range_groups.to1km',
     }, {
         upperBound: 5000,
-        message: Messages("range_groups.to5km"),
+        message: 'range_groups.to5km',
     }, {
         upperBound: 10000,
-        message: Messages("range_groups.to10km"),
+        message: 'range_groups.to10km',
     }, {
         upperBound: 50000,
-        message: Messages("range_groups.to50km"),
+        message: 'range_groups.to50km',
     }, {
         upperBound: 100000,
-        message: Messages("range_groups.to100km"),
+        message: 'range_groups.to100km',
     }, {
         upperBound: Number.MAX_SAFE_INTEGER,
-        message: Messages("range_groups.above100km"),
+        message: 'range_groups.above100km',
     },
 ];
 
@@ -67,7 +67,7 @@ class RecordsList extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = {groupHeaderMessage: ""};
+        this.state = { groupHeaderMessage: '' };
 
         this.renderList = this.renderList.bind(this);
         this.updateGroupHeader = this.updateGroupHeader.bind(this);
@@ -76,59 +76,10 @@ class RecordsList extends React.Component {
     static renderGroupHeader(message, key) {
         return <div key={key}
                     className="records-list-header"
-                    style={{fontSize: HEADER_FONT_SIZE_PX + "px"}}
+                    style={{ fontSize: HEADER_FONT_SIZE_PX + 'px' }}
         >
             {message}
         </div>;
-    };
-
-    static renderRow(beginOfThisGroup, index, key, recordDimension,
-                     buckets, columnsCount, groupByRowIndex, onClick) {
-        if (beginOfThisGroup === index) {
-            return RecordsList.renderGroupHeader(groups[groupByRowIndex(index)].message, index);
-        } else {
-            const lineOfRecordsInGroup = index - beginOfThisGroup - 1;
-            const recordsToShow = RecordsList.recordsToShowInRow(index, lineOfRecordsInGroup, buckets, groupByRowIndex, columnsCount);
-
-            return recordsToShow.map(record =>
-                <div
-                    key={key + "_" + record.id}
-                    className="record-list-item"
-                    style={{
-                        width: recordDimension + "px",
-                        height: recordDimension + "px",
-                        display: "inline-block",
-                        position: "relative",
-                    }}>
-                    <div style={{
-                        width: `${recordDimension - 8}px`,
-                        height: `${recordDimension - 8}px`,
-                        position: "relative",
-                        top: "4px",
-                        left: "4px",
-                    }}>
-                        <img
-                            style={{
-                                width: "100%",
-                                height: "100%",
-                                objectFit: "contain",
-                            }}
-                            alt={Messages('details.animal_picture')}
-                            className="animal-image"
-                            src={"/pictures_min/" + record.picture}
-                            onClick={() => onClick(record.id)}
-                        />
-                        <div className={record.eventType === EVENT_LOST
-                            ? "animal-image-status-lost"
-                            : "animal-image-status-found"}
-                             title={record.eventType === EVENT_LOST
-                                 ? Messages("record_details.probably_lost")
-                                 : Messages("record_details.probably_found")}
-                        />
-                    </div>
-                </div>
-            );
-        }
     };
 
     static recordsToShowInRow(index, lineOfRecordsInGroup, buckets, groupByRowIndex, columnsCount) {
@@ -150,16 +101,72 @@ class RecordsList extends React.Component {
         return firstRowIndexByGroup;
     };
 
+    static rowHeightByIndex(firstRowIndexByGroup, groupByRowIndex, recordDimension) {
+        return ({ index }) => {
+            const beginOfThisGroup = firstRowIndexByGroup[groupByRowIndex(index)];
+            return index === beginOfThisGroup ? HEADER_FONT_SIZE_PX : recordDimension;
+        }
+    }
+
+    renderRow(beginOfThisGroup, index, key, recordDimension,
+        buckets, columnsCount, groupByRowIndex, onClick) {
+        if (beginOfThisGroup === index) {
+            return RecordsList.renderGroupHeader(this.props.t(groups[groupByRowIndex(index)].message, index));
+        } else {
+            const lineOfRecordsInGroup = index - beginOfThisGroup - 1;
+            const recordsToShow = RecordsList.recordsToShowInRow(index, lineOfRecordsInGroup, buckets, groupByRowIndex, columnsCount);
+
+            return recordsToShow.map(record =>
+                <div
+                    key={key + '_' + record.id}
+                    className="record-list-item"
+                    style={{
+                        width: recordDimension + 'px',
+                        height: recordDimension + 'px',
+                        display: 'inline-block',
+                        position: 'relative',
+                    }}>
+                    <div style={{
+                        width: `${recordDimension - 8}px`,
+                        height: `${recordDimension - 8}px`,
+                        position: 'relative',
+                        top: '4px',
+                        left: '4px',
+                    }}>
+                        <img
+                            style={{
+                                width: '100%',
+                                height: '100%',
+                                objectFit: 'contain',
+                            }}
+                            alt={this.props.t('details.animal_picture')}
+                            className="animal-image"
+                            src={'/pictures_min/' + record.picture}
+                            onClick={() => onClick(record.id)}
+                        />
+                        <div className={record.eventType === EVENT_LOST
+                            ? 'animal-image-status-lost'
+                            : 'animal-image-status-found'}
+                             title={record.eventType === EVENT_LOST
+                                 ? this.props.t('record_details.probably_lost')
+                                 : this.props.t('record_details.probably_found')}
+                        />
+                    </div>
+                </div>
+            );
+        }
+    };
+
     renderList() {
-        const {records, onClick, onListScroll} = this.props;
-        const onScroll = ({scrollTop}) => {
+        const { records, onClick, onListScroll } = this.props;
+        const onScroll = ({ scrollTop }) => {
             onListScroll(scrollTop);
         };
         const sortedRecords = records.concat()
             .sort((a, b) => a.distance - b.distance);
 
         return <AutoSizer>
-            {({width, height}) => {
+            {({ width, height }) => {
                 const workingWidth = width - scrollbarSize();
                 const columnsCount = smartColumnCount(workingWidth);
                 const recordDimension = smartColumnWidth(workingWidth);
@@ -180,11 +187,11 @@ class RecordsList extends React.Component {
                 };
 
                 // index for each record to know how many rows to omit
-                const cellRenderer = ({index, key, style}) => {
+                const cellRenderer = ({ index, key, style }) => {
                     const beginOfThisGroup = firstRowIndexByGroup[groupByRowIndex(index)];
 
-                    const contentsOfRow = RecordsList.renderRow(beginOfThisGroup, index, key,
-                        recordDimension, buckets, columnsCount, groupByRowIndex, onClick);
+                    const contentsOfRow = this.renderRow(beginOfThisGroup, index, key,
+                        recordDimension, buckets, columnsCount, groupByRowIndex, onClick, this.t);
                     return <div key={key}
                                 style={style}>
                         {contentsOfRow}
@@ -206,7 +213,7 @@ class RecordsList extends React.Component {
                     estimatedRowSize={recordDimension}
                     rowHeight={RecordsList.rowHeightByIndex(firstRowIndexByGroup, groupByRowIndex, recordDimension)}
                     onRowsRendered={this.updateGroupHeader(groupByRowIndex)}
-                    width={width}/>;
+                    width={width} />;
             }}
         </AutoSizer>;
     }
@@ -215,7 +222,7 @@ class RecordsList extends React.Component {
         return (
             <div className="records-list-wrapper"
                  style={this.props.style}>
-                {RecordsList.renderGroupHeader(this.state.groupHeaderMessage, "headerMessage")}
+                {RecordsList.renderGroupHeader(this.state.groupHeaderMessage, 'headerMessage')}
                 <div className="records-list">
                     {this.renderList()}
                 </div>
@@ -223,18 +230,11 @@ class RecordsList extends React.Component {
     };
 
     updateGroupHeader(groupByRowIndex) {
-        return ({startIndex}) => {
+        return ({ startIndex }) => {
             if (startIndex !== undefined) {
                 const groupInfo = groups[groupByRowIndex(startIndex)];
-                this.setState({groupHeaderMessage: groupInfo.message});
+                this.setState({ groupHeaderMessage: this.props.t(groupInfo.message) });
             }
-        }
-    }
-
-    static rowHeightByIndex(firstRowIndexByGroup, groupByRowIndex, recordDimension) {
-        return ({index}) => {
-            const beginOfThisGroup = firstRowIndexByGroup[groupByRowIndex(index)];
-            return index === beginOfThisGroup ? HEADER_FONT_SIZE_PX : recordDimension;
         }
     }
 }
@@ -249,18 +249,21 @@ const smartColumnCount = (workingWidth) => {
 };
 
 
-const RecordsListContainer = connect((state, ownProps) => {
-        return {
-            records: state.records,
-            listOffset: state.ui.listRow,
-            style: ownProps.style || {},
-        };
-    },
-    dispatch => {
-        return {
-            onClick: recordId => dispatch(selectRecord(recordId)),
-            onListScroll: topScrolling => dispatch(scrollList(topScrolling)),
-        };
-    })(RecordsList);
+const RecordsListContainer = compose(
+    withTranslation(),
+    connect((state, ownProps) => {
+            return {
+                records: state.records,
+                listOffset: state.ui.listRow,
+                style: ownProps.style || {},
+            };
+        },
+        dispatch => {
+            return {
+                onClick: recordId => dispatch(selectRecord(recordId)),
+                onListScroll: topScrolling => dispatch(scrollList(topScrolling)),
+            };
+        })
+)(RecordsList);
 
 export default RecordsListContainer;

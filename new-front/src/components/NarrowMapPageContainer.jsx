@@ -1,12 +1,12 @@
-import React from "react";
-import FiltersContainer from "./FiltersContainer";
-import {connect} from "react-redux";
-import RecordsList from "./RecordsListContainer";
-import RecordDetailsContainer from "./RecordDetailsContainer";
-import {selectRecord} from "../ducks/ui";
-import MapCacheContainer from "./MapCacheContainer";
-import HeaderContainer from "./HeaderContainer";
-import Messages from './Messages';
+import React from 'react';
+import FiltersContainer from './FiltersContainer';
+import { connect } from 'react-redux';
+import RecordsList from './RecordsListContainer';
+import RecordDetailsContainer from './RecordDetailsContainer';
+import { selectRecord } from '../ducks/ui';
+import MapCacheContainer from './MapCacheContainer';
+import HeaderContainer from './HeaderContainer';
+import { useTranslation } from 'react-i18next';
 
 
 const SUBVIEW_LIST = "SUBVIEW_LIST";
@@ -38,6 +38,8 @@ class NarrowMapPage extends React.Component {
     }
 
     render() {
+        const { t } = useTranslation();
+
         if (this.props.selectedRecord) {
             return <RecordDetailsContainer
                 buttonsFixed={true}
@@ -58,7 +60,7 @@ class NarrowMapPage extends React.Component {
                 </div>,
                 <button className="pure-button-primary big-wide-button button-on-bottom"
                         onClick={this.goToList}
-                        key="button">{Messages("show_announcements_in_proximity")}</button>
+                        key="button">{t("show_announcements_in_proximity")}</button>
             ];
         } else {
             return <div
@@ -72,7 +74,7 @@ class NarrowMapPage extends React.Component {
                 <button onClick={this.goToMap}
                         key="button"
                         className="pure-button-primary big-wide-button button-on-bottom">
-                    {Messages("map.back_to_map")}
+                    {t("map.back_to_map")}
                 </button>
             </div>;
         }

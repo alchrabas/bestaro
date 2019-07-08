@@ -1,8 +1,8 @@
-import React from "react";
-import DropdownMenu from "react-dd-menu";
-import "react-dd-menu/src/scss/react-dd-menu.scss";
-import {connect} from "react-redux";
-import Messages from './Messages';
+import React from 'react';
+import DropdownMenu from 'react-dd-menu';
+import 'react-dd-menu/src/scss/react-dd-menu.scss';
+import { connect } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 
 
 class NarrowMenu extends React.Component {
@@ -24,18 +24,19 @@ class NarrowMenu extends React.Component {
     }
 
     render() {
+        const { t } = useTranslation();
         return <DropdownMenu
             isOpen={this.state.open}
             close={this.toggleMenu}
             toggle={<img src="/assets/images/hamburger.png"
-                         alt={Messages("")}
+                         alt={t("navbar.menu")}
                          onClick={this.toggleMenu}/>}
             align="right">
             {this.props.items.map(item =>
                 <li onClick={item.callback} key={item.messageTag}>
                     <button type="button"
                             className={item.isActive ? "nav-menu-item-active" : ""}>
-                        {Messages(item.messageTag)}
+                        {t(item.messageTag)}
                     </button>
                 </li>)}
         </DropdownMenu>;

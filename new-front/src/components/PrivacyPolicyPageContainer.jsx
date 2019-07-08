@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 import React from 'react';
 import HeaderContainer from './HeaderContainer';
-import Messages from './Messages';
+import { useTranslation } from 'react-i18next';
 
 
 const PrivacyPolicyPage = ({wide, goToMap}) => {
@@ -11,6 +11,8 @@ const PrivacyPolicyPage = ({wide, goToMap}) => {
         buttonStyle.bottom = "0";
     }
 
+    const { t } = useTranslation();
+
     return [
         <div className="row top-bar header" key="header">
             <HeaderContainer/>
@@ -18,16 +20,16 @@ const PrivacyPolicyPage = ({wide, goToMap}) => {
         <div className="page-with-text" key="content">
             <div style={{overflow: "hidden"}}>
                 <p className="page-with-text-header">
-                    {Messages("privacy_policy.header")}
+                    {t("privacy_policy.header")}
                 </p>
             </div>
             <div key="text" className="welcome-text"
-                 dangerouslySetInnerHTML={{__html: Messages("privacy_policy.text")}}/>
+                 dangerouslySetInnerHTML={{__html: t("privacy_policy.text")}}/>
             <div className="pure-g" style={{marginTop: "20px"}}>
                 <div className="pure-u-1-1 pure-u-lg-1-3" style={{margin: "auto"}}>
                     <button style={buttonStyle} onClick={goToMap}
                             className="pure-button pure-button-primary big-wide-button">
-                        {Messages("privacy_policy.back_button")}</button>
+                        {t("privacy_policy.back_button")}</button>
                 </div>
             </div>
             <div className="footer"/>
