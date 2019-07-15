@@ -39,7 +39,7 @@ const SidebarForWideLayoutContainer = connect(state => {
 )(SidebarForWideLayout);
 
 
-export const WideMapPage = () => {
+const WideMapPage = () => {
     return [
         <div className="row top-bar header" key="header">
             <HeaderContainer />

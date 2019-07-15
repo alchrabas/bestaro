@@ -2,25 +2,22 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import Backend from 'i18next-xhr-backend';
 
-// const languageDetector = {
-//     name: 'myDetectorsName',
-//
-//     lookup(options) {
-//         // options -> are passed in options
-//         return 'en';
-//     },
-//
-//     cacheUserLanguage(lng, options) {
-//         // options -> are passed in options
-//         // lng -> current language, will be called after init and on changeLanguage
-//
-//         // store it
-//     }
-// };
-
+const languageDetector = {
+    type: 'languageDetector',
+    init: function(services, detectorOptions, i18nextOptions) {
+    },
+    detect: function() {
+        if (window.location.pathname.indexOf('/en') === 0) {
+            return 'en';
+        }
+        return 'pl';
+    },
+    cacheUserLanguage: function() {
+    },
+};
 
 i18n
-    // .use(languageDetector)
+    .use(languageDetector)
     .use(Backend)
     .use(initReactI18next)
     .init({
@@ -32,7 +29,6 @@ i18n
             wait: true,
         },
         keySeparator: false,
-        lng: 'pl',
         defaultNS: 'translation',
         ns: ['translation'],
         fallbackLng: 'pl',

@@ -2,7 +2,8 @@ import React from 'react';
 import DropdownMenu from 'react-dd-menu';
 import 'react-dd-menu/src/scss/react-dd-menu.scss';
 import { connect } from 'react-redux';
-import { useTranslation } from 'react-i18next';
+import { withTranslation } from 'react-i18next';
+import { compose } from 'redux';
 
 
 class NarrowMenu extends React.Component {
@@ -24,18 +25,18 @@ class NarrowMenu extends React.Component {
     }
 
     render() {
-        const { t } = useTranslation();
+        const { t } = this.props;
         return <DropdownMenu
             isOpen={this.state.open}
             close={this.toggleMenu}
             toggle={<img src="/assets/images/hamburger.png"
-                         alt={t("navbar.menu")}
-                         onClick={this.toggleMenu}/>}
+                         alt={t('navbar.menu')}
+                         onClick={this.toggleMenu} />}
             align="right">
             {this.props.items.map(item =>
                 <li onClick={item.callback} key={item.messageTag}>
                     <button type="button"
-                            className={item.isActive ? "nav-menu-item-active" : ""}>
+                            className={item.isActive ? 'nav-menu-item-active' : ''}>
                         {t(item.messageTag)}
                     </button>
                 </li>)}
@@ -44,12 +45,14 @@ class NarrowMenu extends React.Component {
 }
 
 
-const NarrowMenuContainer = connect(
-    (state, ownProps) => {
-        return Object.assign({}, {
-            items: ownProps.items
-        }, state);
-    }
+const NarrowMenuContainer = compose(
+    connect(
+        (state, ownProps) => {
+            return Object.assign({}, {
+                items: ownProps.items
+            }, state);
+        }),
+    withTranslation(),
 )(NarrowMenu);
 
 export default NarrowMenuContainer;

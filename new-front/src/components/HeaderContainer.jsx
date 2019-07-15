@@ -1,13 +1,11 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { switchLanguage } from '../ducks/ui';
 import WideHeader from './WideHeaderContainer';
 import NarrowMenu from './NarrowMenuContainer';
 import { VIEW_MAP, VIEW_PRIVACY_POLICY, VIEW_READ_MORE } from '../constants';
 import { withRouter } from 'react-router';
-
-const LANGUAGE_ENGLISH = 'en';
-const LANGUAGE_POLISH = 'pl';
+import { compose } from 'redux';
+import i18n from '../i18n';
 
 class NavbarItem {
     constructor(messageTag, callback, isActive) {
@@ -19,13 +17,13 @@ class NavbarItem {
 
 
 const Header = ({
-    wide, language, currentView, goToMap, goToReadMore,
+    wide, currentView, goToMap, goToReadMore,
     switchToEnglish, switchToPolish, goToPrivacyPolicy
 }) => {
     const items = [
         new NavbarItem('navbar.map', goToMap, currentView === VIEW_MAP),
         new NavbarItem('navbar.read_more', goToReadMore, currentView === VIEW_READ_MORE),
-        (language !== 'en'
+        (i18n.language !== 'en'
             ? new NavbarItem('navbar.english', switchToEnglish)
             : new NavbarItem('navbar.polish', switchToPolish)),
         new NavbarItem('navbar.privacy_policy', goToPrivacyPolicy, currentView === VIEW_PRIVACY_POLICY)
@@ -36,33 +34,34 @@ const Header = ({
         : <NarrowMenu items={items} />;
 };
 
-const HeaderContainer = withRouter(connect(
-    state => {
-        return {
-            wide: state.responsive.isWide,
-            language: state.ui.language,
-            currentView: state.ui.currentView,
-        };
-    },
-    (dispatch, ownProps) => {
-        return {
-            goToReadMore: () => {
-                ownProps.history.push('read-more');
-            },
-            goToMap: () => {
-                ownProps.history.push('map');
-            },
-            switchToEnglish: () => {
-                dispatch(switchLanguage(LANGUAGE_ENGLISH));
-            },
-            switchToPolish: () => {
-                dispatch(switchLanguage(LANGUAGE_POLISH));
-            },
-            goToPrivacyPolicy: () => {
-                ownProps.history.push('privacy-policy');
-            },
-        }
-    },
-)(Header));
+const mapStateToProps = state => ({
+    wide: state.responsive.isWide,
+    currentView: state.ui.currentView,
+});
+
+const mapDispatchToProps = (dispatch, ownProps) => {
+    return {
+        goToReadMore: () => {
+            ownProps.history.push('read-more');
+        },
+        goToMap: () => {
+            ownProps.history.push('map');
+        },
+        switchToEnglish: () => {
+            ownProps.history.push('/en/');
+        },
+        switchToPolish: () => {
+            ownProps.history.push('/pl/');
+        },
+        goToPrivacyPolicy: () => {
+            ownProps.history.push('privacy-policy');
+        },
+    }
+};
+
+const HeaderContainer = compose(
+    withRouter,
+    connect(mapStateToProps, mapDispatchToProps)
+)(Header);
 
 export default HeaderContainer;

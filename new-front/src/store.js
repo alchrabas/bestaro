@@ -6,7 +6,7 @@ import {reducer as responsive} from 'redux-mediaquery'
 import {mapReducer} from "./ducks/map";
 import {fetchDataFromServer, lastMoveTimestamp, recordsReducer} from "./ducks/records";
 import {filterReducer} from "./ducks/filter";
-import {setLanguage, uiReducer} from "./ducks/ui";
+import { uiReducer} from "./ducks/ui";
 
 
 // ask server for data when it may be outdated
@@ -30,9 +30,3 @@ const mainReducer = combineReducers({
 export let store = createStore(mainReducer,
     composeWithDevTools(applyMiddleware(thunkMiddleware))
 );
-
-if (window.location.href.endsWith("/en/")) {
-    store.dispatch(setLanguage("en"));
-} else {
-    store.dispatch(setLanguage("pl"));
-}
