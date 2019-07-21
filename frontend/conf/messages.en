@@ -17,7 +17,9 @@ welcome.go_to_map=Go to Map
 details.event_date=Event date:
 details.post_date=Post date:
 details.event_type=Event type:
+details.animal_picture=Picture of the animal
 details.link=Go to ad
+details.back=Back
 map.back_to_map=Back to map
 range_groups.to100m=at most 100 meters
 range_groups.to500m=at most 500 meters
@@ -31,9 +33,11 @@ record_details.probably_lost=Probably lost
 record_details.probably_found=Probably found
 record_details.back_button=Back
 read_more.header=How does Mapa Zwierząt work?
-read_more.text=Jakiś ładny obrazek. Coś jeszcze więcej tu napiszę ale nie wiem o co chodzi, tyle że to istotne\
-przyanierjiwje qiwej qiwe jqiw dolorem ipsum costam sit amet.<br/>\
-Stworzył <a href="https://chrabasz.cz">Aleksander Chrabąszcz</a> (<a href="https://github.com/alchrabas/bestaro">Github</a>)
+read_more.text=Mapa Zwierząt is a service presenting information about lost and found pets which are  published by users of the public Facebook groups.<br>\
+  Announcements about lost pets are downloaded automatically and put on the map, which makes it possible to quickly decide if encountered animal was reported as missing in the neighbourhood and in case of losing a pet to read the list of all animals that were recently found.<br>\
+  Mapa Zwierząt provides a link to the original announcement, whose accessing may require having an account on Facebook.<br>\
+Application is tailored for both desktop browsers and mobile devices. <br>\
+Code was created by <a href="https://chrabasz.cz">Aleksander Chrabąszcz</a> (and is accessible on <a href="https://github.com/alchrabas/bestaro">Github</a>), and the page is a non-profit initiative, completely free and lacking any means that may result in generating profit.
 read_more.back_button=Powrót
 show_announcements_in_proximity=Show ads in proximity
 navbar.map=Map
@@ -41,6 +45,7 @@ navbar.read_more=How it works?
 navbar.english=English
 navbar.polish=Polish
 navbar.privacy_policy=Privacy Policy
+navbar.menu=Dropdown Menu
 privacy_policy.header=Privacy Policy
 privacy_policy.text=<p>Effective date: December 12, 2018</p>\
 \
@@ -58,7 +63,8 @@ privacy_policy.text=<p>Effective date: December 12, 2018</p>\
 </ul>\
 <h4>Usage Data</h4>\
 <p>We may collect information how the Service is accessed and used ("Usage Data"). This Usage Data may include information such as your computer's Internet Protocol address (e.g. IP address), browser type, browser version, the pages of our Service that you visit, the time and date of your visit, the time spent on those pages, unique device identifiers and other diagnostic data.</p>\
-<p>We are not using cookies.</p>\
+<p>The page is not using cookies.</p>\
+<p>It's not required to login to Facebook, therefore no data of the Facebook account is used. The pictures from the posts collected on the public Facebook groups are presented on the map to the users.</p>\
 <h2>Use of Data</h2>\
 MapaZwierzat uses the collected data for various purposes:\
 <ul>\

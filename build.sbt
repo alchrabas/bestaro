@@ -10,7 +10,6 @@ lazy val commonSettings = Seq(
 
 
 import com.typesafe.sbt.jse.JsEngineImport.JsEngineKeys
-import com.typesafe.sbt.uglify.Import._
 import com.typesafe.sbt.digest.Import._
 import com.typesafe.sbt.gzip.Import._
 import com.slidingautonomy.sbt.filter.Import._
@@ -21,36 +20,6 @@ import sbt._
 import sbt.Keys._
 
 
-// webpack below
-val webpack = taskKey[Seq[File]]("Webpack source file task")
-
-// from https://github.com/sbt/sbt-js-engine/blob/master/src/main/scala/com/typesafe/sbt/jse/SbtJsTask.scala
-def addUnscopedJsSourceFileTasks(sourceFileTask: TaskKey[Seq[File]]): Seq[Setting[_]] = {
-  Seq(
-    resourceGenerators <+= sourceFileTask,
-    managedResourceDirectories += (resourceManaged in sourceFileTask).value
-  ) ++ inTask(sourceFileTask)(Seq(
-    sourceDirectories := unmanagedSourceDirectories.value ++ managedSourceDirectories.value,
-    sources := unmanagedSources.value ++ managedSources.value
-  ))
-}
-
-def addJsSourceFileTasks(sourceFileTask: TaskKey[Seq[File]]): Seq[Setting[_]] = {
-  Seq(
-    sourceFileTask in Assets := webpackTask.dependsOn(WebKeys.nodeModules in Assets).value,
-    resourceManaged in sourceFileTask in Assets := WebKeys.webTarget.value / sourceFileTask.key.label / "main"
-  ) ++ inConfig(Assets)(addUnscopedJsSourceFileTasks(sourceFileTask))
-}
-
-def webpackTask: Def.Initialize[Task[Seq[File]]] = Def.task {
-  val targetDir = WebKeys.webTarget.value / "webpack" / "main"
-  println("running webpack")
-  val statusCode = Process("npm run webpack", baseDirectory.value).!
-  if (statusCode > 0) throw new Exception("Webpack failed with exit code : " + statusCode)
-  targetDir.***.get.filter(_.isFile)
-}
-
-
 lazy val backend = project
   .dependsOn(common)
   .settings(
@@ -58,7 +27,7 @@ lazy val backend = project
     name := "bestaro-backend",
     libraryDependencies ++= Seq(
       "org.jsoup" % "jsoup" % "1.10.3",
-      "org.facebook4j" % "facebook4j-core" % "2.4.9",
+      "org.facebook4j" % "facebook4j-core" % "2.4.13",
       "org.scalactic" %% "scalactic" % "3.0.1",
       "org.scalatest" %% "scalatest" % "3.0.1" % "test",
       "org.carrot2" % "morfologik-polish" % "2.1.3",
@@ -104,8 +73,7 @@ lazy val frontend = project
     pipelineStages := Seq(filter, digest, gzip),
     WebKeys.exportedMappings in Assets := Seq(),
     JsEngineKeys.engineType := JsEngineKeys.EngineType.Node,
-    PlayKeys.devSettings := Seq("play.server.http.port" -> "8888"),
-    addJsSourceFileTasks(webpack)
+    PlayKeys.devSettings := Seq("play.server.http.port" -> "8888")
   )
 
 lazy val common = project

@@ -5,10 +5,6 @@
 
 # An example controller showing a sample home page
 
-GET         /                                                               controllers.HomeController.index(language: String = "pl")
-GET         /pl/                                                            controllers.HomeController.index(language: String = "pl")
-GET         /en/                                                            controllers.HomeController.index(language: String = "en")
-
 #GET     /                           controllers.HomeController.index
 
 GET         /rest/:centerlat/:centerlon/:dateFrom/:dateTo/:eventType        controllers.RestController.getMarkers(centerlat: Double, centerlon: Double, dateFrom: String, dateTo: String, eventType: String)

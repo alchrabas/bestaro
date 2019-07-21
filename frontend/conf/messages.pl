@@ -17,7 +17,9 @@ welcome.go_to_map=Przejdź do Mapy
 details.event_date=Data zdarzenia: 
 details.post_date=Data umieszczenia: 
 details.event_type=Typ zdarzenia:
+details.animal_picture=Zdjęcie zwierzęcia
 details.link=Idź do ogłoszenia
+details.back=Powrót
 map.back_to_map=Powrót na mapę
 range_groups.to100m=do 100 metrów
 range_groups.to500m=do 500 metrów
@@ -31,9 +33,11 @@ record_details.probably_lost=Prawdopodobnie zaginione
 record_details.probably_found=Prawdopodobnie znalezione
 record_details.back_button=Powrót
 read_more.header=Jak działa Mapa Zwierząt?
-read_more.text=Jakiś ładny obrazek. Coś jeszcze więcej tu napiszę ale nie wiem o co chodzi, tyle że to istotne\
-przyanierjiwje qiwej qiwe jqiw dolorem ipsum costam sit amet.<br/>\
-Stworzył <a href="https://chrabasz.cz">Aleksander Chrabąszcz</a> (<a href="https://github.com/alchrabas/bestaro">Github</a>)
+read_more.text=Mapa Zwierząt jest serwisem wyświetlającym informacje na temat zaginionych i znalezionych zwierząt umieszczonych jako ogłoszenia przez użytkowników innych serwisów, przede wszystkim publicznych grup na Facebooku.<br>\
+  Ogłoszenia umieszczone na grupach poświęconych poszukiwaniom zwierząt są automatycznie ściągane i umieszczane na mapie, tak aby w razie napotkania zwierzęcia możliwie najszybciej można było określić, czy nie został on zgłoszony jako zaginiony w najbliższej okolicy, a w razie zaginięcia zapoznać się z listą zwierząt odnalezionych.<br>\
+  Mapa Zwierząt pozwala na dotarcie do oryginalnego ogłoszenia, którego obejrzenie może wymagać konta w serwisie Facebook.<br>\
+Aplikacja dostosowana jest zarówno dla przeglądarek na komputerach stacjonarnych, jak i urządzeń mobilnych. <br>\
+Kod stworzony został przez <a href="https://chrabasz.cz">Aleksandra Chrabąszcza</a> (i dostępny jest w serwisie <a href="https://github.com/alchrabas/bestaro">Github</a>), a strona jest inicjatywą non-profit, całkowicie darmową i pozbawioną jakichkolwiek elementów generujących zyski.
 read_more.back_button=Powrót
 show_announcements_in_proximity=Pokaż ogłoszenia w pobliżu
 navbar.map=Mapa
@@ -41,6 +45,7 @@ navbar.read_more=Jak to działa?
 navbar.english=English
 navbar.polish=Polish
 navbar.privacy_policy=Polityka Prywatności
+navbar.menu=Menu
 privacy_policy.header=Polityka Prywatności
 privacy_policy.text=<p>Data wejścia w życie: 12 grudnia 2018</p>\
 \
@@ -58,7 +63,8 @@ privacy_policy.text=<p>Data wejścia w życie: 12 grudnia 2018</p>\
 </ul>\
 <h4>Dane o Użytkowaniu</h4>\
 <p>Możemy zbierać informacje na temat tego jak serwis używany ("Dane o Użytkowaniu"). Te Dane o Użytkowaniu mogą zwierać takie informacje jak adres Protokoło Internetowego komputera (np. adres IP), typ przeglądarki, wersja przeglądarki, strony Serwisu, które odwiedzasz, czas i datę twojej wizyty, czas jaki spędzasz na tych stronach, unikalne identyfikatory urządzeń i inne dane diagnostyczne.</p>\
-<p>Nie używamy ciastek.</p>\
+<p>Strona nie używa ciastek.</p>\
+<p>Nie ma konieczności logowania do Facebooka, dlatego też żadne dane konta Facebook nie są wykorzystywane. Zdjęcia z postów pobranych z publicznych group Facebooka prezentowane są użytkownikom na mapie.</p>\
 <h2>Wykorzystanie Danych</h2>\
 MapaZwierzat wykorzystuje dane w następujących celach:\
 <ul>\
