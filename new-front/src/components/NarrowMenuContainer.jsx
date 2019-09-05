@@ -4,6 +4,7 @@ import 'react-dd-menu/src/scss/react-dd-menu.scss';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import { compose } from 'redux';
+import hamburger from '../images/hamburger.png';
 
 
 class NarrowMenu extends React.Component {
@@ -29,7 +30,7 @@ class NarrowMenu extends React.Component {
         return <DropdownMenu
             isOpen={this.state.open}
             close={this.toggleMenu}
-            toggle={<img src="/assets/images/hamburger.png"
+            toggle={<img src={hamburger}
                          alt={t('navbar.menu')}
                          onClick={this.toggleMenu} />}
             align="right">

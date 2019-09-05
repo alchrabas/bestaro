@@ -4,15 +4,18 @@ import {selectRecord} from "../ducks/ui";
 import {connect} from "react-redux";
 import {EVENT_FOUND, EVENT_LOST} from "../constants";
 import {updateMapCenter} from "../ducks/map";
+import redPin from "../images/red-pin.png";
+import greenPin from "../images/green-pin.png";
+import yellowPin from "../images/yellow-pin.png";
 
 const iconByEventType = {
-    [EVENT_LOST]: "red-pin.png",
-    [EVENT_FOUND]: "green-pin.png",
+    [EVENT_LOST]: redPin,
+    [EVENT_FOUND]: greenPin,
 };
 
 
 const iconPathForEventType = (eventType) => {
-    return "/assets/images/" + iconByEventType[eventType];
+    return iconByEventType[eventType];
 };
 
 class MapWrapper extends React.Component {
@@ -98,7 +101,7 @@ class MapWrapper extends React.Component {
             record={record}
             icon={
                 (this.props.selectedRecord && this.props.selectedRecord.id === record.id)
-                    ? "/assets/images/yellow-pin.png"
+                    ? yellowPin
                     : iconPathForEventType(record.eventType)
             }
             onClick={() => this.onClickMarker(record)}
