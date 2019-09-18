@@ -1,6 +1,7 @@
 package bestaro.backend.core
 
 import java.io.File
+import java.nio.file.Paths
 import java.util.Date
 
 import bestaro.backend.collectors.util.SlowHttpDownloader
@@ -10,7 +11,7 @@ import bestaro.backend.database.DatabaseWrapper
 import bestaro.backend.database.DatabaseWrapper.CacheEfficiencyRecord
 import bestaro.backend.helpers.TaggedRecordsManager
 import bestaro.backend.helpers.TaggedRecordsManager.TaggedRecord
-import bestaro.backend.{AppConfig, DataSupplier}
+import bestaro.backend.{AppConfig, DataSupplier, S3Client}
 import bestaro.common.types.{Record, RecordId}
 import bestaro.locator.LocatorDatabase
 
@@ -52,6 +53,12 @@ object Main {
             !DatabaseWrapper.processedLaterThanCollected(rawRecord.recordId))
           .map(locationStringProcessor.process)
           .map(plaintextProcessor.process)
+          .map {
+            record =>
+              record.pictures.foreach(picture =>
+                S3Client.uploadImage(picture, Paths.get("pictures", picture).toFile))
+              record
+          }
           .map { processedRecord =>
             val future = DatabaseWrapper.saveProcessedRecord(processedRecord.buildRecord)
             (future, processedRecord)

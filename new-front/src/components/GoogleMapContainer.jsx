@@ -13,7 +13,6 @@ const iconByEventType = {
     [EVENT_FOUND]: greenPin,
 };
 
-
 const iconPathForEventType = (eventType) => {
     return iconByEventType[eventType];
 };

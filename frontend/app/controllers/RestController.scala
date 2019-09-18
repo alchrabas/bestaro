@@ -1,10 +1,10 @@
 package controllers
 
 import java.text.SimpleDateFormat
-import javax.inject.{Inject, Singleton}
 
+import javax.inject.{Inject, Singleton}
 import bestaro.common.types.{EventType, Record}
-import data.DatabaseTypes
+import data.{DatabaseTypes, S3Client}
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc._
 
@@ -63,7 +63,8 @@ class RestController @Inject()(cc: ControllerComponents,
       "id" -> r.recordId.toString,
       "eventDate" -> String.valueOf(r.eventDate),
       "publishDate" -> String.valueOf(r.postDate),
-      "picture" -> r.pictures.head,
+      "picture" -> S3Client.getPictureUrl(r.pictures.head),
+      "minPicture" -> S3Client.getMinPictureUrl(r.pictures.head),
       "eventType" -> r.eventType.entryName,
       "lat" -> String.valueOf(r.fullLocation.coordinate.get.lat),
       "lng" -> String.valueOf(r.fullLocation.coordinate.get.lon),

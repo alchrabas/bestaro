@@ -24,7 +24,7 @@ const RecordDetails = ({record, moveBack, style, buttonsFixed}) => {
         <div className="pure-u-1-2"> {t("details.event_type")} </div>
         <div className="pure-u-1-2"> {t("event_type." + record.eventType)} </div>
         <div className="pure-u-1-1" style={{textAlign: "center"}}>
-            <img alt={t("details.animal_picture")} className="fullPicturePreview" src={"/pictures/" + record.picture}/>
+            <img alt={t("details.animal_picture")} className="fullPicturePreview" src={record.picture}/>
         </div>
         <div className="pure-u-1" style={buttonStyle}>
             <button
