@@ -141,7 +141,7 @@ class RecordsList extends React.Component {
                             }}
                             alt={this.props.t('details.animal_picture')}
                             className="animal-image"
-                            src={'/pictures_min/' + record.picture}
+                            src={record.minPicture}
                             onClick={() => onClick(record.id)}
                         />
                         <div className={record.eventType === EVENT_LOST

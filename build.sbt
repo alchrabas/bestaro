@@ -42,7 +42,8 @@ lazy val backend = project
       "com.beachape" %% "enumeratum" % "1.5.12",
       "com.beachape" %% "enumeratum-play-json" % "1.5.12-2.6.0-M7",
       "ch.qos.logback" % "logback-classic" % "1.2.3",
-      "net.databinder.dispatch" %% "dispatch-core" % "0.13.2"
+      "net.databinder.dispatch" %% "dispatch-core" % "0.13.2",
+      "com.amazonaws" % "aws-java-sdk-s3" % "1.11.630"
     )
   )
 

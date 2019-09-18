@@ -1,9 +1,8 @@
 package controllers
 
-import java.io.{File, FileOutputStream}
 import java.util.Base64
 
-import bestaro.common.types.{NamedPicture, Record, RecordDTO}
+import bestaro.common.types.Record
 import data.DatabaseTypes
 import javax.inject.Inject
 import play.api.mvc._
@@ -51,31 +50,10 @@ class RecordConsumerController @Inject()(cc: ControllerComponents,
                                           implicit executionContext: ExecutionContext
                                         ) extends AbstractController(cc) {
 
-  def saveRecord() = authenticationAction.async { implicit request: Request[AnyContent] =>
-    val recordDTO = request.body.asJson.get.as[RecordDTO]
-    recordDTO.pictures.foreach(saveNamedPicture)
+  def saveRecord(): Action[AnyContent] = authenticationAction.async { implicit request: Request[AnyContent] =>
+    val record = request.body.asJson.get.as[Record]
 
-    val record = recordDTO.record
     database.saveRecord(record)
       .map(_ => Ok("Thanks"))
   }
-
-  private def saveNamedPicture(picture: NamedPicture): Unit = {
-    val picturesDir = configuration.underlying.getString("bestaro.picturesDir")
-    val minPicturesDir = configuration.underlying.getString("bestaro.minPicturesDir")
-
-    saveImage(picture.bytes, new File(picturesDir + "/" + picture.path))
-    saveImage(picture.minifiedBytes, new File(minPicturesDir + "/" + picture.path))
-  }
-
-  private def saveImage(bytes: Array[Byte], picturePath: File): Unit = {
-    val fileWriter = new FileOutputStream(picturePath)
-
-    // ensure the directory path exists
-    picturePath.getParentFile.mkdirs()
-
-    fileWriter.write(bytes)
-    fileWriter.close()
-  }
 }
-

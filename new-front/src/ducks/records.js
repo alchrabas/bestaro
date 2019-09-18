@@ -17,7 +17,7 @@ export const fetchDataFromServer = () => {
         console.log("FETCHING DATA FROM SERVER");
         const center = getState().map.center;
         const filters = getState().filters;
-        fetch(`/rest/${center.lat}/${center.lng}/`
+        fetch(`/api/${center.lat}/${center.lng}/`
             + `${filters.dateFrom}/${filters.dateTo}/${filters.eventType}`)
             .then(response => response.json())
             .then(data =>
