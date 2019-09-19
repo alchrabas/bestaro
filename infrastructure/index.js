@@ -1,7 +1,10 @@
 'use strict';
 const aws = require('@pulumi/aws');
+const pulumi = require("@pulumi/pulumi");
 
-const imagesBucket = new aws.s3.Bucket('bestaro-images', {
+const stackName = pulumi.getStack();
+
+const imagesBucket = new aws.s3.Bucket(`bestaro-images-${stackName}`, {
     acl: 'public-read',
     corsRules: [{
         allowedHeaders: ['*'],
@@ -14,13 +17,13 @@ const imagesBucket = new aws.s3.Bucket('bestaro-images', {
     }],
 });
 
-const backendUser = new aws.iam.User('bestaro-backend-user');
+const backendUser = new aws.iam.User(`bestaro-backend-user-${stackName}`);
 
 const backendUserAccessKey = new aws.iam.AccessKey('bestaro-backend-access-key', {
     user: backendUser,
 });
 
-const backendUserPolicy = new aws.iam.UserPolicy('bestaro-backend-user-policy', {
+new aws.iam.UserPolicy('bestaro-backend-user-policy', {
     user: backendUser,
     policy: imagesBucket.bucket.apply((bucketName) => ({
         'Version': '2012-10-17',
@@ -42,7 +45,7 @@ const backendUserPolicy = new aws.iam.UserPolicy('bestaro-backend-user-policy', 
 });
 
 
-const publicBucketPolicy = new aws.s3.BucketPolicy('bestaro-public-bucket-policy', {
+new aws.s3.BucketPolicy('bestaro-public-bucket-policy', {
     bucket: imagesBucket.bucket,
     policy: imagesBucket.bucket.apply((bucketName) => ({
         Version: '2012-10-17',
