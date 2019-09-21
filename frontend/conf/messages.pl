@@ -37,7 +37,7 @@ read_more.text=Mapa Zwierząt jest serwisem wyświetlającym informacje na temat
   Ogłoszenia umieszczone na grupach poświęconych poszukiwaniom zwierząt są automatycznie ściągane i umieszczane na mapie, tak aby w razie napotkania zwierzęcia możliwie najszybciej można było określić, czy nie został on zgłoszony jako zaginiony w najbliższej okolicy, a w razie zaginięcia zapoznać się z listą zwierząt odnalezionych.<br>\
   Mapa Zwierząt pozwala na dotarcie do oryginalnego ogłoszenia, którego obejrzenie może wymagać konta w serwisie Facebook.<br>\
 Aplikacja dostosowana jest zarówno dla przeglądarek na komputerach stacjonarnych, jak i urządzeń mobilnych. <br>\
-Kod stworzony został przez <a href="https://chrabasz.cz">Aleksandra Chrabąszcza</a> (i dostępny jest w serwisie <a href="https://github.com/alchrabas/bestaro">Github</a>), a strona jest inicjatywą non-profit, całkowicie darmową i pozbawioną jakichkolwiek elementów generujących zyski.
+Kod stworzony został przez <a href="https://chrabasz.cz">Aleksandra Chrabąszcza</a> (i dostępny jest w serwisie <a href="https://github.com/alchrabas/bestaro">Github</a>), a strona jest inicjatywą non-profit, całkowicie darmową i pozbawioną jakichkolwiek elementów generujących zyski.<br><br>Szczególne podziękowania dla Adama Chrabąszcza za wsparcie programistyczne i Joanny Lekki za pomoc przy projekcie interfejsu.
 read_more.back_button=Powrót
 show_announcements_in_proximity=Pokaż ogłoszenia w pobliżu
 navbar.map=Mapa

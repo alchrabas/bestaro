@@ -37,7 +37,7 @@ read_more.text=Mapa Zwierząt is a service presenting information about lost and
   Announcements about lost pets are downloaded automatically and put on the map, which makes it possible to quickly decide if encountered animal was reported as missing in the neighbourhood and in case of losing a pet to read the list of all animals that were recently found.<br>\
   Mapa Zwierząt provides a link to the original announcement, whose accessing may require having an account on Facebook.<br>\
 Application is tailored for both desktop browsers and mobile devices. <br>\
-Code was created by <a href="https://chrabasz.cz">Aleksander Chrabąszcz</a> (and is accessible on <a href="https://github.com/alchrabas/bestaro">Github</a>), and the page is a non-profit initiative, completely free and lacking any means that may result in generating profit.
+Code was created by <a href="https://chrabasz.cz">Aleksander Chrabąszcz</a> (and is accessible on <a href="https://github.com/alchrabas/bestaro">Github</a>), and the page is a non-profit initiative, completely free and lacking any means that may result in generating profit.<br><br>Special thanks to Adam Chrabąszcz for support in programming and Joanna Lekki for the help in designing the interface.
 read_more.back_button=Powrót
 show_announcements_in_proximity=Show ads in proximity
 navbar.map=Map
