@@ -115,7 +115,7 @@ class OlxCollector(recordConsumer: RawRecord => Unit, httpDownloader: HttpDownlo
       try {
         val potentialPicturePath = ImageUtil.generatePicturePath(ImageUtil.pictureName(id, 1))
         if (potentialPicturePath.toFile.exists()) { // avoid fetching image when it's already there
-          picturePath = Some(potentialPicturePath)
+          picturePath = Some(Paths.get(ImageUtil.pictureName(id, 1)))
         } else {
           picturePath = Some(requestImageSlowly(id, pictures.head, 1))
         }
