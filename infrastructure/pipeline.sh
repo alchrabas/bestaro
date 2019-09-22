@@ -20,11 +20,11 @@ sbt backend/package
 # TODO upload and run backend somewhere
 # scp infrastructure/s3credentials.properties mapazwierzat:/home/bestaro/
 
+scp infrastructure/s3frontend.properties mapazwierzat:/home/bestaro/
+
 sbt frontend/dist
 scp frontend/target/universal/bestaro-frontend-0.1-SNAPSHOT.zip mapazwierzat:/home/bestaro/
 ssh mapazwierzat "/home/bestaro/script.sh"
-
-scp infrastructure/s3frontend.properties mapazwierzat:/home/bestaro/
 
 
 cd new-front

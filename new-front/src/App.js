@@ -14,11 +14,11 @@ import { mediaQueryTracker } from 'redux-mediaquery';
 import { changeDateFilter } from './ducks/filter';
 
 
-const yearAgoDate = new Date();
-yearAgoDate.setDate(yearAgoDate.getDate() - 365);
+const weekAgoDate = new Date();
+weekAgoDate.setDate(weekAgoDate.getDate() - 7);
 
 store.dispatch(changeDateFilter(
-    dateToString(yearAgoDate),
+    dateToString(weekAgoDate),
     dateToString(new Date()),
     EVENT_ANY
 ));

@@ -12,7 +12,7 @@ class Filters extends React.Component {
         super(props);
 
         this.state = {
-            rangeType: "lastYear",
+            rangeType: "lastWeek",
             eventType: props.filters.eventType,
         };
 
