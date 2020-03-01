@@ -3,6 +3,7 @@ const aws = require('@pulumi/aws');
 const awsx = require('@pulumi/awsx');
 const pulumi = require('@pulumi/pulumi');
 const functions = require('./functions');
+const moment = require('moment');
 
 const stackName = pulumi.getStack();
 
@@ -116,12 +117,13 @@ const endpoint = new awsx.apigateway.API('bestaro-frontend-api', {
             path: '/api/{minLat}/{minLon}/{maxLat}/{maxLon}/{dateFrom}/{dateTo}/{eventType}',
             method: 'GET',
             eventHandler: async (req, ctx) => {
-                const { centerlat, centerlon, dateFrom, dateTo, eventType } = req.pathParameters;
+                const { minLat, minLon, maxLat, maxLon, dateFrom, dateTo, eventType } = req.pathParameters;
 
-                const markers = functions.getMarkers(50.129754, 19.557483,
-                    50.134368, 19.570763,
-                    1577145600000, 1583020800000,
-                    'LOST', table.name.get());
+                const momentFrom = moment(dateFrom);
+                const momentTo = moment(dateTo);
+
+                const markers = functions.getMarkers(minLat, minLon, maxLat, maxLon,
+                    momentFrom, momentTo, eventType, table.name.get());
                 console.log(markers);
 
                 return {

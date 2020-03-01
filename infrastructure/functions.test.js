@@ -2,6 +2,7 @@ const aws = require('@pulumi/aws');
 const awsMock = require('aws-sdk-mock');
 const functions = require('./functions');
 const fs = require('fs');
+const moment = require('moment');
 
 const readJson = (fileName) => JSON.parse(fs.readFileSync(fileName));
 
@@ -23,10 +24,13 @@ describe('Geographic records', () => {
     it('should query for records from a single month and year', async () => {
         let queryMock = jest.fn();
         awsMock.mock('DynamoDB.DocumentClient', 'query',
-            (params, cb) => cb(null, queryMock(params)));
+            (params, cb) => {
+                queryMock(params);
+                cb(null, {Items: []});
+            });
 
         await functions.getMarkers(50.129754, 19.557483, 50.134368, 19.570763,
-            1580515200000, 1583020800000, 'LOST', { name: { get: () => 'records' } });
+            moment('2020-02-01'), moment('2020-02-18'), 'LOST', 'records');
 
         expect(queryMock.mock.calls[0][0].ExpressionAttributeValues[':yearAndMonth']).toBe(202002);
         expect(queryMock.mock.calls[0][0].ExpressionAttributeValues[':geohashPrefix']).toBe('u2vvj');
@@ -37,11 +41,11 @@ describe('Geographic records', () => {
         awsMock.mock('DynamoDB.DocumentClient', 'query',
             (params, cb) => {
                 queryMock(params);
-                cb(null, {});
+                cb(null, {Items: []});
             });
 
         await functions.getMarkers(50.129754, 19.557483, 50.134368, 19.570763,
-            1577145600000, 1583020800000, 'LOST', 'records'
+            moment('2019-12-01'), moment('2020-02-18'), 'LOST', 'records'
         );
         expect(queryMock.mock.calls[0][0].ExpressionAttributeValues[':yearAndMonth']).toBe(201912);
         expect(queryMock.mock.calls[1][0].ExpressionAttributeValues[':yearAndMonth']).toBe(202001);

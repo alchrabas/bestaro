@@ -42,21 +42,35 @@ const addRecord = async (r, tableName) => {
     }).promise();
 };
 
-const getMarkers = async (minLat, minLon, maxLat, maxLon, timestampFrom, timestampTo, eventType, tableName) => {
+function monthsBetweenDates(startDate, endDate) {
+    const allMonths = [];
+    const currentDate = startDate.clone();
+    while (currentDate.isBefore(endDate)) {
+        allMonths.push(monthAndYearFromDate(currentDate));
+        currentDate.add(1, 'month');
+    }
+    return allMonths;
+}
+
+function eventTypesSet(eventType) {
+    switch (eventType) {
+        case 'LOST':
+        case 'FOUND':
+            return eventType;
+        case 'ANY':
+            return 'LOST, FOUND';
+    }
+}
+
+const getMarkers = async (minLat, minLon, maxLat, maxLon, startDate, endDate, eventType, tableName) => {
     const geohash1 = geohash.encode(minLat, minLon, 9);
     const geohash2 = geohash.encode(minLat, maxLon, 9);
     const geohash3 = geohash.encode(maxLat, minLon, 9);
     const geohash4 = geohash.encode(maxLat, maxLon, 9);
     const geohashCommonPrefix = commonPrefix([geohash1, geohash2, geohash3, geohash4]);
 
-    const currentDate = moment(timestampFrom);
-    const endDate = moment(timestampTo);
-    const allMonths = [];
-    while (currentDate.isBefore(endDate)) {
-        allMonths.push(monthAndYearFromDate(currentDate));
-        currentDate.add(1, 'month');
-    }
-    console.log(allMonths);
+    const allMonths = monthsBetweenDates(startDate, endDate);
+
     const queryPromises = allMonths.map(yearAndMonth =>
         new aws.sdk.DynamoDB.DocumentClient().query({
             TableName: tableName,
@@ -64,8 +78,8 @@ const getMarkers = async (minLat, minLon, maxLat, maxLon, timestampFrom, timesta
             ExpressionAttributeValues: {
                 ':yearAndMonth': yearAndMonth,
                 ':geohashPrefix': geohashCommonPrefix,
-                ':minTimestamp': timestampFrom,
-                ':maxTimestamp': timestampTo,
+                ':minTimestamp': startDate.valueOf(),
+                ':maxTimestamp': endDate.valueOf(),
                 ':minLat': minLat,
                 ':minLon': minLon,
                 ':maxLat': maxLat,
@@ -74,7 +88,8 @@ const getMarkers = async (minLat, minLon, maxLat, maxLon, timestampFrom, timesta
             FilterExpression:
                 'eventDate BETWEEN :minTimestamp AND :maxTimestamp ' +
                 'AND lat BETWEEN :minLat AND :maxLat ' +
-                'AND lon BETWEEN :minLon AND :maxLon',
+                'AND lon BETWEEN :minLon AND :maxLon ' +
+                `AND eventType IN (${eventTypesSet(eventType)})`,
         }).promise()
     );
     const results = await Promise.all(queryPromises);

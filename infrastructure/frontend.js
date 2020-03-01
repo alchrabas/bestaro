@@ -86,7 +86,7 @@ const certificateArn = provisionCertificate();
 // distributionArgs configures the CloudFront distribution. Relevant documentation:
 // https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/distribution-web-values-specify.html
 // https://www.terraform.io/docs/providers/aws/r/cloudfront_distribution.html
-const distributionArgs = {
+const cdn = new aws.cloudfront.Distribution('cdn', {
     enabled: true,
     aliases: [config.targetDomain],
 
@@ -101,6 +101,17 @@ const distributionArgs = {
                 originSslProtocols: ['TLSv1.2'],
             },
         },
+        {
+            domainName: 'https://hblyf3mk62.execute-api.eu-central-1.amazonaws.com/stage/'.replace(/^https?:\/\/([^/]*).*/, '$1'),
+            originId: 'api',
+            originPath: '/stage',
+            customOriginConfig: {
+                originProtocolPolicy: 'https-only',
+                httpPort: 80,
+                httpsPort: 443,
+                originSslProtocols: ['TLSv1.2'],
+            }
+        }
     ],
 
     defaultRootObject: 'index.html',
@@ -122,10 +133,40 @@ const distributionArgs = {
         maxTtl: tenMinutes,
     },
 
+    orderedCacheBehaviors: [
+        {
+            pathPattern: '/api/*',
+            allowedMethods: ['DELETE', 'GET', 'HEAD', 'OPTIONS', 'PATCH', 'POST', 'PUT'],
+            cachedMethods: ['HEAD', 'GET', 'OPTIONS'],
+            targetOriginId: 'api',
+
+            defaultTtl: 0,
+            minTtl: 0,
+            maxTtl: 0,
+
+            forwardedValues: {
+                queryString: true,
+                cookies: {
+                    forward: 'all',
+                },
+            },
+            viewerProtocolPolicy: 'redirect-to-https',
+        },
+    ],
+
     priceClass: 'PriceClass_100',
 
     customErrorResponses: [
-        { errorCode: 404, responseCode: 404, responsePagePath: '/404.html' },
+        {
+            errorCode: 404,
+            responseCode: 404,
+            responsePagePath: '/404.html',
+        },
+        {
+            errorCode: 403,
+            responseCode: 200,
+            responsePagePath: '/index.html',
+        }
     ],
 
     restrictions: {
@@ -144,9 +185,7 @@ const distributionArgs = {
         includeCookies: false,
         prefix: `${config.targetDomain}/`,
     },
-};
-
-const cdn = new aws.cloudfront.Distribution('cdn', distributionArgs);
+});
 
 function createAliasRecord(targetDomain, distribution) {
     const domainParts = getDomainAndSubdomain(targetDomain);
