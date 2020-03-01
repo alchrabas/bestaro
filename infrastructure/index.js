@@ -1,6 +1,9 @@
 'use strict';
 const aws = require('@pulumi/aws');
-const pulumi = require("@pulumi/pulumi");
+const awsx = require('@pulumi/awsx');
+const pulumi = require('@pulumi/pulumi');
+const cloud = require('@pulumi/cloud-aws');
+const functions = require('./functions');
 
 const stackName = pulumi.getStack();
 
@@ -62,8 +65,79 @@ new aws.s3.BucketPolicy('bestaro-public-bucket-policy', {
     }))
 });
 
+const globalSecondaryIndexesMap = {
+    globalEmail: {
+        name: 'GlobalRecordId',
+        hashKey: 'id',
+        projectionType: 'ALL',
+        readCapacity: 1,
+        writeCapacity: 1,
+    },
+};
+
+const recordsSchema = {
+    name: 'records',
+    hashKey: 'yearAndMonth',
+    rangeKey: 'geohash',
+    attributes: [
+        { name: 'yearAndMonth', type: 'N' },
+        { name: 'id', type: 'S' },
+        { name: 'geohash', type: 'S' },
+    ],
+    localSecondaryIndexes: [],
+    globalSecondaryIndexes: Object.values(globalSecondaryIndexesMap),
+    readCapacity: 1,
+    writeCapacity: 1,
+};
+
+const table = new aws.dynamodb.Table(recordsSchema.name, recordsSchema);
+
+const endpoint = new awsx.apigateway.API('bestaro-frontend-api', {
+    routes: [
+        {
+            path: '/api/upload',
+            method: 'POST',
+            eventHandler: async (req, ctx) => {
+                console.log(req.headers.Authorization);
+                const body = req.isBase64Encoded
+                    ? Buffer.from(req.body, 'base64').toString('utf8')
+                    : req.body;
+                const record = JSON.parse(body);
+
+                await functions.addRecord(record, table);
+
+                return {
+                    statusCode: 200,
+                    body: JSON.stringify({ ok: true }),
+                    headers: { 'content-type': 'application/json' },
+                };
+            },
+        },
+        {
+            path: '/api/{minLat}/{minLon}/{maxLat}/{maxLon}/{dateFrom}/{dateTo}/{eventType}',
+            method: 'GET',
+            eventHandler: async (req, ctx) => {
+                const { centerlat, centerlon, dateFrom, dateTo, eventType } = req.pathParameters;
+
+                const markers = functions.getMarkers(50.129754, 19.557483,
+                    50.134368, 19.570763,
+                    1577145600000, 1583020800000,
+                    'LOST', table.name.get());
+                console.log(markers);
+
+                return {
+                    statusCode: 200,
+                    body: JSON.stringify(markers),
+                    headers: { 'content-type': 'application/json' },
+                };
+            },
+        },
+    ]
+});
 
 exports.bucketName = imagesBucket.id;
 exports.backendUserAccessKeyId = backendUserAccessKey.id;
 exports.backendUserSecretAccessKey = backendUserAccessKey.secret;
 exports.regionalDomain = imagesBucket.bucketRegionalDomainName;
+exports.api = endpoint.url;
+exports.table = table.name;

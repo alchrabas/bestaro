@@ -1,0 +1,20 @@
+{
+  "recordId": {
+    "id": "572425033",
+    "service": "OLX"
+  },
+  "eventType": "FOUND",
+  "animalType": "UNKNOWN",
+  "pictures": [
+    "36/OLX-572425033_1.png"
+  ],
+  "link": "https://example.com",
+  "eventDate": 1575331200000,
+  "postDate": 1575331200000,
+  "fullLocation": {
+    "coordinate": {
+      "lat": 53.7308354,
+      "lon": 20.4787676
+    }
+  }
+}

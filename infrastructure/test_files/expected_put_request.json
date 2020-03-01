@@ -1,0 +1,16 @@
+{
+  "TableName": "records",
+  "Item": {
+    "id": "OLX-572425033",
+    "eventType": "FOUND",
+    "pictures": ["36/OLX-572425033_1.png"],
+    "animalType": "UNKNOWN",
+    "link": "https://example.com",
+    "eventDate": 1575331200000,
+    "publishDate": 1575331200000,
+    "yearAndMonth": 201912,
+    "lat": 53.7308354,
+    "lon": 20.4787676,
+    "geohash": "u3w9dj2hv"
+  }
+}
