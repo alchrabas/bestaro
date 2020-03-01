@@ -2,7 +2,6 @@
 const aws = require('@pulumi/aws');
 const awsx = require('@pulumi/awsx');
 const pulumi = require('@pulumi/pulumi');
-const cloud = require('@pulumi/cloud-aws');
 const functions = require('./functions');
 
 const stackName = pulumi.getStack();
@@ -134,6 +133,8 @@ const endpoint = new awsx.apigateway.API('bestaro-frontend-api', {
         },
     ]
 });
+
+const frontend = require('./frontend');
 
 exports.bucketName = imagesBucket.id;
 exports.backendUserAccessKeyId = backendUserAccessKey.id;
