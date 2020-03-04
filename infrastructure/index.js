@@ -1,9 +1,15 @@
 'use strict';
+
 const aws = require('@pulumi/aws');
 const awsx = require('@pulumi/awsx');
 const pulumi = require('@pulumi/pulumi');
-const functions = require('./functions');
 const moment = require('moment');
+const mime = require('mime');
+const path = require('path');
+const functions = require('./functions');
+const { crawlDirectory } = require('./helpers');
+const { StaticFrontendWithLambdaBackend } = require('./staticFrontendWithLambdaBackend');
+
 
 const stackName = pulumi.getStack();
 
@@ -136,7 +142,44 @@ const endpoint = new awsx.apigateway.API('bestaro-frontend-api', {
     ]
 });
 
-const frontend = require('./frontend');
+
+const config = {
+    pathToWebsiteContents: '../new-front/build',
+    targetDomain: 'mapazwierzat.pl',
+};
+
+const contentBucket = new aws.s3.Bucket('bestaro-front',
+    {
+        bucket: config.targetDomain,
+        website: {
+            indexDocument: 'index.html',
+            errorDocument: '404.html',
+        },
+    });
+
+const frontendWithBackend = new StaticFrontendWithLambdaBackend('bestaro', config.targetDomain, contentBucket, endpoint);
+
+const webContentsRootPath = path.join(process.cwd(), config.pathToWebsiteContents);
+console.log('Syncing contents from local disk at', webContentsRootPath);
+crawlDirectory(
+    webContentsRootPath,
+    (filePath) => {
+        const relativeFilePath = filePath.replace(webContentsRootPath + '/', '');
+        new aws.s3.BucketObject(
+            relativeFilePath,
+            {
+                key: relativeFilePath,
+
+                acl: 'public-read',
+                bucket: contentBucket,
+                contentType: mime.getType(filePath) || undefined,
+                source: new pulumi.asset.FileAsset(filePath),
+            },
+            {
+                parent: contentBucket,
+            });
+    });
+
 
 exports.bucketName = imagesBucket.id;
 exports.backendUserAccessKeyId = backendUserAccessKey.id;
@@ -144,3 +187,8 @@ exports.backendUserSecretAccessKey = backendUserAccessKey.secret;
 exports.regionalDomain = imagesBucket.bucketRegionalDomainName;
 exports.api = endpoint.url;
 exports.table = table.name;
+exports.contentBucketUri = pulumi.interpolate`s3://${contentBucket.bucket}`;
+exports.contentBucketWebsiteEndpoint = contentBucket.websiteEndpoint;
+exports.cloudFrontDomain = frontendWithBackend.cloudFrontDistribution.domainName;
+exports.targetDomainEndpoint = `https://${config.targetDomain}/`;
+
