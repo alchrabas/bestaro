@@ -3,8 +3,7 @@ package bestaro.backend.database
 import java.util.Date
 
 import bestaro.backend.AppConfig
-import bestaro.backend.types.RawRecord
-import bestaro.common.types._
+import bestaro.backend.types._
 import bestaro.locator.types.FullLocation
 import org.sqlite.SQLiteConfig
 import play.api.libs.json.Json

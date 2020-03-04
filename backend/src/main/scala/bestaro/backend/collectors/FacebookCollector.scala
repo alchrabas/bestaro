@@ -5,9 +5,8 @@ import java.time.Instant
 import java.util.Random
 import java.util.concurrent.TimeUnit
 
-import bestaro.backend.types.RawRecord
+import bestaro.backend.types.{AnimalType, EventType, FbId, RawRecord}
 import bestaro.backend.util.ImageUtil
-import bestaro.common.types._
 import bestaro.locator.types.{FullLocation, Voivodeship}
 import facebook4j._
 
@@ -43,7 +42,7 @@ class FacebookCollector(recordConsumer: RawRecord => Unit, isAlreadyStored: RawR
     //    FacebookGroup("GornySlaskDlaZwierzat", "377426005706051", Some(Voivodeship.SLASKIE)),
     //    FacebookGroup("ZaginoneSwietokrzyskie", "1405798499654655", Some(Voivodeship.SWIETOKRZYSKIE)),
     //    FacebookGroup("ZaginioneZnalezioneOlsztynOkolice", "1833070163614017", Some(Voivodeship.WARMINSKO_MAZURSKIE)),
-//    FacebookGroup("ExampleGroup", "610005689402334", Some(Voivodeship.MALOPOLSKIE)),
+    //    FacebookGroup("ExampleGroup", "610005689402334", Some(Voivodeship.MALOPOLSKIE)),
     FacebookGroup("DzikiGroup", "2402384219777987", Some(Voivodeship.SLASKIE)),
   )
 

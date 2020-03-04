@@ -2,8 +2,8 @@ package bestaro.backend.helpers
 
 import java.io.File
 
-import bestaro.common.types.RecordId
 import bestaro.backend.database.DatabaseWrapper
+import bestaro.backend.types.RecordId
 import com.github.tototoshi.csv.{CSVReader, CSVWriter}
 import play.api.libs.json.Json
 

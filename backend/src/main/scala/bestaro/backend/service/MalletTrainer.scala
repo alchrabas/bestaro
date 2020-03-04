@@ -2,10 +2,10 @@ package bestaro.backend.service
 
 import java.io.{File, FileOutputStream, ObjectOutputStream}
 
-import bestaro.common.util.MathUtil
 import bestaro.backend.database.DatabaseWrapper
 import bestaro.backend.extractors.EventTypeExtractor
 import bestaro.backend.helpers.TaggedRecordsManager
+import bestaro.backend.util.MathUtil
 import cc.mallet.classify.{Classifier, ClassifierTrainer, Trial}
 import cc.mallet.types.{Instance, InstanceList}
 import cc.mallet.util.Randoms

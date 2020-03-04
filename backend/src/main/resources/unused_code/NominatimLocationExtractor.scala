@@ -1,12 +1,7 @@
 package unused_code
 
-import bestaro.common.FullLocation
-import bestaro.common.types.Location
-import bestaro.backend.core.processors.LocationType
-import bestaro.backend.extractors._
 import bestaro.locator.extractors.{AbstractLocationExtractor, MatchedFullLocation, MatchedInflectedLocation, MultiWordLocationNameExtractor}
 import bestaro.locator.types.{Location, Token}
-import bestaro.backend.service.Voivodeship
 import org.apache.http.impl.client.DefaultHttpClient
 
 import scala.collection.mutable.ListBuffer

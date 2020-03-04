@@ -1,8 +1,7 @@
 package bestaro.backend.core
 
-import bestaro.common.types.RecordId
 import bestaro.backend.helpers.TaggedRecordsManager.TaggedRecord
-import bestaro.backend.types.RawRecord
+import bestaro.backend.types.{RawRecord, RecordId}
 import bestaro.locator.types.FullLocation
 import bestaro.locator.util.{BaseNameProducer, PolishCharactersAsciizer}
 

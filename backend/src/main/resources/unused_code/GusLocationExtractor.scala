@@ -1,9 +1,7 @@
 package unused_code
 
-import bestaro.backend.core.processors._
 import bestaro.locator.extractors.{AbstractLocationExtractor, MatchedFullLocation, MatchedInflectedLocation, MatchedLocation}
 import bestaro.locator.types.{Location, Token}
-import bestaro.backend.service.GusDataReader
 
 import scala.collection.mutable.ListBuffer
 

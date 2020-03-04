@@ -3,7 +3,7 @@ package bestaro.backend
 
 import java.nio.charset.StandardCharsets
 
-import bestaro.common.types.Record
+import bestaro.backend.types.Record
 import dispatch.Defaults._
 import dispatch._
 import play.api.libs.json.Json

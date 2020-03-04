@@ -1,4 +1,4 @@
-package bestaro.common.types
+package bestaro.backend.types
 
 import play.api.libs.json._
 

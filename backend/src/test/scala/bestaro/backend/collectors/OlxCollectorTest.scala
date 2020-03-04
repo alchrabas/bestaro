@@ -4,8 +4,7 @@ import java.net.URL
 import java.time.{Instant, LocalDate, Month, ZoneOffset}
 
 import bestaro.backend.collectors.util.HttpDownloader
-import bestaro.backend.types.RawRecord
-import bestaro.common.types.EventType
+import bestaro.backend.types.{EventType, RawRecord}
 import bestaro.locator.types.Voivodeship
 import org.jsoup.Jsoup
 import org.scalamock.scalatest.MockFactory

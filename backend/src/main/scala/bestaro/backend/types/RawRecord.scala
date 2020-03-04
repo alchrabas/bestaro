@@ -1,6 +1,5 @@
 package bestaro.backend.types
 
-import bestaro.common.types._
 import bestaro.locator.types.FullLocation
 import play.api.libs.json.{Json, OFormat}
 

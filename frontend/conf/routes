@@ -1,9 +1,0 @@
-# Routes
-# This file defines all application routes (Higher priority routes first)
-# https://www.playframework.com/documentation/latest/ScalaRouting
-# ~~~~
-
-# An example controller showing a sample home page
-
-GET         /api/:centerlat/:centerlon/:dateFrom/:dateTo/:eventType        controllers.RestController.getMarkers(centerlat: Double, centerlon: Double, dateFrom: String, dateTo: String, eventType: String)
-POST        /api/upload/                                                        controllers.RecordConsumerController.saveRecord()

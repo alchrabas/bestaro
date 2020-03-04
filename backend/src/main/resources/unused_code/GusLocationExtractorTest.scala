@@ -1,13 +1,10 @@
 package unused_code
 
-import bestaro.common.types._
 import bestaro.backend.core._
-import bestaro.backend.extractors.GusLocationExtractor
 import bestaro.backend.helpers.TaggedRecordsManager.TaggedRecord
+import bestaro.backend.types.{EventType, FbId, RecordId}
 import bestaro.locator.extractors.MatchedFullLocation
 import bestaro.locator.types.{Location, LocationType, Voivodeship}
-import bestaro.backend.service.Voivodeship
-import org.scalatest.FunSpec
 
 class GusLocationExtractorTest extends FunSpec {
 

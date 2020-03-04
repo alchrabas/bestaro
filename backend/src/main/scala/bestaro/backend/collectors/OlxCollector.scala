@@ -7,9 +7,8 @@ import java.util.Random
 import bestaro.backend.collectors.util.HttpDownloader
 import bestaro.backend.database.DatabaseWrapper
 import bestaro.backend.extractors.PolishDateExtractor
-import bestaro.backend.types.RawRecord
+import bestaro.backend.types._
 import bestaro.backend.util.ImageUtil
-import bestaro.common.types._
 import bestaro.locator.types.{FullLocation, Voivodeship}
 import bestaro.locator.util.PolishCharactersAsciizer
 import org.jsoup.Jsoup

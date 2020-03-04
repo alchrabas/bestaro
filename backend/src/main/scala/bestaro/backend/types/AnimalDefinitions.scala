@@ -1,7 +1,7 @@
-package bestaro.common.types
+package bestaro.backend.types
 
-import play.api.libs.json._
 import enumeratum._
+import play.api.libs.json._
 
 import scala.collection.immutable
 

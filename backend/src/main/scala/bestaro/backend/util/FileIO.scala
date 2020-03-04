@@ -1,4 +1,4 @@
-package bestaro.common.util
+package bestaro.backend.util
 
 import java.io.{File, FileWriter}
 import java.nio.charset.StandardCharsets

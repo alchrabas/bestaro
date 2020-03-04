@@ -3,8 +3,7 @@ package bestaro.backend.core.processors
 import bestaro.backend.AppConfig
 import bestaro.backend.core.Tokenizer
 import bestaro.backend.extractors.EventTypeExtractor
-import bestaro.backend.types.RawRecord
-import bestaro.common.types.EventType
+import bestaro.backend.types.{EventType, RawRecord}
 import bestaro.locator.LocatorDatabase
 import bestaro.locator.extractors.{CacheEfficiency, GoogleLocationExtractor}
 import bestaro.locator.types.{FullLocation, Token, Voivodeship}

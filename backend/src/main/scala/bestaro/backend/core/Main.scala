@@ -11,8 +11,8 @@ import bestaro.backend.database.DatabaseWrapper
 import bestaro.backend.database.DatabaseWrapper.CacheEfficiencyRecord
 import bestaro.backend.helpers.TaggedRecordsManager
 import bestaro.backend.helpers.TaggedRecordsManager.TaggedRecord
+import bestaro.backend.types.{Record, RecordId}
 import bestaro.backend.{AppConfig, DataSupplier, S3Client}
-import bestaro.common.types.{Record, RecordId}
 import bestaro.locator.LocatorDatabase
 
 import scala.concurrent.duration.Duration

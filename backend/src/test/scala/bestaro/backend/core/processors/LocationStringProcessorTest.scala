@@ -1,7 +1,6 @@
 package bestaro.backend.core.processors
 
-import bestaro.backend.types.RawRecord
-import bestaro.common.types._
+import bestaro.backend.types.{AnimalType, EventType, FbId, RawRecord}
 import bestaro.locator.LocatorDatabase
 import bestaro.locator.types.{FullLocation, Location, LocationType, Voivodeship}
 import org.scalamock.scalatest.MockFactory

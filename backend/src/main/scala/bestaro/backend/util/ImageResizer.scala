@@ -1,4 +1,4 @@
-package bestaro.common.util
+package bestaro.backend.util
 
 import java.awt.image.BufferedImage
 import java.awt.{AlphaComposite, Image, RenderingHints}

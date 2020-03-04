@@ -4,10 +4,9 @@ import java.awt.image.BufferedImage
 import java.io.InputStream
 import java.nio.file.{Path, Paths}
 import java.security.MessageDigest
-import javax.imageio.ImageIO
 
-import bestaro.common.types.RecordId
-import bestaro.common.util.ImageResizer
+import bestaro.backend.types.RecordId
+import javax.imageio.ImageIO
 
 object ImageUtil {
 
