@@ -7,10 +7,11 @@
     "@pulumi/cloud-aws": "0.18.1",
     "@pulumi/pulumi": "1.1.0",
     "aws-sdk": "2.607.0",
-    "ngeohash": "^0.6.3",
     "common-prefix": "1.1.0",
+    "mime": "^2.4.4",
     "moment": "2.24.0",
-    "mime": "^2.4.4"
+    "ngeohash": "^0.6.3",
+    "pulumi-s3-lambda-webstack": "^1.0.1"
   },
   "jest": {
     "testEnvironment": "node",

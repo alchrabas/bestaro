@@ -52,13 +52,15 @@ function monthsBetweenDates(startDate, endDate) {
     return allMonths;
 }
 
-function eventTypesSet(eventType) {
+function eventTypesArray(eventType) {
     switch (eventType) {
         case 'LOST':
         case 'FOUND':
-            return eventType;
+            return [eventType, ''];
         case 'ANY':
-            return 'LOST, FOUND';
+            return ['LOST', 'FOUND'];
+        default:
+            throw new Error(`${eventType} is not a valid event type`);
     }
 }
 
@@ -74,22 +76,26 @@ const getMarkers = async (minLat, minLon, maxLat, maxLon, startDate, endDate, ev
     const queryPromises = allMonths.map(yearAndMonth =>
         new aws.sdk.DynamoDB.DocumentClient().query({
             TableName: tableName,
-            KeyConditionExpression: 'yearAndMonth = :yearAndMonth AND begins_with(geohash, :geohashPrefix)',
+            KeyConditionExpression: 'yearAndMonth = :yearAndMonth ' +
+                (geohashCommonPrefix ? 'AND begins_with(geohash, :geohashPrefix)' : ''),
+            // if common prefix is empty then ignore geohash and search the whole world
             ExpressionAttributeValues: {
                 ':yearAndMonth': yearAndMonth,
-                ':geohashPrefix': geohashCommonPrefix,
+                ...(geohashCommonPrefix && {':geohashPrefix': geohashCommonPrefix}),
                 ':minTimestamp': startDate.valueOf(),
                 ':maxTimestamp': endDate.valueOf(),
                 ':minLat': minLat,
                 ':minLon': minLon,
                 ':maxLat': maxLat,
                 ':maxLon': maxLon,
+                ':eventType0': eventTypesArray(eventType)[0],
+                ':eventType1': eventTypesArray(eventType)[1],
             },
             FilterExpression:
-                'eventDate BETWEEN :minTimestamp AND :maxTimestamp ' +
+                'publishDate BETWEEN :minTimestamp AND :maxTimestamp ' +
                 'AND lat BETWEEN :minLat AND :maxLat ' +
                 'AND lon BETWEEN :minLon AND :maxLon ' +
-                `AND eventType IN (${eventTypesSet(eventType)})`,
+                `AND eventType IN (:eventType0, :eventType1)`,
         }).promise()
     );
     const results = await Promise.all(queryPromises);

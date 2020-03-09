@@ -8,7 +8,7 @@ const mime = require('mime');
 const path = require('path');
 const functions = require('./functions');
 const { crawlDirectory } = require('./helpers');
-const { StaticFrontendWithLambdaBackend } = require('./staticFrontendWithLambdaBackend');
+const { StaticFrontendWithLambdaBackend } = require('pulumi-s3-lambda-webstack');
 
 
 const stackName = pulumi.getStack();
@@ -127,8 +127,8 @@ const endpoint = new awsx.apigateway.API('bestaro-frontend-api', {
 
                 const momentFrom = moment(dateFrom);
                 const momentTo = moment(dateTo);
-
-                const markers = functions.getMarkers(minLat, minLon, maxLat, maxLon,
+                const markers = await functions.getMarkers(parseFloat(minLat), parseFloat(minLon),
+                    parseFloat(maxLat), parseFloat(maxLon),
                     momentFrom, momentTo, eventType, table.name.get());
                 console.log(markers);
 
