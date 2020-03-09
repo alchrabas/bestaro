@@ -1,4 +1,4 @@
-export const UPDATE_RECORDS = "UPDATE_RECORDS";
+export const UPDATE_RECORDS = 'UPDATE_RECORDS';
 
 export const updateRecords = records => {
     return {
@@ -14,16 +14,20 @@ export const updateLastMoveTimestamp = () => lastMoveTimestamp = Date.now(); // 
 
 export const fetchDataFromServer = () => {
     return (dispatch, getState) => {
-        console.log("FETCHING DATA FROM SERVER");
-        const center = getState().map.center;
+        console.log('FETCHING DATA FROM SERVER');
+        const map = getState().map.bounds;
         const filters = getState().filters;
-        fetch(`/api/${center.lat}/${center.lng}/`
+        fetch(`/api/${map.minLat}/${map.minLon}/${map.maxLat}/${map.maxLon}/`
             + `${filters.dateFrom}/${filters.dateTo}/${filters.eventType}`)
             .then(response => response.json())
-            .then(data =>
-                dispatch(updateRecords(data))
-            ).catch(e => {
-            console.log("Error when trying to fetch data", e);
+            .then(data => {
+                if (data.message) {
+                    throw new Error(`Backend returned error ${data.message}`);
+                } else {
+                    dispatch(updateRecords(data));
+                }
+            }).catch(e => {
+            console.log('Error when trying to fetch data', e);
         });
         lastMoveTimestamp = Infinity;
     };

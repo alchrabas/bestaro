@@ -1,14 +1,14 @@
-import {updateLastMoveTimestamp} from "./records";
+import { updateLastMoveTimestamp } from './records';
 
-export const UPDATE_MAP_CENTER = "UPDATE_MAP_CENTER";
-export const REFRESH_MAP = "REFRESH_MAP";
+export const UPDATE_MAP_BOUNDS = 'UPDATE_MAP_BOUNDS';
+export const REFRESH_MAP = 'REFRESH_MAP';
 
 
-export const updateMapCenter = center => {
+export const updateMapBounds = bounds => {
     updateLastMoveTimestamp();
     return {
-        type: UPDATE_MAP_CENTER,
-        center,
+        type: UPDATE_MAP_BOUNDS,
+        bounds,
     };
 };
 
@@ -19,13 +19,13 @@ export const refreshMap = () => {
 };
 
 export const mapReducer = (state = {
-    center: {lat: 0, lng: 0},
+    bounds: { minLat: 0, minLon: 0, maxLat: 0, maxLon: 0 },
     refreshSerialId: 0,
 }, action) => {
     switch (action.type) {
-        case UPDATE_MAP_CENTER:
+        case UPDATE_MAP_BOUNDS:
             return Object.assign({}, state, {
-                center: action.center,
+                bounds: action.bounds,
             });
         case REFRESH_MAP:
             return Object.assign({}, state, {
