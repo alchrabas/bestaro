@@ -10,8 +10,10 @@ const functions = require('./functions');
 const { crawlDirectory } = require('./helpers');
 const { StaticFrontendWithLambdaBackend } = require('pulumi-s3-lambda-webstack');
 
-
 const stackName = pulumi.getStack();
+const pathToWebsiteContents = '../frontend/build';
+const config = new pulumi.Config();
+const targetDomain = config.require('targetDomain');
 
 const imagesBucket = new aws.s3.Bucket(`bestaro-images-${stackName}`, {
     acl: 'public-read',
@@ -105,18 +107,10 @@ const endpoint = new awsx.apigateway.API('bestaro-frontend-api', {
             method: 'POST',
             eventHandler: async (req, ctx) => {
                 console.log(req.headers.Authorization);
-                const body = req.isBase64Encoded
-                    ? Buffer.from(req.body, 'base64').toString('utf8')
-                    : req.body;
-                const record = JSON.parse(body);
+                const record = getJsonBody(req);
+                await functions.addRecord(record, table.name.get());
 
-                await functions.addRecord(record, table);
-
-                return {
-                    statusCode: 200,
-                    body: JSON.stringify({ ok: true }),
-                    headers: { 'content-type': 'application/json' },
-                };
+                return successResponse({ ok: true });
             },
         },
         {
@@ -132,34 +126,38 @@ const endpoint = new awsx.apigateway.API('bestaro-frontend-api', {
                     momentFrom, momentTo, eventType, table.name.get());
                 console.log(markers);
 
-                return {
-                    statusCode: 200,
-                    body: JSON.stringify(markers),
-                    headers: { 'content-type': 'application/json' },
-                };
+                return successResponse(markers);
             },
         },
     ]
 });
 
-
-const config = {
-    pathToWebsiteContents: '../new-front/build',
-    targetDomain: 'mapazwierzat.pl',
+const getJsonBody = (req) => {
+    const body = req.isBase64Encoded
+        ? Buffer.from(req.body, 'base64').toString('utf8')
+        : req.body;
+    return JSON.parse(body);
 };
+
+const successResponse = (response) => ({
+    statusCode: 200,
+    body: JSON.stringify(response),
+    headers: { 'content-type': 'application/json' },
+});
+
 
 const contentBucket = new aws.s3.Bucket('bestaro-front',
     {
-        bucket: config.targetDomain,
+        bucket: targetDomain,
         website: {
             indexDocument: 'index.html',
             errorDocument: '404.html',
         },
     });
 
-const frontendWithBackend = new StaticFrontendWithLambdaBackend('bestaro', config.targetDomain, contentBucket, endpoint);
+const frontendWithBackend = new StaticFrontendWithLambdaBackend('bestaro', targetDomain, contentBucket, endpoint);
 
-const webContentsRootPath = path.join(process.cwd(), config.pathToWebsiteContents);
+const webContentsRootPath = path.join(process.cwd(), pathToWebsiteContents);
 console.log('Syncing contents from local disk at', webContentsRootPath);
 crawlDirectory(
     webContentsRootPath,
@@ -190,5 +188,5 @@ exports.table = table.name;
 exports.contentBucketUri = pulumi.interpolate`s3://${contentBucket.bucket}`;
 exports.contentBucketWebsiteEndpoint = contentBucket.websiteEndpoint;
 exports.cloudFrontDomain = frontendWithBackend.cloudFrontDistribution.domainName;
-exports.targetDomainEndpoint = `https://${config.targetDomain}/`;
+exports.targetDomainEndpoint = `https://${targetDomain}/`;
 

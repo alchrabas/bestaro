@@ -1,3 +1,4 @@
 config:
   aws:region: eu-central-1
+  bestaro:targetDomain: mapazwierzat.pl
   pulumi:template: aws-javascript
